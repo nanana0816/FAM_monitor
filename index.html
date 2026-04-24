@@ -594,106 +594,94 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('attendBody').innerHTML = html;
   }
 
-  /* ---- 生産詳細（表形式での横並び比較） ---- */
+    /* ---- 生産詳細（行列入れ替え：項目を行、ラインを列にして比較） ---- */
   function renderProdDetail() {
     var html = '';
+
+    // 1. 比較テーブル（行列入れ替え形式）
+    html += '<div style="margin-bottom:24px;">';
+    html += '<div style="font-weight:700; font-size:14px; margin-bottom:10px; color:var(--accent); border-left:4px solid var(--accent); padding-left:8px;">📊 実績比較</div>';
+    html += '<table class="detail-table" style="font-size:13px;">';
+    html += '<thead><tr><th style="width:25%;">項目</th>';
     
-    // ========== 基本情報テーブル ==========
-    html += '<div style="margin-bottom:20px;">';
-    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">基本情報</div>';
-    html += '<table class="detail-table" style="font-size:12px;">';
-    html += '<thead><tr><th>項目</th>';
+    [span_0](start_span)// ヘッダー列にライン名を並べる[span_0](end_span)
     PROD_DATA.lines.forEach(function (line) {
-      html += '<th>' + line.name + '</th>';
+      html += '<th style="text-align:center;">' + line.name + '</th>';
     });
     html += '</tr></thead>';
     html += '<tbody>';
-    
-    // 工場行
-    html += '<tr><td style="font-weight:600;">工場</td>';
+
+    [span_1](start_span)[span_2](start_span)// 工場/車種行[span_1](end_span)[span_2](end_span)
+    html += '<tr><td style="font-weight:600; background:#f9f9f9;">車種</td>';
     PROD_DATA.lines.forEach(function (line) {
-      html += '<td>' + line.factory + '</td>';
+      html += '<td style="font-size:11px;">' + line.vehicle + '</td>';
     });
     html += '</tr>';
-    
-    // 車種行
-    html += '<tr><td style="font-weight:600;">対象車種</td>';
+
+    [span_3](start_span)// 計画行[span_3](end_span)
+    html += '<tr><td style="font-weight:600; background:#f9f9f9;">計画</td>';
     PROD_DATA.lines.forEach(function (line) {
-      html += '<td>' + line.vehicle + '</td>';
+      html += '<td>' + line.plan + '</td>';
     });
     html += '</tr>';
-    
-    // 計画行
-    html += '<tr><td style="font-weight:600;">計画台数</td>';
+
+    [span_4](start_span)// 実績行[span_4](end_span)
+    html += '<tr><td style="font-weight:600; background:#f9f9f9;">実績</td>';
     PROD_DATA.lines.forEach(function (line) {
-      html += '<td><strong>' + line.plan + '</strong></td>';
+      html += '<td style="font-weight:700; font-size:15px;">' + line.result + '</td>';
     });
     html += '</tr>';
-    
-    // 実績行
-    html += '<tr><td style="font-weight:600;">実績台数</td>';
+
+    [span_5](start_span)// 差分行（色分け）[span_5](end_span)
+    html += '<tr><td style="font-weight:600; background:#f9f9f9;">差分</td>';
     PROD_DATA.lines.forEach(function (line) {
-      html += '<td><strong>' + line.result + '</strong></td>';
+      var diffText = (line.diff >= 0 ? '+' : '') + line.diff;
+      var diffColor = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
+      html += '<td style="font-weight:700; color:' + diffColor + '; font-size:15px;">' + diffText + '</td>';
     });
     html += '</tr>';
-    
-    // 差分行
-    html += '<tr><td style="font-weight:600;">差分</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      var color = line.diff >= 0 ? '#45ADA8' : '#B33F40';
-      html += '<td style="color:' + color + '; font-weight:700;">' + (line.diff >= 0 ? '+' : '') + line.diff + '</td>';
-    });
-    html += '</tr>';
-    
-    // 稼働率行
-    html += '<tr><td style="font-weight:600;">稼働率</td>';
+
+    [span_6](start_span)// 稼働率行[span_6](end_span)
+    html += '<tr><td style="font-weight:600; background:#f9f9f9;">稼働率</td>';
     PROD_DATA.lines.forEach(function (line) {
       html += '<td><span class="status-badge ok">' + line.rate + '%</span></td>';
     });
     html += '</tr>';
-    
-    html += '</tbody></table>';
-    html += '</div>';
-    
-    // ========== ラウンド詳細 ==========
-    html += '<div style="margin-bottom:16px;">';
-    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">ラウンド別実績</div>';
+
+    html += '</tbody></table></div>';
+
+    [span_7](start_span)// 2. ラウンド詳細エリア（検討中のためラインごとに分離）[span_7](end_span)
+    html += '<div style="font-weight:700; font-size:14px; margin-bottom:10px; color:var(--accent); border-left:4px solid var(--accent); padding-left:8px;">🕒 ラウンド別詳細</div>';
     
     PROD_DATA.lines.forEach(function (line, lineIdx) {
-      html += '<div style="margin-bottom:14px;">';
-      html += '<div style="font-weight:600; font-size:12px; color:var(--accent); margin-bottom:6px;">' + line.name + '</div>';
-      
-      html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px;">';
+      html += '<div style="margin-bottom:15px; padding:10px; border:1px solid #eee; border-radius:8px;">';
+      html += '<div style="font-weight:700; font-size:12px; margin-bottom:8px; color:#666;">' + line.name + '</div>';
+      html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px;">';
       
       line.rounds.forEach(function (round) {
         var btnId = 'roundBtn-' + lineIdx + '-' + (round.no - 1);
         var panelId = 'roundPanel-' + lineIdx + '-' + (round.no - 1);
         
         html += '<div>';
-        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '">';
-        html += 'ラウンド ' + round.no + '<br/>(' + round.time + ')';
+        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '" style="font-size:11px; padding:5px;">';
+        html += 'R' + round.no + ' (' + round.time + ')';
         html += '</button>';
         
         html += '<div class="round-detail-panel" id="' + panelId + '">';
-        html += '<div class="round-item"><div class="round-label">計画</div><div class="round-value">' + round.plan + '</div></div>';
         html += '<div class="round-item"><div class="round-label">実績</div><div class="round-value">' + round.result + '</div></div>';
-        html += '<div class="round-item"><div class="round-label">不良</div><div class="round-value">' + round.defect + '</div></div>';
-        html += '<div class="round-item"><div class="round-label">累計</div><div class="round-value">' + round.cumulative + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">累計</div><div class="round-value" style="color:var(--accent);">' + round.cumulative + '</div></div>';
         html += '</div>';
         html += '</div>';
       });
-      
-      html += '</div>';
-      html += '</div>';
+      html += '</div></div>';
     });
-    
-    html += '</div>';
-    
+
     document.getElementById('prodBody').innerHTML = html;
     
-    // ラウンドボタンのイベントリスナー設定
+    [span_8](start_span)// イベント再設定[span_8](end_span)
     setTimeout(attachRoundButtonEvents, 50);
   }
+
 
   /* ラウンドボタンのイベント */
   function attachRoundButtonEvents() {
