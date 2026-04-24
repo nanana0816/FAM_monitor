@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver7.4</title>
-<link href="[https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap)" rel="stylesheet">
+<title>FAM 朝会モニター — ver6.1 (行列入替版)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-/* ===== 基本設定 (ver6.0 継承) ===== */
+/* ===== 基本設定 (ver6.0準拠) ===== */
 :root {
   --bg: #F0F2F5;
   --panel: #FFFFFF;
@@ -39,12 +39,12 @@ header {
   color: var(--accent); letter-spacing: 2px;
 }
 
-/* ===== メイングリッド (レスポンシブ) ===== */
+/* ===== メイングリッド ===== */
 .main-grid { display: grid; gap: 16px; padding: 16px; }
 @media (orientation: landscape) { .main-grid { grid-template-columns: 4fr 6fr; } }
 @media (orientation: portrait)  { .main-grid { grid-template-columns: 1fr; } }
 
-/* ===== カード ===== */
+/* ===== カードデザイン ===== */
 .card {
   background: var(--panel); border-radius: var(--radius);
   border: 1px solid var(--border); overflow: hidden;
@@ -54,44 +54,37 @@ header {
   padding: 15px 20px; background: #fafafa;
   border-bottom: 1px solid var(--border);
   font-weight: 700; font-size: 17px;
+  display: flex; justify-content: space-between; align-items: center;
 }
 .compact-body { padding: 15px; }
 
-/* ===== 行列入れ替え比較テーブル (サマリー) ===== */
-.summary-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; }
-.summary-table th { font-size: 11px; color: #666; padding-bottom: 8px; border-bottom: 2px solid var(--bg); }
-.summary-table td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
-.line-name { text-align: left; font-weight: 700; padding-left: 10px; }
+/* ===== 改修：行列入れ替えテーブル ===== */
+.summary-table { width: 100%; border-collapse: collapse; text-align: center; }
+.summary-table th { background: #f8f8f8; font-size: 11px; color: #666; padding: 10px 5px; border-bottom: 2px solid var(--bg); }
+.summary-table td { padding: 12px 5px; border-bottom: 1px solid var(--bg); font-size: 15px; }
+.line-name-label { text-align: left; font-weight: 700; padding-left: 10px !important; }
 
-/* ===== 詳細分析 (4M / 今日の方針) ===== */
-.analysis-card {
-  border: 1px solid var(--border); border-radius: 12px;
-  padding: 16px; background: #fdfdfd; margin-bottom: 16px;
-}
-.analysis-card.warning { border-left: 6px solid var(--accent); background: #FFF5F5; }
-.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-.analysis-item { background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #EEE; font-size: 12px; }
+/* ===== ステータス表示 ===== */
+.status-badge { padding: 4px 8px; border-radius: 6px; font-weight: 700; color: #fff; font-size: 11px; }
+.status-badge.ok { background: var(--teal); }
+.status-badge.ng { background: var(--accent); }
 
-/* トレンドバー (簡易推移) */
-.trend-box { display: flex; gap: 2px; align-items: flex-end; height: 18px; margin-left: auto; }
-.trend-bar { width: 12px; border-radius: 1px; opacity: 0.7; }
-
-/* ===== 操作バー (ver6.0 デザイン継承) ===== */
+/* ===== 操作パネル (ver6.0準拠) ===== */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 90px;
   background: rgba(255,255,255,0.98); border-top: 2px solid var(--border);
   display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 12px; z-index: 9999;
 }
 .nav-btn {
-  flex: 1; max-width: 170px; height: 55px; border: none; border-radius: 12px;
-  font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  flex: 1; max-width: 170px; height: 55px;
+  border: none; border-radius: 12px; font-weight: 700; font-size: 13px;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12); transition: 0.1s;
 }
 .btn-qr { background: var(--accent); color: #fff; }
 .btn-detail { background: #3a3a3a; color: #fff; }
 .nav-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-/* ===== モーダル (ver6.0 継承) ===== */
+/* ===== モーダル (ver6.0準拠) ===== */
 .modal-overlay {
   visibility: hidden; opacity: 0; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.82); z-index: 10000; display: flex; align-items: center; justify-content: center;
@@ -99,10 +92,10 @@ header {
 }
 .modal-overlay.is-open { visibility: visible; opacity: 1; }
 .modal-content {
-  background: #fff; width: 92%; max-width: 800px; border-radius: var(--radius); padding: 24px;
-  position: relative; max-height: 82vh; overflow-y: auto;
+  background: #fff; width: 92%; max-width: 600px; border-radius: var(--radius); padding: 24px;
+  max-height: 85vh; overflow-y: auto; position: relative;
 }
-.modal-close { position: absolute; top: 12px; right: 15px; font-size: 34px; cursor: pointer; color: #999; border: none; background: none; }
+.modal-close { position: absolute; top: 12px; right: 15px; font-size: 30px; cursor: pointer; color: #999; border: none; background: none; }
 </style>
 </head>
 
@@ -110,7 +103,7 @@ header {
 
 <header>
   <div class="h-title">FAM 朝会モニター</div>
-  <div class="h-clock" id="hClock">--:--:--</div>
+  <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
 <main class="main-grid">
@@ -118,10 +111,10 @@ header {
     <div class="card-header">👥 出勤状況</div>
     <div class="compact-body">
       <table class="summary-table">
-        <thead><tr><th>ライン</th><th>人員数</th><th>出勤率</th><th>判定</th></tr></thead>
+        <thead><tr><th style="text-align:left; padding-left:10px;">ライン</th><th>人員</th><th>出勤率</th><th>判定</th></tr></thead>
         <tbody>
-          <tr><td class="line-name">ABライン</td><td><strong>22 / 24</strong></td><td>92%</td><td style="color:var(--teal)">◎</td></tr>
-          <tr><td class="line-name">Cライン</td><td><strong>16 / 18</strong></td><td style="color:var(--accent)">88%</td><td style="color:var(--amber)">△</td></tr>
+          <tr><td class="line-name-label">ABライン</td><td><strong>22/24</strong></td><td>92%</td><td style="color:var(--teal)">◎</td></tr>
+          <tr><td class="line-name-label">Cライン</td><td><strong>16/18</strong></td><td style="color:var(--accent)">88%</td><td style="color:var(--amber)">△</td></tr>
         </tbody>
       </table>
     </div>
@@ -131,128 +124,87 @@ header {
     <div class="card-header">🏭 生産実績（昨日）</div>
     <div class="compact-body">
       <table class="summary-table">
-        <thead><tr><th style="text-align:left;">ライン名</th><th>計画</th><th>実績</th><th>差分</th><th>稼働率</th></tr></thead>
+        <thead>
+          <tr>
+            <th style="text-align:left; padding-left:10px;">ライン名</th>
+            <th>計画</th>
+            <th>実績</th>
+            <th>差分</th>
+            <th>稼働率</th>
+          </tr>
+        </thead>
         <tbody id="prodSummaryBody">
           </tbody>
       </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">📢 連絡事項</div>
-    <div class="compact-body">
-      <p style="font-size:14px; line-height:1.7;">
-        🚨 <strong>安全：</strong>指差呼称の徹底。安全靴点検。<br>
-        🔵 <strong>予定：</strong>本日13:00〜 3Sパトロール実施。
-      </p>
     </div>
   </div>
 </main>
 
 <nav class="bottom-nav">
   <button class="nav-btn btn-qr" id="btnQR">📲 連携QR</button>
-  <button class="nav-btn btn-detail" id="btnProdOpen">🏭 生産詳細分析</button>
+  <button class="nav-btn btn-detail" id="btnProd">🏭 生産詳細</button>
 </nav>
-
-<div id="modalProd" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeM('prod')">×</button>
-    <div style="font-size:18px; font-weight:700; border-left:5px solid var(--accent); padding-left:12px; margin-bottom:20px;">🏭 実績振り返り・4M分析</div>
-    <div id="prodDetailBody"></div>
-  </div>
-</div>
 
 <div id="modalQR" class="modal-overlay">
   <div class="modal-content">
     <button class="modal-close" onclick="closeM('qr')">×</button>
-    <div style="font-size:18px; font-weight:700; border-left:5px solid var(--accent); padding-left:12px; margin-bottom:15px;">📲 スマホ連携</div>
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-      <button class="nav-btn" style="background:#1565C0; color:#fff;" onclick="showQR('閲覧','[https://example.com/view](https://example.com/view)')">全体閲覧</button>
-      <button class="nav-btn" style="background:var(--teal); color:#fff;" onclick="showQR('入力','[https://example.com/input](https://example.com/input)')">実績入力</button>
-    </div>
-    <div id="qrArea" style="text-align:center; margin-top:20px; display:none;">
-      <img id="qrImg" src="" style="width:180px; border:1px solid #ddd; border-radius:8px;">
-      <p id="qrLabel" style="font-weight:700; margin-top:8px;"></p>
+    <h2 style="margin-bottom:20px; font-size:18px;">📲 スマホ連携QR</h2>
+    <div style="text-align:center; padding:20px; background:#f9f9f9; border-radius:12px;">
+      <p style="color:#666; font-size:14px;">[QRコード表示エリア]</p>
     </div>
   </div>
 </div>
 
+<div id="modalProd" class="modal-overlay">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeM('prod')">×</button>
+    <h2 style="margin-bottom:20px; font-size:18px;">🏭 生産実績詳細</h2>
+    <div id="prodDetailContent"></div>
+  </div>
+</div>
+
 <script>
+/* ---- データ定義 ---- */
 const PROD_DATA = {
   lines: [
-    {
-      name: '大型エンジン', plan: 50, result: 52, diff: 2, rate: 104,
-      rounds: [{p:12, r:12}, {p:13, r:14}, {p:12, r:13}, {p:13, r:13}],
-      analysis: { why: "サイクルタイム安定。ロスなし。", today: "✅ 本日も標準作業の遵守。" }
-    },
-    {
-      name: '中型トランス', plan: 72, result: 61, diff: -11, rate: 84,
-      rounds: [{p:18, r:18}, {p:18, r:7}, {p:18, r:18}, {p:18, r:18}],
-      analysis: { why: "設備故障：R2でモーター故障(103分停止)。", today: "🔧 復旧済。立ち上がり確認実施。" }
-    }
+    { name: 'ABライン', plan: 100, result: 85, diff: -15, rate: 85 },
+    { name: 'Cライン', plan: 150, result: 155, diff: 5, rate: 103 }
   ]
 };
 
 document.addEventListener('DOMContentLoaded', function () {
+  
   // 時計更新
   function updateClock() {
     const n = new Date();
     document.getElementById('hClock').textContent = 
-      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0') + ':' + String(n.getSeconds()).padStart(2,'0');
+      String(n.getHours()).padStart(2,'0') + ':' + 
+      String(n.getMinutes()).padStart(2,'0') + ':' + 
+      String(n.getSeconds()).padStart(2,'0');
   }
   setInterval(updateClock, 1000); updateClock();
 
-  // サマリー生成 (行列入れ替え)
-  let sHtml = '';
-  PROD_DATA.lines.forEach(line => {
-    const color = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
-    sHtml += `<tr>
-      <td class="line-name">${line.rate < 95 ? '⚠️' : '✅'} ${line.name}</td>
-      <td>${line.plan}</td><td>${line.result}</td>
-      <td style="color:${color}; font-weight:700;">${line.diff>=0?'+':''}${line.diff}</td>
-      <td><span style="background:${line.rate>=95?'var(--teal)':'var(--accent)'}; color:#fff; padding:2px 8px; border-radius:4px; font-size:11px;">${line.rate}%</span></td>
-    </tr>`;
-  });
-  document.getElementById('prodSummaryBody').innerHTML = sHtml;
-
-  // 詳細生成
-  window.renderDetail = function() {
-    let dHtml = '';
+  // サマリー表示 (行列入れ替え)
+  function renderSummary() {
+    let html = '';
     PROD_DATA.lines.forEach(line => {
-      dHtml += `<div class="analysis-card ${line.rate < 95 ? 'warning' : ''}">
-        <div style="display:flex; align-items:center; margin-bottom:8px;">
-          <span style="font-weight:900;">${line.name}</span>
-          <div class="trend-box">`;
-      line.rounds.forEach(r => {
-        const h = (r.r/r.p)*100;
-        dHtml += `<div class="trend-bar" style="height:${h/5}px; background:${h<100?'var(--accent)':'var(--teal)'};"></div>`;
-      });
-      dHtml += `</div></div>
-        <div class="analysis-grid">
-          <div class="analysis-item"><strong>【なぜ？】</strong><br>${line.analysis.why}</div>
-          <div class="analysis-item"><strong>【対策】</strong><br><span style="color:var(--teal); font-weight:700;">${line.analysis.today}</span></div>
-        </div>
-      </div>`;
+      const diffColor = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
+      html += `<tr>
+        <td class="line-name-label">${line.name}</td>
+        <td>${line.plan}</td>
+        <td style="font-weight:bold;">${line.result}</td>
+        <td style="color:${diffColor}; font-weight:bold;">${line.diff>=0?'+':''}${line.diff}</td>
+        <td><span class="status-badge ${line.rate>=90?'ok':'ng'}">${line.rate}%</span></td>
+      </tr>`;
     });
-    document.getElementById('prodDetailBody').innerHTML = dHtml;
-  };
+    document.getElementById('prodSummaryBody').innerHTML = html;
+  }
+  renderSummary();
 
-  // モーダル操作
-  window.openM = function(id) {
-    if(id === 'prod') renderDetail();
-    document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('is-open');
-  };
-  window.closeM = function(id) {
-    document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.remove('is-open');
-  };
-  window.showQR = function(name, url) {
-    document.getElementById('qrImg').src = '[https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=](https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=)' + encodeURIComponent(url);
-    document.getElementById('qrLabel').textContent = name;
-    document.getElementById('qrArea').style.display = 'block';
-  };
-
-  document.getElementById('btnProdOpen').onclick = () => openM('prod');
-  document.getElementById('btnQR').onclick = () => openM('qr');
+  // モーダル制御
+  window.closeM = function(id) { document.getElementById('modal' + id.toUpperCase()).classList.remove('is-open'); };
+  document.getElementById('btnQR').onclick = () => document.getElementById('modalQR').classList.add('is-open');
+  document.getElementById('btnProd').onclick = () => document.getElementById('modalProd').classList.add('is-open');
 });
 </script>
 </body>
