@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function renderMain() {
   let aHtml = '', pHtml = '';
   FAM_DATA.forEach(l => {
-    // 出勤カード
+    // 出勤カード (判定を出勤率へ)
     aHtml += `<tr><td class="t-left">${l.line}</td><td>${l.attendSummary.total - l.attendSummary.missing} / ${l.attendSummary.total}</td><td><strong>${l.attendSummary.rate}</strong></td></tr>`;
     // 生産カード
     pHtml += `<tr><td class="t-left">${l.line}</td><td><strong>${l.result} / ${l.plan}</strong></td><td>${l.stop}</td><td>${l.overtime}</td><td><span class="badge ${parseInt(l.rate)>=90?'bg-teal':'bg-accent'}">${l.rate}</span></td></tr>`;
