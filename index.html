@@ -600,62 +600,104 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('attendBody').innerHTML = html;
   }
 
-    /* ---- 生産詳細（ライン別ヘッダー ＋ 項目比較テーブル形式） ---- */
+  /* ---- 生産詳細（表形式での横並び比較） ---- */
   function renderProdDetail() {
     var html = '';
-
+    
+    // ========== 基本情報テーブル ==========
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">基本情報</div>';
+    html += '<table class="detail-table" style="font-size:12px;">';
+    html += '<thead><tr><th>項目</th>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<th>' + line.name + '</th>';
+    });
+    html += '</tr></thead>';
+    html += '<tbody>';
+    
+    // 工場行
+    html += '<tr><td style="font-weight:600;">工場</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td>' + line.factory + '</td>';
+    });
+    html += '</tr>';
+    
+    // 車種行
+    html += '<tr><td style="font-weight:600;">対象車種</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td>' + line.vehicle + '</td>';
+    });
+    html += '</tr>';
+    
+    // 計画行
+    html += '<tr><td style="font-weight:600;">計画台数</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><strong>' + line.plan + '</strong></td>';
+    });
+    html += '</tr>';
+    
+    // 実績行
+    html += '<tr><td style="font-weight:600;">実績台数</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><strong>' + line.result + '</strong></td>';
+    });
+    html += '</tr>';
+    
+    // 差分行
+    html += '<tr><td style="font-weight:600;">差分</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      var color = line.diff >= 0 ? '#45ADA8' : '#B33F40';
+      html += '<td style="color:' + color + '; font-weight:700;">' + (line.diff >= 0 ? '+' : '') + line.diff + '</td>';
+    });
+    html += '</tr>';
+    
+    // 稼働率行
+    html += '<tr><td style="font-weight:600;">稼働率</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><span class="status-badge ok">' + line.rate + '%</span></td>';
+    });
+    html += '</tr>';
+    
+    html += '</tbody></table>';
+    html += '</div>';
+    
+    // ========== ラウンド詳細 ==========
+    html += '<div style="margin-bottom:16px;">';
+    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">ラウンド別実績</div>';
+    
     PROD_DATA.lines.forEach(function (line, lineIdx) {
-      // 1. ラインごとの外枠（出勤詳細のスタイルに準拠）
-      html += '<div style="margin-bottom:24px; background:#fff; border-radius:8px;">';
+      html += '<div style="margin-bottom:14px;">';
+      html += '<div style="font-weight:600; font-size:12px; color:var(--accent); margin-bottom:6px;">' + line.name + '</div>';
       
-      // 2. ラインヘッダー（出勤詳細と統一）
-      html += '<div style="font-weight:700; font-size:14px; padding:8px 0; color:var(--accent); border-bottom:1px solid #eee; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">';
-      html += '<span>' + line.name + '</span>';
-      html += '<span class="status-badge ok" style="font-size:11px;">稼働率 ' + line.rate + '%</span>';
-      html += '</div>';
-
-      // 3. 基本実績の比較テーブル（項目を左、数値を右に配置して読みやすく）
-      html += '<table class="detail-table" style="margin-bottom:15px; background:var(--bg);">';
-      html += '<tbody>';
-      html += '<tr><th style="width:35%;">工場 / 車種</th><td style="font-size:12px;">' + line.factory + ' / ' + line.vehicle + '</td></tr>';
-      html += '<tr><th>計画 / 実績</th><td style="font-size:15px;">' + line.plan + ' / <strong>' + line.result + '</strong></td></tr>';
-      
-      // 差分の判定
-      var diffText = (line.diff >= 0 ? '+' : '') + line.diff;
-      var diffColor = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
-      html += '<tr><th>差分</th><td style="font-weight:700; color:' + diffColor + '; font-size:15px;">' + diffText + '</td></tr>';
-      html += '</tbody></table>';
-
-      // 4. ラウンド別実績（検討中のため、現在はコンパクトなボタン配置）
-      html += '<div style="padding:0 4px;">';
-      html += '<div style="font-weight:600; font-size:11px; color:#888; margin-bottom:8px;">▼ ラウンド詳細（タップで展開）</div>';
-      html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px;">';
+      html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px;">';
       
       line.rounds.forEach(function (round) {
         var btnId = 'roundBtn-' + lineIdx + '-' + (round.no - 1);
         var panelId = 'roundPanel-' + lineIdx + '-' + (round.no - 1);
         
         html += '<div>';
-        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '" style="padding:6px; font-size:11px;">';
-        html += 'R' + round.no + ' (' + round.time + ')';
+        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '">';
+        html += 'ラウンド ' + round.no + '<br/>(' + round.time + ')';
         html += '</button>';
         
-        html += '<div class="round-detail-panel" id="' + panelId + '" style="padding:8px; border-color:var(--accent);">';
-        html += '<div class="round-item"><div class="round-label">計画/実績</div><div class="round-value">' + round.plan + ' / ' + round.result + '</div></div>';
+        html += '<div class="round-detail-panel" id="' + panelId + '">';
+        html += '<div class="round-item"><div class="round-label">計画</div><div class="round-value">' + round.plan + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">実績</div><div class="round-value">' + round.result + '</div></div>';
         html += '<div class="round-item"><div class="round-label">不良</div><div class="round-value">' + round.defect + '</div></div>';
-        html += '<div class="round-item"><div class="round-label">累計</div><div class="round-value" style="color:var(--accent);">' + round.cumulative + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">累計</div><div class="round-value">' + round.cumulative + '</div></div>';
         html += '</div>';
         html += '</div>';
       });
       
-      html += '</div>'; // round grid end
-      html += '</div>'; // padding end
-      html += '</div>'; // line card end
+      html += '</div>';
+      html += '</div>';
     });
+    
+    html += '</div>';
     
     document.getElementById('prodBody').innerHTML = html;
     
-    // イベント再設定
+    // ラウンドボタンのイベントリスナー設定
     setTimeout(attachRoundButtonEvents, 50);
   }
 
