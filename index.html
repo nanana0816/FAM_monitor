@@ -594,94 +594,10 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('attendBody').innerHTML = html;
   }
 
-      /* ---- 生産詳細（行列入れ替え：ラインを列ヘッダーにし、各項目を1行に集約） ---- */
-  function renderProdDetail() {
-    var html = '';
-
-    // 1. 実績比較テーブル
-    html += '<div style="margin-bottom:20px; overflow-x: auto;">'; // 横長になっても崩れないようスクロール許可
-    html += '<table class="detail-table" style="font-size:12px; min-width: 100%;">';
-    
-    [span_1](start_span)// ヘッダー行：1列目は「項目」、2列目以降に「各ライン名」を配置[span_1](end_span)
-    html += '<thead><tr><th style="width:20%; background:#f0f0f0;">項目</th>';
-    PROD_DATA.lines.forEach(function (line) {
-      html += '<th style="text-align:center; background:#f0f0f0; color:var(--accent);">' + line.name + '</th>';
-    });
-    html += '</tr></thead>';
-    
-    html += '<tbody>';
-    
-    [span_2](start_span)// 車種行[span_2](end_span)
-    html += '<tr><td style="font-weight:600; text-align:left;">対象車種</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      html += '<td>' + line.vehicle + '</td>';
-    });
-    html += '</tr>';
-    
-    [span_3](start_span)// 計画行[span_3](end_span)
-    html += '<tr><td style="font-weight:600; text-align:left;">計画台数</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      html += '<td><strong>' + line.plan + '</strong></td>';
-    });
-    html += '</tr>';
-    
-    [span_4](start_span)// 実績行[span_4](end_span)
-    html += '<tr><td style="font-weight:600; text-align:left;">実績台数</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      html += '<td><strong style="font-size:14px;">' + line.result + '</strong></td>';
-    });
-    html += '</tr>';
-    
-    [span_5](start_span)// 差分行[span_5](end_span)
-    html += '<tr><td style="font-weight:600; text-align:left;">差分</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      var color = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
-      var sign = line.diff >= 0 ? '+' : '';
-      html += '<td style="color:' + color + '; font-weight:700; font-size:14px;">' + sign + line.diff + '</td>';
-    });
-    html += '</tr>';
-    
-    [span_6](start_span)// 稼働率行[span_6](end_span)
-    html += '<tr><td style="font-weight:600; text-align:left;">稼働率</td>';
-    PROD_DATA.lines.forEach(function (line) {
-      html += '<td><span class="status-badge ok">' + line.rate + '%</span></td>';
-    });
-    html += '</tr>';
-    
-    html += '</tbody></table>';
-    html += '</div>';
-
-    [span_7](start_span)// 2. ラウンド詳細（検討中のため、ラインごとに簡易表示）[span_7](end_span)
-    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:10px; border-left:4px solid #ccc; padding-left:8px;">ラウンド別実績</div>';
-    
-    PROD_DATA.lines.forEach(function (line, lineIdx) {
-      html += '<div style="margin-bottom:12px;">';
-      html += '<div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:5px;">' + line.name + '</div>';
-      html += '<div style="display:flex; gap:6px; flex-wrap:wrap;">';
-      
-      line.rounds.forEach(function (round, rIdx) {
-        var btnId = 'roundBtn-' + lineIdx + '-' + rIdx;
-        var panelId = 'roundPanel-' + lineIdx + '-' + rIdx;
-        
-        html += '<div style="flex:1; min-width:80px;">';
-        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '" style="font-size:10px; padding:4px;">';
-        html += 'R' + round.no + ' (' + round.time + ')';
-        html += '</button>';
-        
-        html += '<div class="round-detail-panel" id="' + panelId + '" style="font-size:10px; padding:5px;">';
-        [span_8](start_span)html += '実:' + round.result + ' / 累:' + round.cumulative;[span_8](end_span)
-        html += '</div>';
-        html += '</div>';
-      });
-      html += '</div></div>';
-    });
-
-    document.getElementById('prodBody').innerHTML = html;
-    
-    // ボタンイベントの紐付け
-    [span_9](start_span)setTimeout(attachRoundButtonEvents, 50);[span_9](end_span)
+ html;
   }
 
+      
   /* ラウンドボタンのイベント */
   function attachRoundButtonEvents() {
     document.querySelectorAll('.round-toggle-btn').forEach(function (btn) {
