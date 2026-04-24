@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver6.1 (詳細行列入替版)</title>
+<title>FAM 朝会モニター — ver6.1 (行列入れ替え完全版)</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-/* ===== 基本設定 (ver6.0 完全継承) ===== */
+/* ===== 基本設定 (ver6.0 継承) ===== */
 :root {
   --bg: #F0F2F5;
   --panel: #FFFFFF;
@@ -39,11 +39,12 @@ header {
   color: var(--accent); letter-spacing: 2px;
 }
 
-/* ===== メインコンテンツ ===== */
+/* ===== メイングリッド ===== */
 .main-grid { display: grid; gap: 16px; padding: 16px; }
 @media (orientation: landscape) { .main-grid { grid-template-columns: 4fr 6fr; } }
 @media (orientation: portrait)  { .main-grid { grid-template-columns: 1fr; } }
 
+/* ===== カード ===== */
 .card {
   background: var(--panel); border-radius: var(--radius);
   border: 1px solid var(--border); overflow: hidden;
@@ -55,52 +56,76 @@ header {
   font-weight: 700; font-size: 17px;
 }
 .compact-body { padding: 15px; }
+table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; }
+th { font-size: 11px; color: #666; padding-bottom: 8px; border-bottom: 2px solid var(--bg); }
+td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
 
-/* ===== 共通テーブルスタイル ===== */
-.summary-table { width: 100%; border-collapse: collapse; text-align: center; }
-.summary-table th { background: #f8f8f8; font-size: 11px; color: #666; padding: 10px 5px; border-bottom: 2px solid var(--bg); }
-.summary-table td { padding: 12px 5px; border-bottom: 1px solid var(--bg); font-size: 15px; }
-.line-label { text-align: left; font-weight: 700; padding-left: 10px !important; }
-
-/* ===== モーダル内詳細テーブル (改修箇所) ===== */
-.detail-scroll-area { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.detail-table-horizontal { width: 100%; border-collapse: collapse; min-width: 400px; }
-.detail-table-horizontal th { background: #f0f0f0; padding: 12px 8px; font-size: 12px; border-bottom: 2px solid #ddd; }
-.detail-table-horizontal td { padding: 14px 8px; border-bottom: 1px solid #eee; font-size: 16px; text-align: center; }
-
-/* ===== ステータスバッジ ===== */
-.status-badge { padding: 4px 8px; border-radius: 6px; font-weight: 700; color: #fff; font-size: 11px; }
-.status-badge.ok { background: var(--teal); }
-.status-badge.ng { background: var(--accent); }
-
-/* ===== ナビゲーションバー (ver6.0 継承) ===== */
+/* ===== 操作バー ===== */
 .bottom-nav {
   position: fixed; bottom: 0; left: 0; width: 100%; height: 90px;
   background: rgba(255,255,255,0.98); border-top: 2px solid var(--border);
-  display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 12px; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 0 12px; z-index: 9999;
 }
 .nav-btn {
-  flex: 1; max-width: 170px; height: 55px; border: none; border-radius: 12px;
-  font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.15s;
+  flex: 1; max-width: 170px; height: 55px;
+  border: none; border-radius: 12px; font-weight: 700; font-size: 13px;
+  cursor: pointer; transition: opacity 0.15s, transform 0.1s;
   box-shadow: 0 2px 8px rgba(0,0,0,0.12);
 }
-.btn-qr { background: var(--accent); color: #fff; }
+.btn-qr     { background: var(--accent); color: #fff; }
 .btn-detail { background: #3a3a3a; color: #fff; }
-.nav-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-/* ===== モーダル設定 (ver6.0 継承) ===== */
+/* ===== モーダル設定 ===== */
 .modal-overlay {
-  visibility: hidden; opacity: 0; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.82); z-index: 10000; display: flex; align-items: center; justify-content: center;
+  visibility: hidden; opacity: 0; pointer-events: none;
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.82); z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
   transition: 0.2s;
 }
-.modal-overlay.is-open { visibility: visible; opacity: 1; }
+.modal-overlay.is-open { visibility: visible; opacity: 1; pointer-events: auto; }
 .modal-content {
-  background: #fff; width: 92%; max-width: 650px; border-radius: var(--radius); padding: 24px;
+  background: #fff; width: 92%; max-width: 800px;
+  border-radius: var(--radius); padding: 24px;
   position: relative; max-height: 82vh; overflow-y: auto;
 }
-.modal-close { position: absolute; top: 10px; right: 15px; font-size: 34px; cursor: pointer; color: #999; border: none; background: none; }
-.modal-title { font-size: 18px; font-weight: 700; border-left: 5px solid var(--accent); padding-left: 12px; margin-bottom: 20px; }
+.modal-close {
+  position: absolute; top: 8px; right: 12px;
+  font-size: 34px; cursor: pointer; color: #999; border: none; background: none;
+}
+.modal-title {
+  font-size: 18px; font-weight: 700; border-left: 5px solid var(--accent);
+  padding-left: 12px; margin-bottom: 18px;
+}
+
+/* ステータスバッジ */
+.status-badge {
+  display: inline-block; padding: 4px 10px;
+  border-radius: 12px; font-weight: 600; font-size: 12px;
+}
+.status-badge.ok { background: var(--teal); color: #fff; }
+.status-badge.ng { background: var(--accent); color: #fff; }
+
+/* 行列入れ替え後のテーブル用スタイル */
+.detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.detail-table th { background: #f8f8f8; color: #666; padding: 12px 8px; text-align: center; border-bottom: 2px solid #ddd; }
+.detail-table td { padding: 14px 8px; border-bottom: 1px solid #eee; text-align: center; }
+.detail-table .line-name-cell { text-align: left; font-weight: 700; color: var(--text); background: #fafafa; }
+
+/* ラウンド詳細ボタン */
+.round-toggle-btn {
+  width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel); font-weight: 600; font-size: 12px; cursor: pointer;
+}
+.round-toggle-btn.active { background: var(--accent); color: #fff; }
+.round-detail-panel { display: none; padding: 10px; background: #fff; border: 1px solid #eee; border-radius: 6px; }
+.round-detail-panel.is-open { display: block; }
+
+/* アクションボタン */
+.action-buttons { display: flex; gap: 10px; margin-bottom: 16px; }
+.action-btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 700; color: #fff; cursor: pointer; }
+.btn-input-prod { background: #1565C0; }
 </style>
 </head>
 
@@ -108,28 +133,28 @@ header {
 
 <header>
   <div class="h-title">FAM 朝会モニター</div>
-  <div class="h-clock" id="hClock">00:00:00</div>
+  <div class="h-clock" id="hClock">--:--:--</div>
 </header>
 
 <main class="main-grid">
-  <div class="card">
+  <div class="card" id="cardAttend">
     <div class="card-header">👥 出勤状況</div>
     <div class="compact-body">
-      <table class="summary-table">
-        <thead><tr><th class="line-label">ライン</th><th>人員</th><th>出勤率</th><th>判定</th></tr></thead>
+      <table>
+        <thead><tr><th>ライン</th><th>人員数</th><th>出勤率</th><th>判定</th></tr></thead>
         <tbody>
-          <tr><td class="line-label">大型エンジン</td><td><strong>22/24</strong></td><td>92%</td><td style="color:var(--teal)">◎</td></tr>
-          <tr><td class="line-label">中型トランス</td><td><strong>16/18</strong></td><td style="color:var(--accent)">88%</td><td style="color:var(--amber)">△</td></tr>
+          <tr><td>ABライン</td><td><strong>22 / 24</strong></td><td>92%</td><td style="color:var(--teal)">◎</td></tr>
+          <tr><td>Cライン</td><td><strong>16 / 18</strong></td><td style="color:var(--accent)">88%</td><td style="color:var(--amber)">△</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">🏭 生産実績（昨日）</div>
+  <div class="card" id="cardProd">
+    <div class="card-header">🏭 生産実績（サマリー）</div>
     <div class="compact-body">
-      <table class="summary-table">
-        <thead><tr><th class="line-label">ライン名</th><th>計画</th><th>実績</th><th>差分</th><th>稼働率</th></tr></thead>
+      <table>
+        <thead><tr><th>ライン名</th><th>実績</th><th>差分</th><th>稼働率</th></tr></thead>
         <tbody id="prodSummaryBody"></tbody>
       </table>
     </div>
@@ -137,40 +162,28 @@ header {
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn btn-qr" onclick="openM('qr')">📲 連携QR</button>
-  <button class="nav-btn btn-detail" id="btnAttend">👥 出勤詳細</button>
-  <button class="nav-btn btn-detail" id="btnProd">🏭 生産詳細</button>
+  <button class="nav-btn btn-qr" onclick="openModal('qr')">📲 連携QR</button>
+  <button class="nav-btn btn-detail" onclick="openModal('attend')">👥 出勤詳細</button>
+  <button class="nav-btn btn-detail" onclick="openModal('prod')">🏭 生産詳細</button>
 </nav>
-
-<div id="modalQR" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeM('qr')">×</button>
-    <div class="modal-title">📲 スマホ連携QR</div>
-    <div style="text-align:center; padding:30px; background:#f9f9f9; border-radius:12px; color:#999; border:1px dashed #ccc;">
-      [ここにQRコードが表示されます]
-    </div>
-  </div>
-</div>
-
-<div id="modalAttend" class="modal-overlay">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeM('attend')">×</button>
-    <div class="modal-title">👥 出勤状況詳細</div>
-    <div id="attendDetailBody"></div>
-  </div>
-</div>
 
 <div id="modalProd" class="modal-overlay">
   <div class="modal-content">
-    <button class="modal-close" onclick="closeM('prod')">×</button>
+    <button class="modal-close" onclick="closeModal('prod')">×</button>
     <div class="modal-title">🏭 生産実績詳細分析</div>
-    <div class="detail-scroll-area">
-      <table class="detail-table-horizontal">
+    
+    <div class="action-buttons">
+      <button class="action-btn btn-input-prod" onclick="alert('入力画面へ移動')">✏️ 生産実績入力</button>
+    </div>
+
+    <div style="font-weight:700; font-size:13px; color:#666; margin-bottom:10px;">【行列入れ替え】ライン別実績一覧</div>
+    <div style="overflow-x: auto;">
+      <table class="detail-table">
         <thead>
           <tr>
-            <th style="text-align:left; padding-left:10px;">ライン名</th>
-            <th>計画(台)</th>
-            <th>実績(台)</th>
+            <th style="text-align:left;">ライン名</th>
+            <th>計画</th>
+            <th>実績</th>
             <th>差分</th>
             <th>稼働率</th>
           </tr>
@@ -179,76 +192,91 @@ header {
           </tbody>
       </table>
     </div>
+
+    <div id="roundDetailContainer" style="margin-top:24px;"></div>
   </div>
 </div>
 
+<div id="modalAttend" class="modal-overlay"><div class="modal-content"><button class="modal-close" onclick="closeModal('attend')">×</button><div class="modal-title">👥 出勤詳細</div><div id="attendBody"></div></div></div>
+<div id="modalQR" class="modal-overlay"><div class="modal-content"><button class="modal-close" onclick="closeModal('qr')">×</button><div class="modal-title">📲 連携QR</div><p style="text-align:center;">QRを表示します</p></div></div>
+
 <script>
-/* ================================================================
-   1. データ定義 (ver6.0 準拠)
-   ================================================================ */
 const PROD_DATA = {
   lines: [
-    { name: '大型エンジン', plan: 100, result: 85, diff: -15, rate: 85 },
-    { name: '中型トランス', plan: 150, result: 155, diff: 5, rate: 103 }
+    { name: '大型エンジン組付け', plan: 50, result: 52, diff: 2, rate: 98, rounds: [
+      { no: 1, time: '10:30', plan: 12, result: 12, cumulative: 12 },
+      { no: 2, time: '14:15', plan: 13, result: 14, cumulative: 26 }
+    ]},
+    { name: '中型トランス組付け', plan: 72, result: 72, diff: 0, rate: 99, rounds: [
+      { no: 1, time: '10:30', plan: 24, result: 24, cumulative: 24 },
+      { no: 2, time: '14:15', plan: 24, result: 24, cumulative: 48 }
+    ]}
   ]
 };
 
 document.addEventListener('DOMContentLoaded', function () {
-  
-  /* ---- 時計 (ver6.0 準拠) ---- */
-  function updateClock() {
+  // 時計
+  setInterval(() => {
     const n = new Date();
-    const el = document.getElementById('hClock');
-    if(el) el.textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0') + ':' + String(n.getSeconds()).padStart(2,'0');
-  }
-  setInterval(updateClock, 1000); updateClock();
+    document.getElementById('hClock').textContent = n.toLocaleTimeString();
+  }, 1000);
 
-  /* ---- サマリー表示 (メイン画面用) ---- */
-  function renderSummary() {
-    var html = '';
-    PROD_DATA.lines.forEach(function(line) {
-      var diffCol = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
-      html += '<tr>' +
-        '<td class="line-label">' + line.name + '</td>' +
-        '<td>' + line.plan + '</td>' +
-        '<td style="font-weight:bold;">' + line.result + '</td>' +
-        '<td style="color:' + diffCol + '; font-weight:bold;">' + (line.diff>=0?'+':'') + line.diff + '</td>' +
-        '<td><span class="status-badge ' + (line.rate>=95?'ok':'ng') + '">' + line.rate + '%</span></td>' +
-      '</tr>';
-    });
-    document.getElementById('prodSummaryBody').innerHTML = html;
-  }
-  renderSummary();
+  // サマリー表示
+  const summaryBody = document.getElementById('prodSummaryBody');
+  PROD_DATA.lines.forEach(l => {
+    summaryBody.innerHTML += `<tr><td>${l.name}</td><td><strong>${l.result}</strong></td><td style="color:${l.diff>=0?'var(--teal)':'var(--accent)'}">${l.diff>=0?'+':''}${l.diff}</td><td>${l.rate}%</td></tr>`;
+  });
 
-  /* ---- 【改修箇所】生産詳細表示 (行列を入れ替えて横並びに) ---- */
+  // モーダル制御
+  window.openModal = function(key) {
+    if(key === 'prod') renderProdDetail();
+    document.getElementById('modal' + key.charAt(0).toUpperCase() + key.slice(1)).classList.add('is-open');
+  };
+  window.closeModal = function(key) {
+    document.getElementById('modal' + key.charAt(0).toUpperCase() + key.slice(1)).classList.remove('is-open');
+  };
+
+  /* ---- 【重要】生産詳細の行列入れ替えロジック ---- */
   function renderProdDetail() {
-    var html = '';
-    PROD_DATA.lines.forEach(function(line) {
-      var diffCol = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
-      html += '<tr>' +
-        '<td style="text-align:left; font-weight:bold; color:var(--text);">' + line.name + '</td>' +
-        '<td>' + line.plan + '</td>' +
-        '<td style="font-weight:bold;">' + line.result + '</td>' +
-        '<td style="color:' + diffCol + '; font-weight:bold;">' + (line.diff>=0?'+':'') + line.diff + '</td>' +
-        '<td><span class="status-badge ' + (line.rate>=95?'ok':'ng') + '">' + line.rate + '%</span></td>' +
-      '</tr>';
+    // 1. 基本情報テーブル（ラインを行に、項目を列に）
+    let html = '';
+    PROD_DATA.lines.forEach(line => {
+      const diffColor = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
+      html += `
+        <tr>
+          <td class="line-name-cell">${line.name}</td>
+          <td>${line.plan}</td>
+          <td style="font-weight:700;">${line.result}</td>
+          <td style="color:${diffColor}; font-weight:700;">${line.diff >= 0 ? '+' : ''}${line.diff}</td>
+          <td><span class="status-badge ok">${line.rate}%</span></td>
+        </tr>
+      `;
     });
     document.getElementById('prodDetailBody').innerHTML = html;
+
+    // 2. ラウンド詳細（ver6.0のUIを維持）
+    let rHtml = '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:10px;">ラウンド別実績</div>';
+    PROD_DATA.lines.forEach((line, lIdx) => {
+      rHtml += `<div style="margin-bottom:15px;"><div style="font-size:12px; font-weight:700; color:var(--accent); margin-bottom:5px;">${line.name}</div><div style="display:flex; gap:8px;">`;
+      line.rounds.forEach((r, rIdx) => {
+        rHtml += `
+          <div style="flex:1;">
+            <button class="round-toggle-btn" onclick="toggleRound(${lIdx}, ${rIdx})">R${r.no} (${r.time})</button>
+            <div id="rPanel-${lIdx}-${rIdx}" class="round-detail-panel">
+              <div style="font-size:11px; display:flex; justify-content:space-between;"><span>計:</span><b>${r.plan}</b></div>
+              <div style="font-size:11px; display:flex; justify-content:space-between;"><span>実:</span><b>${r.result}</b></div>
+            </div>
+          </div>`;
+      });
+      rHtml += `</div></div>`;
+    });
+    document.getElementById('roundDetailContainer').innerHTML = rHtml;
   }
 
-  /* ---- モーダル制御 ---- */
-  window.openM = function(id) {
-    if(id === 'prod') renderProdDetail();
-    document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('is-open');
+  window.toggleRound = function(lIdx, rIdx) {
+    const panel = document.getElementById(`rPanel-${lIdx}-${rIdx}`);
+    panel.classList.toggle('is-open');
   };
-  window.closeM = function(id) {
-    document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.remove('is-open');
-  };
-
-  // ボタンイベント紐付け
-  document.getElementById('btnProd').onclick = function() { openM('prod'); };
-  document.getElementById('btnAttend').onclick = function() { openM('attend'); };
-
 });
 </script>
 </body>
