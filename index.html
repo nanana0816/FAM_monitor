@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver5.0</title>
+<title>FAM 朝会モニター — ver6.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
@@ -92,7 +92,7 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
   visibility: visible; opacity: 1; pointer-events: auto;
 }
 .modal-content {
-  background: #fff; width: 92%; max-width: 720px;
+  background: #fff; width: 92%; max-width: 800px;
   border-radius: var(--radius); padding: 24px;
   position: relative; max-height: 82vh; overflow-y: auto;
   transform: translateY(18px);
@@ -186,14 +186,88 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
 .status-badge.warn   { background: var(--amber); color: #fff; }
 .status-badge.alert  { background: var(--accent); color: #fff; }
 
-/* ===== ラウンド別レイアウト ===== */
-.round-card {
+/* ===== 生産詳細 - 横並びレイアウト ===== */
+.line-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.line-card {
   border: 1px solid var(--border); border-radius: 10px;
-  padding: 12px; margin-bottom: 10px; background: var(--bg);
+  padding: 14px; background: #fafafa;
 }
+.line-card-title {
+  font-weight: 700; color: var(--accent); font-size: 13px;
+  margin-bottom: 8px;
+}
+.line-info {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; font-size: 12px; margin-bottom: 10px;
+}
+.line-info-item {
+  border: 1px solid #eee; padding: 6px 8px;
+  border-radius: 6px; background: #fff;
+}
+.line-info-label {
+  font-weight: 600; color: #666; font-size: 10px;
+  margin-bottom: 2px;
+}
+.line-info-value {
+  font-weight: 700; color: var(--text); font-size: 13px;
+}
+
+/* ラウンド詳細ボタン */
+.round-toggle-btn {
+  width: 100%; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--panel); color: var(--text);
+  font-weight: 600; font-size: 12px; cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+}
+.round-toggle-btn:hover { background: #f0f0f0; }
+.round-toggle-btn:active { transform: scale(0.98); }
+.round-toggle-btn.active {
+  background: var(--accent); color: #fff;
+  border-color: var(--accent);
+}
+
+/* ラウンド詳細パネル（折り畳み） */
+.round-detail-panel {
+  display: none; margin-bottom: 10px;
+  padding: 10px; border: 1px solid var(--border);
+  border-radius: 6px; background: #fff;
+}
+.round-detail-panel.is-open { display: block; }
+.round-item {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; font-size: 11px; margin-bottom: 6px;
+}
+.round-item:last-child { margin-bottom: 0; }
 .round-label {
-  font-weight: 700; color: var(--accent); margin-bottom: 8px; font-size: 13px;
+  font-weight: 600; color: #999;
 }
+.round-value {
+  font-weight: 700; color: var(--text); text-align: right;
+}
+
+/* ===== 入力ページジャンプボタン ===== */
+.action-buttons {
+  display: flex; gap: 10px; margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.action-btn {
+  flex: 1; min-width: 140px; padding: 10px 12px;
+  border: none; border-radius: 8px;
+  font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: transform 0.1s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.action-btn:active { transform: scale(0.97); }
+.btn-input-prod { background: #1565C0; color: #fff; }
+.btn-input-attend { background: var(--teal); color: #fff; }
+.btn-input-contact { background: #6A1B9A; color: #fff; }
 </style>
 
 </head>
@@ -293,6 +367,7 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
     <button class="modal-close" id="closeQR">×</button>
     <div class="modal-title">📲 スマホ連携 QR</div>
 
+```
 <div class="qr-menu-grid">
   <button class="qr-menu-btn qr-btn-view"    data-qr="view">
     <span class="btn-icon">🖥️</span>
@@ -317,6 +392,7 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
   <div class="qr-page-name" id="qrPageName"></div>
   <div class="qr-url" id="qrUrl"></div>
 </div>
+```
 
   </div>
 </div>
@@ -327,7 +403,15 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
   <div class="modal-content">
     <button class="modal-close" id="closeAttend">×</button>
     <div class="modal-title" id="attendTitle">👥 出勤詳細</div>
-    <div id="attendBody"></div>
+
+```
+<div class="action-buttons">
+  <button class="action-btn btn-input-attend" onclick="jumpToPage('attend')">✏️ 出勤状況入力</button>
+</div>
+
+<div id="attendBody"></div>
+```
+
   </div>
 </div>
 
@@ -337,7 +421,15 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
   <div class="modal-content">
     <button class="modal-close" id="closeProd">×</button>
     <div class="modal-title" id="prodTitle">🏭 生産詳細</div>
-    <div id="prodBody"></div>
+
+```
+<div class="action-buttons">
+  <button class="action-btn btn-input-prod" onclick="jumpToPage('prod')">✏️ 生産実績入力</button>
+</div>
+
+<div id="prodBody"></div>
+```
+
   </div>
 </div>
 
@@ -346,7 +438,6 @@ td { padding: 12px 5px; border-bottom: 1px solid var(--bg); }
    データ定義
    ================================================================ */
 
-// 出勤詳細データ
 var ATTEND_DATA = {
   lines: [
     {
@@ -375,7 +466,6 @@ var ATTEND_DATA = {
   ]
 };
 
-// 生産詳細データ
 var PROD_DATA = {
   lines: [
     {
@@ -410,10 +500,16 @@ var PROD_DATA = {
 };
 
 var QR_PAGES = {
-  view:    { name: '全体閲覧ページ',        url: 'https://nanana0816.github.io/FAM_monitor/' },
+  view:    { name: '全体閲覧ページ',        url: 'https://example.com/fam_view' },
   attend:  { name: '出勤状況入力',          url: 'https://example.com/fam_attend' },
   contact: { name: '連絡事項入力',          url: 'https://example.com/fam_contact' },
   react:   { name: '遅れへのリアクション',  url: 'https://example.com/fam_react' }
+};
+
+// 入力ページURL
+var INPUT_PAGES = {
+  prod:   'FAM_PM_input.html',  // 生産実績入力
+  attend: 'FAM_AM_input.html'   // 出勤状況入力（未作成）
 };
 
 /* ================================================================
@@ -504,45 +600,131 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('attendBody').innerHTML = html;
   }
 
-  /* ---- 生産詳細 ---- */
+  /* ---- 生産詳細（表形式での横並び比較） ---- */
   function renderProdDetail() {
     var html = '';
     
-    PROD_DATA.lines.forEach(function (line, idx) {
-      html += '<div style="margin-bottom:20px;">';
-      html += '<div style="font-weight:700; font-size:14px; margin-bottom:8px; color:var(--accent);">' + line.name + '</div>';
+    // ========== 基本情報テーブル ==========
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">基本情報</div>';
+    html += '<table class="detail-table" style="font-size:12px;">';
+    html += '<thead><tr><th>項目</th>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<th>' + line.name + '</th>';
+    });
+    html += '</tr></thead>';
+    html += '<tbody>';
+    
+    // 工場行
+    html += '<tr><td style="font-weight:600;">工場</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td>' + line.factory + '</td>';
+    });
+    html += '</tr>';
+    
+    // 車種行
+    html += '<tr><td style="font-weight:600;">対象車種</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td>' + line.vehicle + '</td>';
+    });
+    html += '</tr>';
+    
+    // 計画行
+    html += '<tr><td style="font-weight:600;">計画台数</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><strong>' + line.plan + '</strong></td>';
+    });
+    html += '</tr>';
+    
+    // 実績行
+    html += '<tr><td style="font-weight:600;">実績台数</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><strong>' + line.result + '</strong></td>';
+    });
+    html += '</tr>';
+    
+    // 差分行
+    html += '<tr><td style="font-weight:600;">差分</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      var color = line.diff >= 0 ? '#45ADA8' : '#B33F40';
+      html += '<td style="color:' + color + '; font-weight:700;">' + (line.diff >= 0 ? '+' : '') + line.diff + '</td>';
+    });
+    html += '</tr>';
+    
+    // 稼働率行
+    html += '<tr><td style="font-weight:600;">稼働率</td>';
+    PROD_DATA.lines.forEach(function (line) {
+      html += '<td><span class="status-badge ok">' + line.rate + '%</span></td>';
+    });
+    html += '</tr>';
+    
+    html += '</tbody></table>';
+    html += '</div>';
+    
+    // ========== ラウンド詳細 ==========
+    html += '<div style="margin-bottom:16px;">';
+    html += '<div style="font-weight:700; font-size:13px; color:#666; margin-bottom:8px;">ラウンド別実績</div>';
+    
+    PROD_DATA.lines.forEach(function (line, lineIdx) {
+      html += '<div style="margin-bottom:14px;">';
+      html += '<div style="font-weight:600; font-size:12px; color:var(--accent); margin-bottom:6px;">' + line.name + '</div>';
       
-      // 基本情報
-      html += '<table class="detail-table" style="margin-bottom:12px;">';
-      html += '<thead><tr><th>項目</th><th>内容</th></tr></thead>';
-      html += '<tbody>';
-      html += '<tr><td>工場</td><td>' + line.factory + '</td></tr>';
-      html += '<tr><td>対象車種</td><td>' + line.vehicle + '</td></tr>';
-      html += '<tr><td>計画台数</td><td><strong>' + line.plan + '</strong></td></tr>';
-      html += '<tr><td>実績台数</td><td><strong>' + line.result + '</strong></td></tr>';
-      html += '<tr><td>差分</td><td style="color:' + (line.diff >= 0 ? '#45ADA8' : '#B33F40') + '"><strong>' + (line.diff >= 0 ? '+' : '') + line.diff + '</strong></td></tr>';
-      html += '<tr><td>稼働率</td><td><span class="status-badge ok">' + line.rate + '%</span></td></tr>';
-      html += '</tbody></table>';
+      html += '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px;">';
       
-      // ラウンド別実績
-      html += '<div style="font-weight:700; font-size:12px; color:#666; margin:10px 0 8px 0;">▼ ラウンド別実績</div>';
       line.rounds.forEach(function (round) {
-        html += '<div class="round-card">';
-        html += '<div class="round-label">ラウンド ' + round.no + ' (' + round.time + ')</div>';
-        html += '<table class="detail-table" style="font-size:13px;">';
-        html += '<tbody>';
-        html += '<tr><td style="width:50%;">計画</td><td><strong>' + round.plan + '</strong></td></tr>';
-        html += '<tr><td>実績</td><td><strong>' + round.result + '</strong></td></tr>';
-        html += '<tr><td>不良</td><td>' + round.defect + '</td></tr>';
-        html += '<tr><td>累計</td><td><strong>' + round.cumulative + '</strong></td></tr>';
-        html += '</tbody></table>';
+        var btnId = 'roundBtn-' + lineIdx + '-' + (round.no - 1);
+        var panelId = 'roundPanel-' + lineIdx + '-' + (round.no - 1);
+        
+        html += '<div>';
+        html += '<button class="round-toggle-btn" id="' + btnId + '" data-panel="' + panelId + '">';
+        html += 'ラウンド ' + round.no + '<br/>(' + round.time + ')';
+        html += '</button>';
+        
+        html += '<div class="round-detail-panel" id="' + panelId + '">';
+        html += '<div class="round-item"><div class="round-label">計画</div><div class="round-value">' + round.plan + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">実績</div><div class="round-value">' + round.result + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">不良</div><div class="round-value">' + round.defect + '</div></div>';
+        html += '<div class="round-item"><div class="round-label">累計</div><div class="round-value">' + round.cumulative + '</div></div>';
+        html += '</div>';
         html += '</div>';
       });
       
       html += '</div>';
+      html += '</div>';
     });
     
+    html += '</div>';
+    
     document.getElementById('prodBody').innerHTML = html;
+    
+    // ラウンドボタンのイベントリスナー設定
+    setTimeout(attachRoundButtonEvents, 50);
+  }
+
+  /* ラウンドボタンのイベント */
+  function attachRoundButtonEvents() {
+    document.querySelectorAll('.round-toggle-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var panelId = btn.getAttribute('data-panel');
+        var panel = document.getElementById(panelId);
+        if (!panel) return;
+        
+        // 同じカード内の他のパネルを閉じる
+        var parentCard = btn.closest('.line-card');
+        if (parentCard) {
+          parentCard.querySelectorAll('.round-detail-panel').forEach(function (p) {
+            p.classList.remove('is-open');
+          });
+          parentCard.querySelectorAll('.round-toggle-btn').forEach(function (b) {
+            b.classList.remove('active');
+          });
+        }
+        
+        // 選択したパネルを開く
+        panel.classList.add('is-open');
+        btn.classList.add('active');
+      });
+    });
   }
 
   /* ---- ボタンイベント ---- */
@@ -569,6 +751,14 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
 }); // DOMContentLoaded end
+
+/* ===== 入力ページへのジャンプ ===== */
+function jumpToPage(type) {
+  var url = INPUT_PAGES[type];
+  if (url) {
+    window.location.href = url;
+  }
+}
 </script>
 
 </body>
