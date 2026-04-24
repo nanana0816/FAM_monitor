@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver 7.0</title>
+<title>FAM 朝会モニター — ver7.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
@@ -22,31 +22,36 @@
 body {
   background: var(--bg);
   font-family: 'Noto Sans JP', sans-serif;
-  padding-bottom: 110px;
+  color: var(--text);
+  overflow-x: hidden;
 }
 
-/* ===== ヘッダー & 時計 ===== */
+/* ===== ヘッダー ===== */
 header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px; height: 70px;
   background: var(--panel); border-bottom: 2px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
 }
+.h-title { font-weight: 900; font-size: 22px; color: var(--accent); }
 .time-display {
   font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: bold; color: var(--accent);
 }
 
-/* ===== メイングリッド (ボタン/カード) ===== */
+/* ===== メインコンテンツ ===== */
+.container { padding: 24px; max-width: 1200px; margin: 0 auto; }
 .main-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 20px; padding: 20px;
+  gap: 20px; margin-bottom: 40px;
 }
 .clickable-card {
-  background: var(--panel); border-radius: var(--radius); padding: 20px;
+  background: var(--panel); border-radius: var(--radius); padding: 24px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s;
+  border: 1px solid transparent;
 }
-.clickable-card:hover { transform: translateY(-4px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+.clickable-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
 
-/* ===== モーダル ===== */
+/* ===== モーダル基本設定 ===== */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -56,41 +61,52 @@ header {
   background: white; width: 95%; max-width: 650px; max-height: 85vh;
   border-radius: var(--radius); overflow-y: auto; padding: 24px; position: relative;
 }
-.modal-close { position: sticky; top: 0; float: right; font-size: 30px; cursor: pointer; border: none; background: none; color: #999; }
+.modal-close { position: sticky; top: 0; float: right; font-size: 32px; cursor: pointer; border: none; background: none; color: #999; }
 
-/* ===== 詳細テーブル ===== */
-.detail-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+/* ===== テーブル・分析表示 ===== */
+.detail-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; }
 .detail-table th, .detail-table td { border: 1px solid #EEE; padding: 12px; text-align: center; }
-.detail-table th { background: #F8F9FA; font-size: 12px; }
+.detail-table th { background: #F8F9FA; color: #666; font-weight: bold; }
 
-/* ===== ラウンドトグル ===== */
-.round-detail-panel { display: none; padding: 10px; background: #FAFAFA; margin-top: 5px; border-radius: 8px; }
+.status-badge { padding: 4px 10px; border-radius: 6px; font-weight: 900; color: white; font-size: 11px; }
+.status-badge.ok { background: var(--teal); }
+.status-badge.ng { background: var(--accent); }
+
+.round-detail-panel { display: none; padding: 15px; background: #FAFAFA; margin-top: 10px; border-radius: 8px; border: 1px dashed #DDD; }
 .round-detail-panel.is-open { display: block; }
 </style>
 </head>
 <body>
 
 <header>
-  <div style="font-weight: 900; font-size: 22px; color: var(--accent);">FAM <span style="font-weight:400; color:#999;">Morning Meeting</span></div>
-  <div class="time-display" id="clock">00:00:00</div>
+  <div class="h-title">FAM <span style="font-weight:400; color:#999;">Morning Meeting</span></div>
+  <div class="time-display" id="clock">--:--:--</div>
 </header>
 
-<main class="main-grid">
-  <div class="clickable-card" id="btnProd">
-    <h2 style="font-size: 16px; margin-bottom: 10px; color: var(--accent);">📊 生産実績（昨日）</h2>
-    <p style="font-size: 12px; color: #666;">タップして詳細・要因分析を表示</p>
-  </div>
+<div class="container">
+  <div class="main-grid">
+    <div class="clickable-card" id="btnProd">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="font-size:18px; color:var(--accent);">📊 生産実績（昨日）</h2>
+        <span style="font-size:12px; color:#999;">詳細分析 ＞</span>
+      </div>
+      <p style="font-size:13px; color:#666; line-height:1.6;">昨日の稼働率と異常要因を確認し、本日の対策を協議します。</p>
+    </div>
 
-  <div class="clickable-card" id="btnAttend">
-    <h2 style="font-size: 16px; margin-bottom: 10px; color: var(--teal);">👥 出勤状況</h2>
-    <p style="font-size: 12px; color: #666;">タップしてライン別出勤詳細を表示</p>
+    <div class="clickable-card" id="btnAttend">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="font-size:18px; color:var(--teal);">👥 出勤状況</h2>
+        <span style="font-size:12px; color:#999;">ライン別 ＞</span>
+      </div>
+      <p style="font-size:13px; color:#666; line-height:1.6;">現在のライン別出勤率、応援状況を確認します。</p>
+    </div>
   </div>
-</main>
+</div>
 
 <div class="modal-overlay" id="modalProd">
   <div class="modal-content">
     <button class="modal-close" id="closeProd">&times;</button>
-    <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 8px;">生産実績 振り返り分析</h2>
+    <h2 style="font-size:20px; margin-bottom:20px; color:var(--accent); border-bottom:3px solid var(--accent); padding-bottom:8px;">生産実績 振り返り分析</h2>
     <div id="prodBody"></div>
   </div>
 </div>
@@ -98,107 +114,154 @@ header {
 <div class="modal-overlay" id="modalAttend">
   <div class="modal-content">
     <button class="modal-close" id="closeAttend">&times;</button>
-    <h2 style="font-size: 18px; margin-bottom: 20px; color: var(--teal); border-bottom: 2px solid var(--teal); padding-bottom: 8px;">出勤詳細確認</h2>
-    <div id="attendBody"></div>
+    <h2 style="font-size:20px; margin-bottom:20px; color:var(--teal); border-bottom:3px solid var(--teal); padding-bottom:8px;">出勤状況 詳細</h2>
+    <div id="attendBody">
+        <p style="padding:20px; text-align:center; color:#999;">出勤データの詳細を表示します。</p>
+    </div>
   </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ---- 1. 時計の更新 ---- */
+  /* ---- 1. 時計表示の更新 ---- */
   function updateClock() {
     const now = new Date();
     const h = String(now.getHours()).padStart(2, '0');
     const m = String(now.getMinutes()).padStart(2, '0');
     const s = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+    const clockEl = document.getElementById('clock');
+    if (clockEl) clockEl.textContent = `${h}:${m}:${s}`;
   }
   setInterval(updateClock, 1000);
   updateClock();
 
-  /* ---- 2. データ定義 ---- */
+  /* ---- 2. データの定義 ---- */
   const PROD_DATA = {
     lines: [
       {
         name: "大型エンジン", vehicle: "トラック用A", plan: 100, result: 85, diff: -15, rate: 85,
         rounds: [ {no:1, p:25, r:25}, {no:2, p:25, r:23}, {no:3, p:25, r:15}, {no:4, p:25, r:22} ],
-        analysis: { why: "Machine: 第2工程センサー不調による停止(20分)", today: "🔧 修理完了。通常稼働。" }
+        analysis: { why: "Machine: 第2工程センサー不調により、R3で30分停止が発生。", today: "🔧 修理完了。本日は朝イチから通常稼働。" }
       },
       {
         name: "中型トランス", vehicle: "乗用車用B", plan: 200, result: 205, diff: 5, rate: 102,
         rounds: [ {no:1, p:50, r:52}, {no:2, p:50, r:50}, {no:3, p:50, r:51}, {no:4, p:50, r:52} ],
-        analysis: { why: "特記事項なし。安定。", today: "✅ 継続して安定稼働の見込み。" }
+        analysis: { why: "特記事項なし。サイクルタイム安定。", today: "✅ 継続して安定稼働の見込み。" }
       }
     ]
   };
 
-  /* ---- 3. 生産詳細レンダリング (行列入れ替え版) ---- */
+  /* ---- 3. 生産詳細レンダリング（最新レイアウト） ---- */
   function renderProdDetail() {
     let html = '';
     
-    // 実績テーブル
-    html += '<div style="margin-bottom:24px;"><table class="detail-table">';
-    html += '<thead><tr><th style="text-align:left;">ライン名</th><th>計画</th><th>実績</th><th>差分</th><th>稼働率</th></tr></thead><tbody>';
+    // 実績比較テーブル（行列入れ替え）
+    html += '<div style="margin-bottom:24px;">';
+    html += '<div style="font-weight:bold; font-size:14px; margin-bottom:10px; color:var(--accent);">📊 昨日の実績比較</div>';
+    html += '<table class="detail-table"><thead><tr>';
+    html += '<th style="text-align:left;">ライン名</th><th>計画</th><th>実績</th><th>差分</th><th>稼働率</th>';
+    html += '</tr></thead><tbody>';
+    
     PROD_DATA.lines.forEach(line => {
-      const diffCol = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
+      const diffColor = line.diff >= 0 ? 'var(--teal)' : 'var(--accent)';
       html += `<tr>
                 <td style="text-align:left; font-weight:bold;">${line.rate < 90 ? '⚠️' : '✅'} ${line.name}</td>
                 <td>${line.plan}</td><td>${line.result}</td>
-                <td style="color:${diffCol}; font-weight:bold;">${(line.diff>=0?'+':'')+line.diff}</td>
+                <td style="color:${diffColor}; font-weight:bold;">${(line.diff>=0?'+':'')+line.diff}</td>
                 <td><span class="status-badge ${line.rate>=90?'ok':'ng'}">${line.rate}%</span></td>
               </tr>`;
     });
     html += '</tbody></table></div>';
 
-    // 分析 & トレンド
+    // 分析・トレンド
+    html += '<div style="font-weight:bold; font-size:14px; margin-bottom:10px; color:var(--accent);">🔍 異常要因と今日への影響</div>';
     PROD_DATA.lines.forEach((line, idx) => {
-      const isWarning = line.rate < 95;
-      html += `<div style="margin-bottom:15px; padding:12px; background:${isWarning?'#FFF5F5':'#F9F9F9'}; border:1px solid ${isWarning?'#FEB2B2':'#EEE'}; border-radius:8px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                  <span style="font-weight:bold; font-size:14px;">${line.name}</span>
-                  <div style="display:flex; gap:2px; align-items:flex-end; height:18px;">`;
+      const isNG = line.rate < 95;
+      html += `
+        <div style="margin-bottom:15px; padding:15px; background:${isNG?'#FFF5F5':'#F9F9F9'}; border:1px solid ${isNG?'#FEB2B2':'#EEE'}; border-radius:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-weight:bold; font-size:15px;">${line.name}</span>
+            <div style="display:flex; gap:3px; align-items:flex-end; height:20px;">`;
+      
       line.rounds.forEach(r => {
         const h = (r.r / r.p) * 100;
-        html += `<div style="width:12px; height:${h/5}px; background:${h<100?'var(--accent)':'var(--teal)'}; opacity:0.6;"></div>`;
+        html += `<div style="width:14px; height:${h/5}px; background:${h<100?'var(--accent)':'var(--teal)'}; opacity:0.7; border-radius:1px;"></div>`;
       });
-      html += `<span style="font-size:9px; margin-left:4px; color:#999;">Trend</span></div></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:11px;">
-                  <div style="background:white; padding:6px; border-radius:4px; border:1px solid #EEE;"><strong>【なぜ？】</strong><br>${line.analysis.why}</div>
-                  <div style="background:white; padding:6px; border-radius:4px; border:1px solid #EEE;"><strong>【今日は？】</strong><br><span style="color:var(--teal); font-weight:bold;">${line.analysis.today}</span></div>
-                </div>
-                <button class="tgl-btn" data-target="p${idx}" style="margin-top:10px; font-size:10px; background:none; border:1px solid #CCC; padding:2px 8px; cursor:pointer;">▼ ラウンド実績を表示</button>
-                <div id="p${idx}" class="round-detail-panel"><div style="display:grid; grid-template-columns:repeat(4,1fr); text-align:center; font-size:10px;">`;
-      line.rounds.forEach(r => { html += `<div><div style="color:#999;">R${r.no}</div><div>${r.r}/${r.p}</div></div>`; });
+      
+      html += `<span style="font-size:10px; margin-left:5px; color:#999;">Trend</span></div></div>
+          
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:12px;">
+            <div style="background:white; padding:10px; border-radius:6px; border:1px solid #EEE;">
+              <strong>【なぜ？】</strong><br><span style="color:#666;">${line.analysis.why}</span>
+            </div>
+            <div style="background:white; padding:10px; border-radius:6px; border:1px solid #EEE;">
+              <strong>【今日は？】</strong><br><span style="color:var(--teal); font-weight:bold;">${line.analysis.today}</span>
+            </div>
+          </div>
+
+          <button class="tgl-btn" data-target="p${idx}" style="margin-top:12px; font-size:11px; background:none; border:1px solid #CCC; padding:4px 10px; cursor:pointer; color:#666; border-radius:4px;">▼ 詳細数値を表示</button>
+          <div id="p${idx}" class="round-detail-panel">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); text-align:center; font-size:11px;">`;
+      
+      line.rounds.forEach(r => {
+        html += `<div><div style="color:#999; margin-bottom:2px;">R${r.no}</div><div style="font-weight:bold;">${r.r}/${r.p}</div></div>`;
+      });
+      
       html += `</div></div></div>`;
     });
-    
+
     document.getElementById('prodBody').innerHTML = html;
+    
+    // 詳細トグルイベントの登録
     document.querySelectorAll('.tgl-btn').forEach(btn => {
       btn.onclick = function() {
-        const p = document.getElementById(this.dataset.target);
-        p.classList.toggle('is-open');
-        this.innerText = p.classList.contains('is-open') ? '▲ 詳細を閉じる' : '▼ ラウンド実績を表示';
+        const targetId = this.getAttribute('data-target');
+        const panel = document.getElementById(targetId);
+        if (panel) {
+          const isOpen = panel.classList.toggle('is-open');
+          this.innerText = isOpen ? '▲ 詳細を閉じる' : '▼ 詳細数値を表示';
+        }
       };
     });
   }
 
-  /* ---- 4. モーダル基本制御 ---- */
-  function openModal(id) { document.getElementById(id).classList.add('is-active'); }
-  function closeModal(id) { document.getElementById(id).classList.remove('is-active'); }
+  /* ---- 4. モーダル基本操作 ---- */
+  const modals = {
+    prod: document.getElementById('modalProd'),
+    attend: document.getElementById('modalAttend')
+  };
 
-  // イベント紐付け
-  document.getElementById('btnProd').onclick = () => { renderProdDetail(); openModal('modalProd'); };
-  document.getElementById('btnAttend').onclick = () => { openModal('modalAttend'); };
-  document.getElementById('closeProd').onclick = () => closeModal('modalProd');
-  document.getElementById('closeAttend').onclick = () => closeModal('modalAttend');
+  function openM(key) {
+    if (modals[key]) modals[key].classList.add('is-active');
+  }
+  function closeAll() {
+    Object.values(modals).forEach(m => m.classList.remove('is-active'));
+  }
+
+  // ボタンクリックイベント
+  document.getElementById('btnProd').onclick = function() {
+    renderProdDetail();
+    openM('prod');
+  };
   
-  window.onclick = (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
-      e.target.classList.remove('is-active');
+  document.getElementById('btnAttend').onclick = function() {
+    openM('attend');
+  };
+
+  // 閉じるボタン
+  document.getElementById('closeProd').onclick = closeAll;
+  document.getElementById('closeAttend').onclick = closeAll;
+
+  // 背景クリックで閉じる
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+      closeAll();
     }
   };
+
 });
 </script>
+
 </body>
 </html>
