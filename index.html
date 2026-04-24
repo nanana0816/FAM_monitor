@@ -3,57 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver7.4</title>
+<title>FAM 朝会モニター — ver7.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg: #EBEEF2; --panel: #FFFFFF; --accent: #C0392B; --teal: #27AE60;
-  --amber: #F39C12; --text: #2C3E50; --border: #BDC3C7; --radius: 8px;
+  --bg: #E2E8F0; --panel: #FFFFFF; --accent: #C0392B; --teal: #27AE60;
+  --amber: #F39C12; --text: #1A202C; --border: #CBD5E0; --radius: 6px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 80px; font-size: 13px; }
+body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 70px; font-size: 12px; }
 
-header { display: flex; align-items: center; justify-content: space-between; padding: 0 15px; height: 50px; background: #fff; border-bottom: 2px solid var(--accent); }
-.h-title { font-size: 16px; font-weight: 900; color: var(--accent); }
-.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 22px; font-weight: 700; }
+header { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; height: 44px; background: #fff; border-bottom: 2px solid var(--accent); }
+.h-title { font-size: 14px; font-weight: 900; color: var(--accent); }
+.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: 700; }
 
-.main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 10px; padding: 10px; }
-.card { background: var(--panel); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.card-header { padding: 8px 12px; background: #F8F9F9; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 14px; }
+.main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; padding: 8px; }
+.card { background: var(--panel); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.card-header { padding: 6px 10px; background: #EDF2F7; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 13px; color: #4A5568; }
 
 /* テーブル圧縮設定 */
 .table-container { width: 100%; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
-th, td { padding: 6px 2px; border-bottom: 1px solid #eee; border-right: 1px solid #f9f9f9; word-break: break-all; }
-th { background: #ECF0F1; font-size: 11px; color: #7F8C8D; }
-.t-left { text-align: left; padding-left: 8px; width: 100px; }
+th, td { padding: 4px 1px; border-bottom: 1px solid #E2E8F0; border-right: 1px solid #F7FAFC; }
+th { background: #F7FAFC; font-size: 10px; color: #718096; border-top: 1px solid #E2E8F0; }
+.t-left { text-align: left; padding-left: 6px; width: 85px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* 状態バッジ（単位なし数値のみ対応） */
-.val-box { font-weight: 900; }
-.ng { color: var(--accent); }
-.ok { color: var(--teal); }
-.badge { padding: 2px 4px; border-radius: 4px; font-size: 11px; color: #fff; font-weight: 700; display: inline-block; min-width: 30px; }
+/* 状態表示 */
+.ng { background-color: #FFF5F5; color: var(--accent); font-weight: 900; }
+.ok { color: var(--teal); font-weight: 900; }
+.badge { padding: 1px 3px; border-radius: 3px; font-size: 10px; color: #fff; font-weight: 700; display: inline-block; min-width: 28px; }
+.bg-ng { background: var(--accent); }
+.bg-ok { background: var(--teal); }
+.bg-warn { background: var(--amber); }
 
 /* モーダル */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; padding: 10px; overflow-y: auto; align-items: flex-start; justify-content: center; }
-.modal-content { background: #fff; width: 100%; max-width: 1200px; border-radius: var(--radius); position: relative; display: flex; flex-direction: column; max-height: 95vh; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-.modal-header { position: sticky; top: 0; background: #fff; z-index: 2010; padding: 12px 15px; border-bottom: 2px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; padding: 8px; overflow-y: auto; align-items: flex-start; justify-content: center; }
+.modal-content { background: #fff; width: 100%; max-width: 1200px; border-radius: var(--radius); position: relative; display: flex; flex-direction: column; max-height: 96vh; }
+.modal-header { position: sticky; top: 0; background: #fff; z-index: 2010; padding: 10px 12px; border-bottom: 2px solid #CBD5E0; display: flex; justify-content: space-between; align-items: center; }
 .modal-body { padding: 0; overflow: auto; flex-grow: 1; }
-.modal-close { font-size: 28px; cursor: pointer; border: none; background: none; color: #95A5A6; }
-
-/* アコーディオン内部 */
-.acc-row { cursor: pointer; }
-.acc-row:hover { background: #EBF5FB; }
-.acc-content { display: none; background: #FEFEFE; }
-.acc-content.is-open { display: table-row; }
-.inner-wrap { padding: 10px; border: 1px solid #D6EAF8; margin: 5px; border-radius: 4px; background: #fff; }
+.modal-close { font-size: 24px; cursor: pointer; border: none; background: none; color: #A0AEC0; }
 
 /* 下部ナビ */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 10px; z-index: 2001; }
-.nav-btn { flex: 1; max-width: 150px; height: 42px; border: none; border-radius: 6px; font-weight: 700; color: #fff; font-size: 13px; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 8px; z-index: 2001; }
+.nav-btn { flex: 1; max-width: 140px; height: 38px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 12px; cursor: pointer; }
 .btn-red { background: var(--accent); }
-.btn-dark { background: #34495E; }
+.btn-dark { background: #2D3748; }
+
+/* 累計項目用 */
+.sum-head { background: #E2E8F0 !important; color: #2D3748 !important; border-bottom: 1px solid #CBD5E0 !important; }
 </style>
 </head>
 <body>
@@ -68,7 +66,7 @@ th { background: #ECF0F1; font-size: 11px; color: #7F8C8D; }
     <div class="card-header">👥 出勤状況</div>
     <div class="table-container">
       <table style="table-layout: auto;">
-        <thead><tr><th class="t-left">ライン</th><th>欠/定</th><th>率</th></tr></thead>
+        <thead><tr><th class="t-left">ライン</th><th>欠/定</th><th>出勤率</th></tr></thead>
         <tbody id="mainAttendBody"></tbody>
       </table>
     </div>
@@ -78,41 +76,59 @@ th { background: #ECF0F1; font-size: 11px; color: #7F8C8D; }
     <div class="card-header">🏭 生産状況 (昨日)</div>
     <div class="table-container">
       <table style="table-layout: auto;">
-        <thead><tr><th class="t-left">ライン</th><th>実/計</th><th>停</th><th>残</th><th>可</th></tr></thead>
+        <thead><tr><th class="t-left">ライン</th><th>実/計</th><th>停</th><th>残</th><th>可動</th></tr></thead>
         <tbody id="mainProdBody"></tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">🛡️ 安全・品質</div>
+    <div style="padding: 10px; display: flex; gap: 10px;">
+      <div style="flex:1; background:#F0FFF4; border:1px solid #C6F6D5; padding:8px; border-radius:4px;">
+        <div style="font-size:9px; color:#276749;">無災害記録</div>
+        <div style="font-size:20px; font-weight:900; color:var(--teal);">425</div>
+      </div>
+      <div style="flex:1; background:#FFF5F5; border:1px solid #FED7D7; padding:8px; border-radius:4px;">
+        <div style="font-size:9px; color:#9B2C2C;">品質直行率</div>
+        <div style="font-size:20px; font-weight:900; color:var(--accent);">98.2</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">📢 連絡事項</div>
+    <div style="padding: 8px; font-size: 11px; color: #4A5568;">
+      ・13:00〜 防災備蓄品チェック<br>
+      ・工具置き場ルールの再徹底
     </div>
   </div>
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn btn-red" onclick="openM('qr')">連携QR</button>
-  <button class="nav-btn btn-dark" onclick="openM('attend')">出勤詳細</button>
-  <button class="nav-btn btn-dark" onclick="openM('prod')">生産詳細</button>
+  <button class="nav-btn btn-red" onclick="openM('qr')">📲 連携QR</button>
+  <button class="nav-btn btn-dark" onclick="openM('attend')">👥 出勤詳細</button>
+  <button class="nav-btn btn-dark" onclick="openM('prod')">🏭 生産詳細</button>
 </nav>
 
 <div id="modalAttend" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <div style="font-weight:900; color:var(--accent);">出勤詳細：当月累計集計</div>
+      <div style="font-weight:900; color:var(--accent); font-size:14px;">出勤詳細：当月累計状況</div>
       <button class="modal-close" onclick="closeM('attend')">×</button>
     </div>
     <div class="modal-body">
       <div class="table-container">
-        <table style="min-width: 800px; table-layout: auto;">
+        <table style="min-width: 700px; table-layout: auto;">
           <thead>
             <tr>
               <th rowspan="2" class="t-left">ライン</th>
               <th rowspan="2">氏名</th>
-              <th rowspan="2">ステータス</th>
-              <th colspan="5" style="background:#D5DBDB; color:#2C3E50;">当月累計</th>
+              <th rowspan="2">現況</th>
+              <th colspan="5" class="sum-head">当月累計</th>
             </tr>
             <tr>
-              <th style="background:#F2F4F4;">年休</th>
-              <th style="background:#F2F4F4;">AM半</th>
-              <th style="background:#F2F4F4;">PM半</th>
-              <th style="background:#F2F4F4;">遅刻</th>
-              <th style="background:#F2F4F4;">早退</th>
+              <th>年休</th><th>AM半</th><th>PM半</th><th>遅刻</th><th>早退</th>
             </tr>
           </thead>
           <tbody id="detailAttendBody"></tbody>
@@ -125,12 +141,12 @@ th { background: #ECF0F1; font-size: 11px; color: #7F8C8D; }
 <div id="modalProd" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <div style="font-weight:900; color:var(--accent);">生産詳細：3階層ドリルダウン</div>
+      <div style="font-weight:900; color:var(--accent); font-size:14px;">生産詳細：実績ドリルダウン</div>
       <button class="modal-close" onclick="closeM('prod')">×</button>
     </div>
     <div class="modal-body">
       <div class="table-container">
-        <table style="min-width:900px; table-layout: auto;">
+        <table style="min-width:850px; table-layout: auto;">
           <thead>
             <tr>
               <th class="t-left">ライン</th><th>U</th><th>直</th><th>計</th><th>実</th>
@@ -153,8 +169,8 @@ const DATA = [
       { name: '田中 太郎', status: '出勤', nenkju: 1, am: 0, pm: 1, chikoku: 0, sotai: 0 },
       { name: '佐藤 次郎', status: '欠勤', nenkju: 2, am: 1, pm: 0, chikoku: 1, sotai: 2 }
     ],
-    rounds: [{ rd: 1, p: 5, r: 4, s: 10, c: '設備' }, { rd: 2, p: 5, r: 5, s: 0, c: '-' }],
-    changes: [{ time: '08:45', rd: 1, content: 'センサ故障', action: '交換', react: '完了' }]
+    rounds: [{ rd: 1, p: 5, r: 4, s: 10, c: '設備' }],
+    changes: [{ time: '08:45', rd: 1, content: 'センサ故障', action: '交換', react: '完' }]
   },
   {
     line: '中型トランス', unit: 'U2', shift: '夜', plan: 72, result: 75, diff: 3, progress: 102, rate: 98, stop: 5, overtime: 0,
@@ -165,11 +181,6 @@ const DATA = [
   }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
-  setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP',{hour12:false}); }, 1000);
-  renderMain();
-});
-
 function renderMain() {
   let aHtml = '', pHtml = '';
   DATA.forEach(l => {
@@ -177,11 +188,25 @@ function renderMain() {
     aHtml += `<tr><td class="t-left">${l.line}</td><td>${l.attendSummary.total - l.attendSummary.missing}/${l.attendSummary.total}</td><td><span class="badge ${aBadge}">${l.attendSummary.rate}</span></td></tr>`;
     
     const pBadge = l.rate < 90 ? 'bg-ng' : (l.rate < 95 ? 'bg-warn' : 'bg-ok');
-    const resCol = l.result < l.plan ? 'ng' : 'ok';
+    const resCol = l.result < l.plan ? 'ng' : '';
     pHtml += `<tr><td class="t-left">${l.line}</td><td class="${resCol}">${l.result}/${l.plan}</td><td>${l.stop}</td><td>${l.overtime}</td><td><span class="badge ${pBadge}">${l.rate}</span></td></tr>`;
   });
   document.getElementById('mainAttendBody').innerHTML = aHtml;
   document.getElementById('mainProdBody').innerHTML = pHtml;
+}
+
+function renderAttendDetail() {
+  let html = '';
+  DATA.forEach(l => {
+    l.members.forEach(m => {
+      const sStyle = m.status === '欠勤' ? 'color:var(--accent); font-weight:900;' : '';
+      html += `<tr>
+        <td class="t-left">${l.line}</td><td>${m.name}</td><td style="${sStyle}">${m.status}</td>
+        <td>${m.nenkju}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.chikoku}</td><td>${m.sotai}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('detailAttendBody').innerHTML = html;
 }
 
 function openM(id) {
@@ -195,51 +220,30 @@ function closeM(id) {
   document.body.style.overflow = 'auto';
 }
 
-function renderAttendDetail() {
-  let html = '';
-  DATA.forEach(l => {
-    l.members.forEach(m => {
-      const sCol = m.status === '欠勤' ? 'color:var(--accent); font-weight:900;' : '';
-      html += `<tr>
-        <td class="t-left">${l.line}</td><td>${m.name}</td><td style="${sCol}">${m.status}</td>
-        <td>${m.nenkju}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.chikoku}</td><td>${m.sotai}</td>
-      </tr>`;
-    });
-  });
-  document.getElementById('detailAttendBody').innerHTML = html;
-}
-
 function renderProdDetail() {
   let html = '';
   DATA.forEach((l, idx) => {
     const dCol = l.diff >= 0 ? 'ok' : 'ng';
-    html += `
-      <tr class="acc-row" onclick="toggleAcc('acc-${idx}')">
-        <td class="t-left">▶ ${l.line}</td><td>${l.unit}</td><td>${l.shift}</td><td>${l.plan}</td><td>${l.result}</td>
-        <td class="${dCol}">${l.diff >= 0 ? '+' : ''}${l.diff}</td><td>${l.progress}</td><td>${l.rate}</td><td>${l.stop}</td><td>${l.overtime}</td>
-      </tr>
-      <tr id="acc-${idx}" class="acc-content"><td colspan="10">
-        <div class="inner-wrap">
-          <div style="font-weight:900; color:var(--teal); font-size:11px;">【RD実績】</div>
-          <table style="margin-bottom:10px; border:1px solid #eee;">
-            <thead style="background:#f9f9f9;"><tr><th>RD</th><th>計</th><th>実</th><th>停</th><th>内容</th></tr></thead>
-            <tbody>${l.rounds.map(r=>`<tr><td>${r.rd}</td><td>${r.p}</td><td>${r.r}</td><td>${r.s}</td><td>${r.c}</td></tr>`).join('')}</tbody>
-          </table>
-          <div style="font-weight:900; color:var(--accent); font-size:11px;">【変化点】</div>
-          <table style="border:1px solid #eee;">
-            <thead style="background:#f9f9f9;"><tr><th>時間</th><th>RD</th><th>内容</th><th>対応</th></tr></thead>
-            <tbody>${l.changes.length?l.changes.map(c=>`<tr><td>${c.time}</td><td>${c.rd}</td><td>${c.content}</td><td>${c.action}</td></tr>`).join(''):'<tr><td colspan="4">なし</td></tr>'}</tbody>
-          </table>
-        </div>
-      </td></tr>`;
+    html += `<tr class="acc-row" onclick="this.nextElementSibling.style.display = (this.nextElementSibling.style.display==='table-row'?'none':'table-row')">
+      <td class="t-left">▶ ${l.line}</td><td>${l.unit}</td><td>${l.shift}</td><td>${l.plan}</td><td>${l.result}</td>
+      <td class="${dCol}">${l.diff>=0?'+':''}${l.diff}</td><td>${l.progress}</td><td>${l.rate}</td><td>${l.stop}</td><td>${l.overtime}</td>
+    </tr>
+    <tr class="acc-content" style="display:none;"><td colspan="10" style="padding:8px; background:#fff;">
+      <div style="border:1px solid #eee; padding:6px; border-radius:4px;">
+        <table style="font-size:10px;">
+          <thead style="background:#f9f9f9;"><tr><th>RD</th><th>計</th><th>実</th><th>停</th><th>内容</th></tr></thead>
+          <tbody>${l.rounds.map(r=>`<tr><td>${r.rd}</td><td>${r.p}</td><td>${r.r}</td><td>${r.s}</td><td>${r.c}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </td></tr>`;
   });
   document.getElementById('detailProdBody').innerHTML = html;
 }
 
-function toggleAcc(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('is-open');
-}
+document.addEventListener('DOMContentLoaded', () => {
+  setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP',{hour12:false}); }, 1000);
+  renderMain();
+});
 </script>
 </body>
 </html>
