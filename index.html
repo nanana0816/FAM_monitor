@@ -151,65 +151,46 @@ th { background: #F9FAFB; position: sticky; top: 0; z-index: 10; color: #666; fo
 <div id="modalProd" class="modal-overlay"><div class="modal-content"><div class="modal-header"><b>生産詳細</b><button onclick="closeM('prod')">×</button></div><div class="modal-body"><table id="detailProdBody"></table></div></div></div>
 
 <script>
+// --- データ定義 ---
 const DATA = {
   attend: [
-    { line:'大型エンジン組立', on:22, total:24, rate:91.6 },
-    { line:'中型トランス組立', on:18, total:18, rate:100 },
-    { line:'ピストン加工', on:14, total:15, rate:93.3 }
+    { line:'大型エンジン組立', on:22, total:24, rate:91.6, members:[
+      {name:'佐藤', st:'出勤', n:1, am:0, pm:1, c:0, s:0},
+      {name:'田中', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}
+    ]},
+    { line:'中型トランス組立', on:18, total:18, rate:100, members:[] }
   ],
   prod: [
-    { line:'大型エンジン組立', res:48, plan:50, rate:88.5, stop:'25/1' },
-    { line:'中型トランス組立', res:125, plan:120, rate:98.2, stop:'5/2' },
-    { line:'ピストン加工', res:280, plan:300, rate:82.0, stop:'45/4' }
+    { line:'大型エンジン組立', res:48, plan:50, rate:88.5, prog:96, stop:'25/1' },
+    { line:'中型トランス組立', res:125, plan:120, rate:104.2, prog:104, stop:'5/2' }
   ],
   issues: [
     { time:'08:15', content:'U1設備停止(ベアリング破損)', stop:25, status:'対応済', cat:'Machine', reaction:'了解👌', boss:'課', comment:'予備交換完了。' },
-    { time:'10:30', content:'作業タクト遅延(新人研修)', stop:0, status:'継続中', cat:'Man', reaction:'再調査', boss:'工', comment:'班長フォロー中。' },
-    { time:'13:45', content:'鋳造品寸法バラツキ', stop:15, status:'経過観察', cat:'Material', reaction:'横展開', boss:'部長', comment:'他ラインも確認。' }
-  ],
-  notices: [
-    { content:'【重要】防火3S活動：可燃物の滞留厳禁。各自エリア点検。', from:'総務・安全' },
-    { content:'来週月曜日：生産調整による残業カット(全ライン)', from:'生産管理' },
-    { content:'災害展開：他社でのフォークリフト接触事故に関する周知。', from:'安全推進' }
+    { time:'10:30', content:'作業タクト遅延(新人研修)', stop:0, status:'継続中', cat:'Man', reaction:'再調査', boss:'工', comment:'班長フォロー中。' }
   ]
 };
 
-function renderMain() {
-  let aH='', pH='', iH='', nH='';
-  DATA.attend.forEach(l => aH += `<tr><td class="t-left">${l.line}</td><td>${l.on}/${l.total}</td><td class="${l.rate<95?'st-keep':''}">${l.rate}%</td></tr>`);
-  DATA.prod.forEach(l => pH += `<tr><td class="t-left">${l.line}</td><td class="${l.res<l.plan?'st-keep':''}">${l.res}/${l.plan}</td><td>${l.rate}%</td><td>${l.stop}</td></tr>`);
-  DATA.issues.forEach(i => {
-    const stClass = i.status==='継続中'?'st-keep': (i.status==='経過観察'?'st-watch':'st-done');
-    iH += `<tr>
-      <td class="t-left">${i.content}</td><td>${i.stop}</td><td class="${stClass}">${i.status}</td><td>${i.cat}</td>
-      <td class="t-left"><span class="stamp">${i.boss}</span><span class="reaction-text">${i.reaction}</span></td>
-    </tr>`;
-  });
-  DATA.notices.forEach(n => nH += `<tr><td class="t-left">${n.content}</td><td>${n.from}</td></tr>`);
-  
-  document.getElementById('mainAttendBody').innerHTML = aH;
-  document.getElementById('mainProdBody').innerHTML = pH;
-  document.getElementById('mainIssueBody').innerHTML = iH;
-  document.getElementById('mainNoticeBody').innerHTML = nH;
-}
+// --- 全詳細カードのレンダリング機能 ---
 
 function openM(type) {
   const modal = document.getElementById('modal' + type.charAt(0).toUpperCase() + type.slice(1));
-  if (modal) {
-    if (type === 'issue') renderIssueDetail();
-    modal.style.display = 'flex';
-  }
-}
-function closeM(type) {
-  document.getElementById('modal' + type.charAt(0).toUpperCase() + type.slice(1)).style.display = 'none';
+  if (!modal) return;
+
+  // ボタンの種類に応じて描画関数を振り分け
+  if (type === 'issue') renderIssueDetail();
+  if (type === 'attend') renderAttendDetail();
+  if (type === 'prod') renderProdDetail();
+
+  modal.style.display = 'flex';
 }
 
+// 1. 遅れ・不良詳細
 function renderIssueDetail() {
   let h = '';
   DATA.issues.forEach(i => {
     const stClass = i.status==='継続中'?'st-keep': (i.status==='経過観察'?'st-watch':'st-done');
     h += `<tr>
-      <td>${i.time}</td><td>${i.cat}</td><td class="t-left">${i.content}</td><td>${i.stop}分</td>
+      <td>${i.time}</td><td>${i.cat}</td><td class="t-left">${i.content}</td><td>${i.stop}m</td>
       <td class="${stClass}">${i.status}</td>
       <td class="t-left"><span class="stamp">${i.boss}</span><span class="reaction-text">${i.reaction}</span> ${i.comment}</td>
     </tr>`;
@@ -217,10 +198,36 @@ function renderIssueDetail() {
   document.getElementById('detailIssueBody').innerHTML = h;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP',{hour12:false}); }, 1000);
-  renderMain();
-});
+// 2. 出勤詳細 (全メンバー・全項目)
+function renderAttendDetail() {
+  let h = `<thead><tr><th>ライン</th><th>氏名</th><th>状況</th><th>年休</th><th>AM半</th><th>PM半</th><th>遅刻</th><th>早退</th></tr></thead><tbody>`;
+  DATA.attend.forEach(l => {
+    if(l.members.length === 0) {
+      h += `<tr><td>${l.line}</td><td colspan="7">全員出勤</td></tr>`;
+    } else {
+      l.members.forEach(m => {
+        h += `<tr><td>${l.line}</td><td>${m.name}</td><td>${m.st}</td><td>${m.n}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.c}</td><td>${m.s}</td></tr>`;
+      });
+    }
+  });
+  h += `</tbody>`;
+  document.getElementById('detailAttendBody').innerHTML = h;
+}
+
+// 3. 生産詳細 (進捗・可動率・停止)
+function renderProdDetail() {
+  let h = `<thead><tr><th>ライン</th><th>計画</th><th>実績</th><th>進捗</th><th>可動率</th><th>停止(分/件)</th></tr></thead><tbody>`;
+  DATA.prod.forEach(l => {
+    h += `<tr><td class="t-left">${l.line}</td><td>${l.plan}</td><td>${l.res}</td><td>${l.prog}%</td><td>${l.rate}%</td><td>${l.stop}</td></tr>`;
+  });
+  h += `</tbody>`;
+  document.getElementById('detailProdBody').innerHTML = h;
+}
+
+function closeM(type) {
+  document.getElementById('modal' + type.charAt(0).toUpperCase() + type.slice(1)).style.display = 'none';
+}
 </script>
+
 </body>
 </html>
