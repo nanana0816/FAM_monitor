@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM MORNING BRIEFING MONITOR ver8.2</title>
+<title>FAM MORNING BRIEFING MONITOR ver8.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
@@ -12,60 +12,59 @@
   --amber: #EF6C00; --text: #1A1C1E; --border: #D1D5DB; --radius: 4px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 70px; font-size: 11px; }
+body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 60px; font-size: 11px; line-height: 1.2; }
 
-header { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; height: 42px; background: #fff; border-bottom: 3px solid var(--accent); }
-.h-title { font-size: 15px; font-weight: 900; color: var(--accent); }
+header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 40px; background: #fff; border-bottom: 3px solid var(--accent); }
+.h-title { font-size: 14px; font-weight: 900; color: var(--accent); }
 .h-clock { font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: 700; }
 
-/* 3:7 グリッドレイアウト */
-.main-grid { 
-  display: grid; 
-  grid-template-columns: 3fr 7fr; /* ここで割合を3:7に固定 */
-  gap: 8px; 
-  padding: 8px; 
-}
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 39vh; }
-.card-header { padding: 5px 10px; background: #f8fafc; border-bottom: 1px solid var(--border); }
-.card-header .en { font-size: 8px; color: #64748b; display: block; letter-spacing: 0.5px; text-transform: uppercase; }
-.card-header .jp { font-size: 12px; font-weight: 900; color: #334155; }
-.card-body { flex: 1; overflow-y: auto; }
+/* 3:7 グリッド */
+.main-grid { display: grid; grid-template-columns: 3fr 7fr; gap: 6px; padding: 6px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 39.5vh; overflow: hidden; }
+.card-header { padding: 3px 8px; background: #f8fafc; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.card-header .en { font-size: 7px; color: #64748b; display: block; text-transform: uppercase; }
+.card-header .jp { font-size: 11px; font-weight: 900; color: #334155; }
+.card-body { flex: 1; overflow-y: auto; overflow-x: hidden; }
 
-/* テーブル（縞模様なし） */
-table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; background: #fff; }
-th, td { padding: 5px 2px; border-bottom: 1px solid #E5E7EB; border-right: 1px solid #F3F4F6; }
-th { background: #F9FAFB; vertical-align: middle; }
-th .en { font-size: 7px; color: #71717a; display: block; line-height: 1.2; text-transform: uppercase; }
+/* テーブル（動的幅調整・最小パディング） */
+table { width: 100%; border-collapse: collapse; text-align: center; table-layout: auto; background: #fff; }
+th, td { 
+  padding: 2px 1px; /* 最小パディング */
+  border-bottom: 1px solid #E5E7EB; 
+  border-right: 1px solid #F3F4F6; 
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+th { background: #F9FAFB; vertical-align: middle; position: sticky; top: 0; z-index: 10; }
+th .en { font-size: 7px; color: #71717a; display: block; line-height: 1; text-transform: uppercase; }
 th .jp { font-size: 9px; display: block; margin-top: 1px; }
 
-/* 動的強調カラー */
-.cell-ng { background-color: #FFF1F0; color: var(--accent); font-weight: 900; } /* 異常/未達 */
-.cell-ok { color: var(--teal); font-weight: 700; } /* 正常 */
-.cell-warn { background-color: #FFFBEB; color: var(--amber); font-weight: 700; } /* 注意 */
-
-.t-left { text-align: left; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 動的強調 */
+.cell-ng { background-color: #FFF1F0; color: var(--accent); font-weight: 900; }
+.cell-ok { color: var(--teal); font-weight: 700; }
+.cell-warn { background-color: #FFFBEB; color: var(--amber); font-weight: 700; }
+.t-left { text-align: left; padding-left: 4px; }
 
 /* スタンプ */
-.stamp { display: inline-block; width: 18px; height: 18px; line-height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 9px; text-align: center; margin-right: 4px; vertical-align: middle; background: #fff; }
-
-/* モーダル */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; padding: 10px; align-items: flex-start; justify-content: center; }
-.modal-content { background: #fff; width: 100%; max-width: 1150px; border-radius: var(--radius); max-height: 96vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-.modal-header { padding: 10px 15px; border-bottom: 2px solid #E2E8F0; display: flex; justify-content: space-between; background: #F8FAFC; }
-.modal-body { overflow: auto; flex: 1; }
+.stamp { display: inline-block; width: 16px; height: 16px; line-height: 14px; border: 1.2px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 8px; text-align: center; margin-right: 2px; vertical-align: middle; background: #fff; flex-shrink: 0; }
 
 /* 下部ナビ */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2500; }
-.nav-btn { flex: 1; max-width: 150px; height: 40px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 11px; cursor: pointer; transition: 0.2s; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 50px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; z-index: 2500; }
+.nav-btn { flex: 1; max-width: 140px; height: 36px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 10px; cursor: pointer; }
 .btn-red { background: var(--accent); }
 .btn-dark { background: #334155; }
-.nav-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+/* モーダル */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; align-items: flex-start; justify-content: center; padding-top: 10px; }
+.modal-content { background: #fff; width: 98%; max-width: 1200px; border-radius: var(--radius); max-height: 95vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { padding: 8px 12px; border-bottom: 2px solid #E2E8F0; display: flex; justify-content: space-between; background: #F8FAFC; }
+.modal-body { overflow: auto; flex: 1; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-title">FAM MORNING BRIEFING MONITOR ver8.2</div>
+  <div class="h-title">FAM MORNING MONITOR v8.3</div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
@@ -76,7 +75,7 @@ th .jp { font-size: 9px; display: block; margin-top: 1px; }
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:50%;"><span class="en">Line</span><span class="jp">ライン名</span></th>
+            <th class="t-left"><span class="en">Line Name</span><span class="jp">ライン名</span></th>
             <th><span class="en">Att/Abs</span><span class="jp">出/欠</span></th>
             <th><span class="en">Rate</span><span class="jp">率</span></th>
           </tr>
@@ -87,14 +86,14 @@ th .jp { font-size: 9px; display: block; margin-top: 1px; }
   </div>
 
   <div class="card">
-    <div class="card-header"><span class="en">Current Issues & Defects</span><span class="jp">⚠️ 遅れ・不良</span></div>
+    <div class="card-header"><span class="en">Issues & Defects</span><span class="jp">⚠️ 遅れ・不良</span></div>
     <div class="card-body">
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:35%;"><span class="en">Problem Detail</span><span class="jp">発生内容詳細</span></th>
-            <th style="width:12%;"><span class="en">Status</span><span class="jp">状況</span></th>
-            <th style="width:12%;"><span class="en">Category</span><span class="jp">区分</span></th>
+            <th class="t-left" style="width: 30%;"><span class="en">Problem Detail</span><span class="jp">発生内容詳細</span></th>
+            <th style="width: 10%;"><span class="en">Status</span><span class="jp">状況</span></th>
+            <th style="width: 10%;"><span class="en">4M</span><span class="jp">区分</span></th>
             <th><span class="en">Supervisor Analysis / Comment</span><span class="jp">上長分析コメント</span></th>
           </tr>
         </thead>
@@ -109,9 +108,9 @@ th .jp { font-size: 9px; display: block; margin-top: 1px; }
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:45%;"><span class="en">Line</span><span class="jp">ライン名</span></th>
-            <th><span class="en">Actual</span><span class="jp">実績</span></th>
-            <th><span class="en">Rate</span><span class="jp">可動</span></th>
+            <th class="t-left"><span class="en">Line Name</span><span class="jp">ライン名</span></th>
+            <th><span class="en">Actual/Planned</span><span class="jp">実績/計画</span></th>
+            <th><span class="en">Operation</span><span class="jp">可動</span></th>
           </tr>
         </thead>
         <tbody id="mainProdBody"></tbody>
@@ -125,7 +124,7 @@ th .jp { font-size: 9px; display: block; margin-top: 1px; }
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:80%;"><span class="en">Notice / Message Content</span><span class="jp">連絡事項内容</span></th>
+            <th class="t-left" style="width: 80%;"><span class="en">Notice Content</span><span class="jp">連絡事項内容</span></th>
             <th><span class="en">Sender</span><span class="jp">発信元</span></th>
           </tr>
         </thead>
@@ -136,120 +135,46 @@ th .jp { font-size: 9px; display: block; margin-top: 1px; }
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn btn-red" onclick="openM('qr')">📲 QR LINKAGE</button>
-  <button class="nav-btn btn-dark" onclick="openM('attend')">ATTENDANCE DETAILS</button>
-  <button class="nav-btn btn-dark" onclick="openM('prod')">PRODUCTION DETAILS</button>
+  <button class="nav-btn btn-red" onclick="openM('qr')">📲 QR LINK</button>
+  <button class="nav-btn btn-dark" onclick="openM('attend')">ATTENDANCE DT</button>
+  <button class="nav-btn btn-dark" onclick="openM('prod')">PRODUCTION DT</button>
 </nav>
 
 <div id="modalQR" class="modal-overlay">
-  <div class="modal-content" style="max-width:320px;">
-    <div class="modal-header"><b>QR CODE LINKAGE</b><button onclick="closeM('qr')" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button></div>
-    <div class="modal-body" style="padding:20px; text-align:center;">
-      <div style="width:140px; height:140px; background:#fff; margin:auto; border:4px solid #334155; display:flex; align-items:center; justify-content:center; font-weight:900;">QR</div>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:15px;">
-        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Syncing...')">Mobile Sync</button>
-        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Manual Entry')">Entry</button>
-        <button class="nav-btn btn-dark" style="max-width:none;" onclick="location.reload()">Refresh</button>
-        <button class="nav-btn btn-red" style="max-width:none;" onclick="closeM('qr')">Close</button>
+  <div class="modal-content" style="max-width:300px;">
+    <div class="modal-header"><b>QR LINKAGE</b><button onclick="closeM('qr')" style="border:none;background:none;font-size:20px;">×</button></div>
+    <div class="modal-body" style="padding:15px; text-align:center;">
+      <div style="width:120px; height:120px; background:#fff; margin:0 auto 15px; border:3px solid #334155; display:flex; align-items:center; justify-content:center; font-weight:900;">QR</div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Sync')">Sync</button>
+        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Entry')">Entry</button>
+        <button class="nav-btn btn-dark" style="max-width:none;" onclick="location.reload()">Reset</button>
+        <button class="nav-btn btn-red" style="max-width:none;" onclick="closeM('qr')">Exit</button>
       </div>
     </div>
   </div>
 </div>
 
-<div id="modalAttend" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header"><b>ATTENDANCE DETAILS (MONTHLY)</b><button onclick="closeM('attend')" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button></div>
-    <div class="modal-body">
-      <table>
-        <thead>
-          <tr>
-            <th rowspan="2"><span class="en">Production Line</span><span class="jp">ライン</span></th>
-            <th rowspan="2"><span class="en">Employee Full Name</span><span class="jp">氏名</span></th>
-            <th rowspan="2"><span class="en">Current Status</span><span class="jp">現況</span></th>
-            <th colspan="5" style="background:#e2e8f0;"><span class="en">Monthly Cumulative Total</span><span class="jp">当月累計</span></th>
-          </tr>
-          <tr>
-            <th><span class="en">Paid Leave</span><span class="jp">年休</span></th>
-            <th><span class="en">AM Half</span><span class="jp">AM半</span></th>
-            <th><span class="en">PM Half</span><span class="jp">PM半</span></th>
-            <th><span class="en">Late</span><span class="jp">遅刻</span></th>
-            <th><span class="en">Early</span><span class="jp">早退</span></th>
-          </tr>
-        </thead>
-        <tbody id="detailAttendBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<div id="modalProd" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header"><b>PRODUCTION PERFORMANCE DRILL-DOWN</b><button onclick="closeM('prod')" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button></div>
-    <div class="modal-body">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:15%;"><span class="en">Production Line</span><span class="jp">ライン</span></th>
-            <th><span class="en">Unit</span><span class="jp">U</span></th>
-            <th><span class="en">Shift</span><span class="jp">直</span></th>
-            <th><span class="en">Planned Quantity</span><span class="jp">計画</span></th>
-            <th><span class="en">Actual Quantity</span><span class="jp">実績</span></th>
-            <th><span class="en">Difference</span><span class="jp">差引</span></th>
-            <th><span class="en">Progress Rate</span><span class="jp">進捗</span></th>
-            <th><span class="en">Operation Rate</span><span class="jp">可動</span></th>
-            <th><span class="en">Downtime</span><span class="jp">停</span></th>
-            <th><span class="en">Overtime</span><span class="jp">残</span></th>
-          </tr>
-        </thead>
-        <tbody id="detailProdBody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
+<div id="modalAttend" class="modal-overlay"><div class="modal-content"><div class="modal-header"><b>ATTENDANCE DETAILS</b><button onclick="closeM('attend')" style="border:none;background:none;font-size:20px;">×</button></div><div class="modal-body"><table><thead><tr><th rowspan="2">ライン</th><th rowspan="2">氏名</th><th rowspan="2">現況</th><th colspan="5" style="background:#e2e8f0;">当月累計</th></tr><tr><th>年休</th><th>AM半</th><th>PM半</th><th>遅刻</th><th>早退</th></tr></thead><tbody id="detailAttendBody"></tbody></table></div></div></div>
+<div id="modalProd" class="modal-overlay"><div class="modal-content"><div class="modal-header"><b>PRODUCTION DETAILS</b><button onclick="closeM('prod')" style="border:none;background:none;font-size:20px;">×</button></div><div class="modal-body"><table><thead><tr><th>ライン</th><th>U</th><th>直</th><th>計画</th><th>実績</th><th>差引</th><th>進捗</th><th>可動</th><th>停</th><th>残</th></tr></thead><tbody id="detailProdBody"></tbody></table></div></div></div>
 
 <script>
 const DATA = {
-  attend: [{ 
-    line:'大型エンジン組立', on:22, total:24, rate:91.6, 
-    members:[
-      {name:'佐藤 健太郎', st:'出勤', n:1, am:0, pm:1, c:0, s:0},
-      {name:'田中 美咲', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}
-    ] 
-  },
-  { line:'中型トランス', on:18, total:18, rate:100, members:[] }],
-  prod: [{ 
-    line:'大型エンジン組立', plan:50, res:48, rate:88, u:'U1', shift:'昼', diff:-2, prog:92, stopT:25, over:30
-  }],
+  attend: [{ line:'大型エンジン組立', on:22, total:24, rate:91.6, members:[{name:'佐藤 健太郎', st:'出勤', n:1, am:0, pm:1, c:0, s:0},{name:'田中 美咲', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}] }],
+  prod: [{ line:'大型エンジン組立', plan:50, res:48, rate:88, u:'U1', shift:'昼', diff:-2, prog:92, stopT:25, over:30 }],
   issues: [
-    { content:'U1コンベアベアリング異音発生', status:'継続中', cat:'Machine', comment:'保全手配済み。部品入荷待ち。', boss:'課' },
-    { content:'加工精度バラツキによる再加工', status:'対応済', cat:'Method', comment:'治具位置合わせ再設定完了。', boss:'工' }
+    { content:'U1コンベアベアリング異音発生。継続的な監視が必要。', status:'継続中', cat:'Mach', comment:'保全手配済み。次回非稼働日に交換実施予定。', boss:'課' },
+    { content:'トルクレンチ較正期限切れ確認', status:'対応済', cat:'Meth', comment:'全数較正完了。予備機と入れ替え済み。', boss:'工' }
   ],
-  notices: [
-    { content:'【重要】夏季休暇期間中の設備点検計画書の提出期限について', from:'保全課' },
-    { content:'5Sパトロール結果：Bエリア工具棚の整理整頓が必要', from:'総務部' }
-  ]
+  notices: [{ content:'夏季休暇期間中の設備点検計画書の提出について。各課15日までに必着。', from:'保全課' }]
 };
 
 function renderMain() {
   let aH='', pH='', iH='', nH='';
-  
-  DATA.attend.forEach(l => {
-    const rateClass = l.rate < 95 ? 'cell-ng' : 'cell-ok';
-    aH += `<tr><td class="t-left">${l.line}</td><td>${l.on}/${l.total}</td><td class="${rateClass}">${l.rate}%</td></tr>`;
-  });
-
-  DATA.prod.forEach(l => {
-    const resClass = l.res < l.plan ? 'cell-ng' : 'cell-ok';
-    pH += `<tr><td class="t-left">${l.line}</td><td class="${resClass}">${l.res}/${l.plan}</td><td class="${l.rate<90?'cell-warn':''}">${l.rate}%</td></tr>`;
-  });
-
-  DATA.issues.forEach(i => {
-    const stStyle = i.status === '継続中' ? 'color:var(--accent); font-weight:900; background:#FFF1F0;' : '';
-    iH += `<tr><td class="t-left">${i.content}</td><td style="${stStyle}">${i.status}</td><td>${i.cat}</td><td class="t-left"><span class="stamp">${i.boss}</span>${i.comment}</td></tr>`;
-  });
-
+  DATA.attend.forEach(l => aH += `<tr><td class="t-left">${l.line}</td><td>${l.on}/${l.total}</td><td class="${l.rate<95?'cell-ng':''}">${l.rate}%</td></tr>`);
+  DATA.prod.forEach(l => pH += `<tr><td class="t-left">${l.line}</td><td class="${l.res<l.plan?'cell-ng':''}">${l.res}/${l.plan}</td><td class="${l.rate<90?'cell-warn':''}">${l.rate}%</td></tr>`);
+  DATA.issues.forEach(i => iH += `<tr><td class="t-left">${i.content}</td><td class="${i.status==='継続中'?'cell-ng':''}">${i.status}</td><td>${i.cat}</td><td class="t-left"><span class="stamp">${i.boss}</span>${i.comment}</td></tr>`);
   DATA.notices.forEach(n => nH += `<tr><td class="t-left">${n.content}</td><td>${n.from}</td></tr>`);
-  
   document.getElementById('mainAttendBody').innerHTML = aH;
   document.getElementById('mainProdBody').innerHTML = pH;
   document.getElementById('mainIssueBody').innerHTML = iH;
@@ -257,32 +182,21 @@ function renderMain() {
 }
 
 function openM(id) {
-  document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
   if(id==='attend') renderAttendDetail();
   if(id==='prod') renderProdDetail();
   document.getElementById('modal'+id.charAt(0).toUpperCase()+id.slice(1)).style.display = 'flex';
-  document.body.style.overflow = 'hidden';
 }
 function closeM(id) {
   document.getElementById('modal'+id.charAt(0).toUpperCase()+id.slice(1)).style.display = 'none';
-  document.body.style.overflow = 'auto';
 }
-
 function renderAttendDetail() {
   let html = '';
-  DATA.attend.forEach(l => l.members.forEach(m => {
-    const rowClass = m.st === '欠勤' ? 'cell-ng' : '';
-    html += `<tr><td class="t-left">${l.line}</td><td>${m.name}</td><td class="${rowClass}">${m.st}</td><td>${m.n}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.c}</td><td>${m.s}</td></tr>`;
-  }));
+  DATA.attend.forEach(l => l.members.forEach(m => html += `<tr><td class="t-left">${l.line}</td><td>${m.name}</td><td class="${m.st==='欠勤'?'cell-ng':''}">${m.st}</td><td>${m.n}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.c}</td><td>${m.s}</td></tr>`));
   document.getElementById('detailAttendBody').innerHTML = html;
 }
-
 function renderProdDetail() {
   let html = '';
-  DATA.prod.forEach(l => {
-    const diffStyle = l.diff < 0 ? 'color:var(--accent); font-weight:900;' : 'color:var(--teal); font-weight:700;';
-    html += `<tr><td class="t-left">${l.line}</td><td>${l.u}</td><td>${l.shift}</td><td>${l.plan}</td><td>${l.res}</td><td style="${diffStyle}">${l.diff}</td><td>${l.prog}%</td><td>${l.rate}%</td><td>${l.stopT}</td><td>${l.over}</td></tr>`;
-  });
+  DATA.prod.forEach(l => html += `<tr><td class="t-left">${l.line}</td><td>${l.u}</td><td>${l.shift}</td><td>${l.plan}</td><td>${l.res}</td><td class="${l.diff<0?'cell-ng':''}">${l.diff}</td><td>${l.prog}%</td><td>${l.rate}%</td><td>${l.stopT}</td><td>${l.over}</td></tr>`);
   document.getElementById('detailProdBody').innerHTML = html;
 }
 
