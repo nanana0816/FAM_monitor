@@ -3,54 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver7.6</title>
+<title>FAM 朝会モニター — ver7.7</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
 :root {
   --bg: #E5E9F0; --panel: #FFFFFF; --accent: #B33F40; --teal: #2D8E8A;
-  --amber: #D68910; --text: #232B2B; --border: #BDC3C7; --radius: 6px;
+  --amber: #D68910; --text: #232B2B; --border: #BDC3C7; --radius: 4px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 70px; font-size: 12px; line-height: 1.3; }
+body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 70px; font-size: 12px; }
 
-/* ヘッダー */
 header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 45px; background: #fff; border-bottom: 2px solid var(--accent); }
 .h-title { font-size: 15px; font-weight: 900; color: var(--accent); }
 .h-clock { font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: 700; }
 
-/* メイン 2x2 グリッド */
-.main-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 8px; padding: 8px; height: calc(100vh - 120px); }
-.card { background: var(--panel); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
-.card-header { padding: 5px 10px; background: #f1f4f6; border-bottom: 1px solid var(--border); font-weight: 700; font-size: 12px; color: #444; }
-.card-body { flex: 1; overflow-y: auto; padding: 2px; }
+/* 2x2 グリッドレイアウト */
+.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 38vh; }
+.card-header { padding: 6px 10px; background: #f1f4f6; border-bottom: 1px solid var(--border); font-weight: 900; font-size: 12px; }
+.card-body { flex: 1; overflow-y: auto; }
 
 /* テーブル圧縮 */
 table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
-th, td { padding: 4px 1px; border-bottom: 1px solid #edf2f7; border-right: 1px solid #f9f9f9; word-break: break-all; }
+th, td { padding: 5px 2px; border-bottom: 1px solid #edf2f7; border-right: 1px solid #f9f9f9; word-break: break-all; }
 th { background: #f8fafc; font-size: 10px; color: #666; }
-.t-left { text-align: left; padding-left: 5px; }
+.t-left { text-align: left; padding-left: 6px; }
 
-/* 状態バッジ・スタンプ */
-.st-badge { padding: 1px 3px; border-radius: 3px; font-size: 10px; color: #fff; font-weight: 700; }
+/* 状態バッジ & スタンプ */
+.st-badge { padding: 1px 4px; border-radius: 3px; font-size: 10px; color: #fff; font-weight: 700; }
 .bg-ng { background: var(--accent); }
 .bg-ok { background: var(--teal); }
-.bg-warn { background: var(--amber); }
+.stamp { display: inline-block; width: 22px; height: 22px; line-height: 20px; border: 2px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 11px; text-align: center; margin-right: 4px; vertical-align: middle; background: #fff; }
 
-/* 上長スタンプ（◯囲みデザイン） */
-.stamp { display: inline-block; width: 20px; height: 20px; line-height: 18px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 10px; text-align: center; margin-right: 3px; vertical-align: middle; background: #fff; }
-.stamp-factory { border-color: #333; color: #333; width: auto; border-radius: 4px; padding: 0 3px; }
-
-/* モーダル */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; padding: 5px; align-items: flex-start; justify-content: center; }
-.modal-content { background: #fff; width: 100%; max-width: 1200px; border-radius: var(--radius); position: relative; max-height: 98vh; display: flex; flex-direction: column; overflow: hidden; }
-.modal-header { padding: 10px; border-bottom: 2px solid #ddd; display: flex; justify-content: space-between; align-items: center; background: #fff; z-index: 10; }
-.modal-body { overflow: auto; flex: 1; padding: 0; }
-.modal-close { font-size: 24px; cursor: pointer; border: none; background: none; color: #999; }
+/* モーダル管理（重複防止） */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; padding: 5px; align-items: flex-start; justify-content: center; }
+.modal-content { background: #fff; width: 100%; max-width: 1150px; border-radius: var(--radius); position: relative; max-height: 96vh; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.modal-header { padding: 10px 15px; border-bottom: 2px solid #ddd; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+.modal-body { overflow-y: auto; flex: 1; padding: 0; }
+.modal-close { font-size: 28px; cursor: pointer; border: none; background: none; color: #999; }
 
 /* 下部ナビ */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 10px; z-index: 2001; }
-.nav-btn { flex: 1; max-width: 140px; height: 38px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 12px; cursor: pointer; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 10px; padding: 0 10px; z-index: 2500; }
+.nav-btn { flex: 1; max-width: 140px; height: 40px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 12px; cursor: pointer; }
 .btn-red { background: var(--accent); }
 .btn-dark { background: #34495E; }
 </style>
@@ -58,7 +53,7 @@ th { background: #f8fafc; font-size: 10px; color: #666; }
 <body>
 
 <header>
-  <div class="h-title">FAM 朝会モニター ver7.6</div>
+  <div class="h-title">FAM 朝会モニター ver7.7</div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
@@ -77,7 +72,7 @@ th { background: #f8fafc; font-size: 10px; color: #666; }
     <div class="card-header">⚠️ 遅れ・不良</div>
     <div class="card-body">
       <table>
-        <thead><tr><th class="t-left" style="width:30%;">内容</th><th>状況</th><th>区分</th><th style="width:40%;">コメント</th></tr></thead>
+        <thead><tr><th class="t-left" style="width:30%;">内容</th><th>状況</th><th>区分</th><th>コメント</th></tr></thead>
         <tbody id="mainIssueBody"></tbody>
       </table>
     </div>
@@ -97,7 +92,7 @@ th { background: #f8fafc; font-size: 10px; color: #666; }
     <div class="card-header">📢 連絡事項</div>
     <div class="card-body">
       <table>
-        <thead><tr><th class="t-left" style="width:75%;">内容</th><th>発信元</th></tr></thead>
+        <thead><tr><th class="t-left" style="width:70%;">内容</th><th>発信元</th></tr></thead>
         <tbody id="mainNoticeBody"></tbody>
       </table>
     </div>
@@ -112,56 +107,65 @@ th { background: #f8fafc; font-size: 10px; color: #666; }
 
 <div id="modalQR" class="modal-overlay">
   <div class="modal-content" style="max-width:300px; text-align:center;">
-    <div class="modal-header"><b>QR連携</b><button class="modal-close" onclick="closeM('qr')">×</button></div>
-    <div class="modal-body" style="padding:20px;"><div style="width:150px; height:150px; background:#eee; margin:auto; display:flex; align-items:center; justify-content:center;">QR CODE</div></div>
+    <div class="modal-header"><b>QRコード連携</b><button class="modal-close" onclick="closeM('qr')">×</button></div>
+    <div class="modal-body" style="padding:30px;"><div style="width:160px; height:160px; background:#f0f0f0; margin:auto; display:flex; align-items:center; justify-content:center; border:1px solid #ccc;">QR</div></div>
   </div>
 </div>
 
 <div id="modalAttend" class="modal-overlay">
   <div class="modal-content">
-    <div class="modal-header"><b>出勤詳細 (当月累計)</b><button class="modal-close" onclick="closeM('attend')">×</button></div>
+    <div class="modal-header"><b>出勤詳細：当月累計</b><button class="modal-close" onclick="closeM('attend')">×</button></div>
     <div class="modal-body">
-      <table>
-        <thead>
-          <tr><th rowspan="2">ライン</th><th rowspan="2">氏名</th><th rowspan="2">現況</th><th colspan="5" style="background:#eee;">当月累計</th></tr>
-          <tr><th>年休</th><th>AM半</th><th>PM半</th><th>遅</th><th>早</th></tr>
-        </thead>
-        <tbody id="detailAttendBody"></tbody>
-      </table>
+      <div style="overflow-x:auto;">
+        <table style="min-width:750px;">
+          <thead>
+            <tr><th rowspan="2">ライン</th><th rowspan="2">氏名</th><th rowspan="2">現況</th><th colspan="5" style="background:#eee;">当月累計</th></tr>
+            <tr><th>年休</th><th>AM半</th><th>PM半</th><th>遅刻</th><th>早退</th></tr>
+          </thead>
+          <tbody id="detailAttendBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
 
 <div id="modalProd" class="modal-overlay">
   <div class="modal-content">
-    <div class="modal-header"><b>生産詳細 (3階層)</b><button class="modal-close" onclick="closeM('prod')">×</button></div>
-    <div class="modal-body"><table id="detailProdTable"></table></div>
+    <div class="modal-header"><b>生産詳細：ライン別ドリルダウン</b><button class="modal-close" onclick="closeM('prod')">×</button></div>
+    <div class="modal-body">
+      <div style="overflow-x:auto;">
+        <table style="min-width:900px;">
+          <thead>
+            <tr><th>ライン</th><th>U</th><th>直</th><th>計</th><th>実</th><th>差</th><th>進捗</th><th>可動</th><th>停</th><th>残</th></tr>
+          </thead>
+          <tbody id="detailProdBody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 const DATA = {
   attend: [
-    { line: '大型エンジン', on: 22, total: 24, rate: 91.6, members: [{name:'田中', st:'出勤', n:1, am:0, pm:1, c:0, s:0}, {name:'佐藤', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}] },
-    { line: '中型トランス', on: 18, total: 18, rate: 100, members: [{name:'鈴木', st:'出勤', n:0, am:0, pm:0, c:0, s:0}] }
+    { line: '大型エンジン', on: 22, total: 24, rate: 91.6, members: [{name:'田中 太郎', st:'出勤', n:1, am:0, pm:1, c:0, s:0}, {name:'佐藤 次郎', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}] },
+    { line: '中型トランス', on: 18, total: 18, rate: 100, members: [{name:'鈴木 一郎', st:'出勤', n:0, am:0, pm:0, c:0, s:0}] }
   ],
   prod: [
-    { line: '大型エンジン', res: 48, plan: 50, rate: 89, stopTime: 25, stopCnt: 3 },
-    { line: '中型トランス', res: 75, plan: 72, rate: 98, stopTime: 5, stopCnt: 1 }
+    { line: '大型エンジン', u:'U1', shift:'昼', plan: 50, res: 48, diff:-2, prog:92, rate: 89, stopT: 25, stopC: 3, over:30 },
+    { line: '中型トランス', u:'U2', shift:'昼', plan: 72, res: 75, diff:3, prog:102, rate: 98, stopT: 5, stopC: 1, over:0 }
   ],
   issues: [
     { content: 'U1コンベア停止', status: '継続中', cat: 'Machine', comment: '了解👌', boss: '課' },
-    { content: '加工精度バラツキ', status: '対応済', cat: 'Method', comment: '横展開', boss: '工' },
-    { content: '治具破損', status: '経過観察', cat: 'Material', comment: '再発防止', boss: '部' }
+    { content: '加工精度バラツキ', status: '対応済', cat: 'Method', comment: '横展開', boss: '工' }
   ],
   notices: [
     { content: '【災害】他工場での挟まれ災害展開', from: '安全推進室' },
-    { content: '週末の生産調整に伴う残業停止', from: '生産管理' },
     { content: '防火3S活動：Bエリア重点点検', from: '総務' }
   ]
 };
 
-function render() {
+function renderMain() {
   // 出勤
   let aH = '';
   DATA.attend.forEach(l => {
@@ -172,20 +176,18 @@ function render() {
   // 生産
   let pH = '';
   DATA.prod.forEach(l => {
-    pH += `<tr><td class="t-left">${l.line}</td><td class="${l.res<l.plan?'ng':''}">${l.res}/${l.plan}</td><td><span class="st-badge ${l.rate<90?'bg-ng':'bg-ok'}">${l.rate}</span></td><td>${l.stopTime}/${l.stopCnt}</td></tr>`;
+    pH += `<tr><td class="t-left">${l.line}</td><td class="${l.res<l.plan?'ng':''}">${l.res}/${l.plan}</td><td><span class="st-badge ${l.rate<90?'bg-ng':'bg-ok'}">${l.rate}</span></td><td>${l.stopT}/${l.stopC}</td></tr>`;
   });
   document.getElementById('mainProdBody').innerHTML = pH;
 
-  // 遅れ・不良
+  // 遅れ不良
   let iH = '';
   DATA.issues.forEach(i => {
-    const stCol = i.status === '継続中' ? 'color:var(--accent);font-weight:900;' : '';
-    iH += `<tr><td class="t-left">${i.content}</td><td style="${stCol}">${i.status}</td><td>${i.cat}</td>
-    <td class="t-left"><span class="stamp">${i.boss}</span>${i.comment}</td></tr>`;
+    iH += `<tr><td class="t-left">${i.content}</td><td>${i.status}</td><td>${i.cat}</td><td class="t-left"><span class="stamp">${i.boss}</span>${i.comment}</td></tr>`;
   });
   document.getElementById('mainIssueBody').innerHTML = iH;
 
-  // 連絡事項
+  // 連絡
   let nH = '';
   DATA.notices.forEach(n => {
     nH += `<tr><td class="t-left">${n.content}</td><td>${n.from}</td></tr>`;
@@ -194,15 +196,22 @@ function render() {
 }
 
 function openM(id) {
-  const m = document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1));
-  if(m) {
-    m.style.display = 'flex';
+  // 重複防止：すべてのモーダルを一旦隠す
+  document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+  
+  const target = document.getElementById('modal' + id.toUpperCase().replace('QR','QR').replace('ATTEND','Attend').replace('PROD','Prod'));
+  if(id === 'attend') renderAttendDetail();
+  if(id === 'prod') renderProdDetail();
+  
+  if(target) {
+    target.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-    if(id === 'attend') renderAttendDetail();
   }
 }
+
 function closeM(id) {
-  document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).style.display = 'none';
+  const target = document.getElementById('modal' + id.toUpperCase().replace('QR','QR').replace('ATTEND','Attend').replace('PROD','Prod'));
+  if(target) target.style.display = 'none';
   document.body.style.overflow = 'auto';
 }
 
@@ -216,9 +225,21 @@ function renderAttendDetail() {
   document.getElementById('detailAttendBody').innerHTML = html;
 }
 
+function renderProdDetail() {
+  let html = '';
+  DATA.prod.forEach(l => {
+    html += `<tr>
+      <td>${l.line}</td><td>${l.u}</td><td>${l.shift}</td><td>${l.plan}</td><td>${l.res}</td>
+      <td style="color:${l.diff<0?'var(--accent)':'var(--teal)'};font-weight:900;">${l.diff}</td>
+      <td>${l.prog}</td><td>${l.rate}</td><td>${l.stopT}</td><td>${l.over}</td>
+    </tr>`;
+  });
+  document.getElementById('detailProdBody').innerHTML = html;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP',{hour12:false}); }, 1000);
-  render();
+  renderMain();
 });
 </script>
 </body>
