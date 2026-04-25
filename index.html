@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver8.1</title>
+<title>FAM MORNING BRIEFING MONITOR ver8.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
@@ -18,61 +18,67 @@ header { display: flex; align-items: center; justify-content: space-between; pad
 .h-title { font-size: 15px; font-weight: 900; color: var(--accent); }
 .h-clock { font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: 700; }
 
-/* 2x2 グリッド */
-.main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 8px; }
+/* 3:7 グリッドレイアウト */
+.main-grid { 
+  display: grid; 
+  grid-template-columns: 3fr 7fr; /* ここで割合を3:7に固定 */
+  gap: 8px; 
+  padding: 8px; 
+}
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 39vh; }
 .card-header { padding: 5px 10px; background: #f8fafc; border-bottom: 1px solid var(--border); }
-.card-header .en { font-size: 8px; color: #64748b; display: block; letter-spacing: 0.5px; }
+.card-header .en { font-size: 8px; color: #64748b; display: block; letter-spacing: 0.5px; text-transform: uppercase; }
 .card-header .jp { font-size: 12px; font-weight: 900; color: #334155; }
 .card-body { flex: 1; overflow-y: auto; }
 
-/* テーブル設定（縞模様廃止） */
+/* テーブル（縞模様なし） */
 table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; background: #fff; }
-th, td { padding: 4px 2px; border-bottom: 1px solid #E5E7EB; border-right: 1px solid #F3F4F6; }
+th, td { padding: 5px 2px; border-bottom: 1px solid #E5E7EB; border-right: 1px solid #F3F4F6; }
 th { background: #F9FAFB; vertical-align: middle; }
 th .en { font-size: 7px; color: #71717a; display: block; line-height: 1.2; text-transform: uppercase; }
-th .jp { font-size: 10px; display: block; margin-top: 1px; }
+th .jp { font-size: 9px; display: block; margin-top: 1px; }
 
-/* 動的カラー強調 */
-.cell-ng { background-color: #FFF1F0; color: var(--accent); font-weight: 900; } /* 異常時 */
-.cell-ok { color: var(--teal); font-weight: 700; } /* 正常時 */
-.cell-warn { background-color: #FFFBEB; color: var(--amber); font-weight: 700; } /* 注意時 */
+/* 動的強調カラー */
+.cell-ng { background-color: #FFF1F0; color: var(--accent); font-weight: 900; } /* 異常/未達 */
+.cell-ok { color: var(--teal); font-weight: 700; } /* 正常 */
+.cell-warn { background-color: #FFFBEB; color: var(--amber); font-weight: 700; } /* 注意 */
 
-.t-left { text-align: left; padding-left: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-left { text-align: left; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* スタンプ */
-.stamp { display: inline-block; width: 18px; height: 18px; line-height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 9px; text-align: center; margin-right: 3px; vertical-align: middle; background: #fff; }
+.stamp { display: inline-block; width: 18px; height: 18px; line-height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 9px; text-align: center; margin-right: 4px; vertical-align: middle; background: #fff; }
 
 /* モーダル */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 3000; padding: 10px; align-items: flex-start; justify-content: center; }
-.modal-content { background: #fff; width: 100%; max-width: 1150px; border-radius: var(--radius); max-height: 96vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal-content { background: #fff; width: 100%; max-width: 1150px; border-radius: var(--radius); max-height: 96vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 .modal-header { padding: 10px 15px; border-bottom: 2px solid #E2E8F0; display: flex; justify-content: space-between; background: #F8FAFC; }
 .modal-body { overflow: auto; flex: 1; }
 
-/* ナビゲーション */
+/* 下部ナビ */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2500; }
-.nav-btn { flex: 1; max-width: 130px; height: 38px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 11px; cursor: pointer; }
+.nav-btn { flex: 1; max-width: 150px; height: 40px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 11px; cursor: pointer; transition: 0.2s; }
 .btn-red { background: var(--accent); }
 .btn-dark { background: #334155; }
+.nav-btn:active { transform: scale(0.95); opacity: 0.8; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-title">FAM MORNING BRIEFING MONITOR ver8.1</div>
+  <div class="h-title">FAM MORNING BRIEFING MONITOR ver8.2</div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
 <main class="main-grid">
   <div class="card">
-    <div class="card-header"><span class="en">ATTENDANCE STATUS</span><span class="jp">👥 出勤状況</span></div>
+    <div class="card-header"><span class="en">Attendance Status</span><span class="jp">👥 出勤状況</span></div>
     <div class="card-body">
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:45%;"><span class="en">Production Line</span><span class="jp">ライン名</span></th>
-            <th><span class="en">Present / Absent</span><span class="jp">出勤 / 欠員</span></th>
-            <th><span class="en">Attendance Rate</span><span class="jp">出勤率</span></th>
+            <th class="t-left" style="width:50%;"><span class="en">Line</span><span class="jp">ライン名</span></th>
+            <th><span class="en">Att/Abs</span><span class="jp">出/欠</span></th>
+            <th><span class="en">Rate</span><span class="jp">率</span></th>
           </tr>
         </thead>
         <tbody id="mainAttendBody"></tbody>
@@ -81,15 +87,15 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
   </div>
 
   <div class="card">
-    <div class="card-header"><span class="en">ISSUES AND DEFECTS</span><span class="jp">⚠️ 遅れ・不良</span></div>
+    <div class="card-header"><span class="en">Current Issues & Defects</span><span class="jp">⚠️ 遅れ・不良</span></div>
     <div class="card-body">
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:28%;"><span class="en">Problem Detail</span><span class="jp">発生内容</span></th>
-            <th style="width:18%;"><span class="en">Current Status</span><span class="jp">状況</span></th>
-            <th style="width:15%;"><span class="en">4M Category</span><span class="jp">区分</span></th>
-            <th><span class="en">Supervisor Comment</span><span class="jp">上長コメント</span></th>
+            <th class="t-left" style="width:35%;"><span class="en">Problem Detail</span><span class="jp">発生内容詳細</span></th>
+            <th style="width:12%;"><span class="en">Status</span><span class="jp">状況</span></th>
+            <th style="width:12%;"><span class="en">Category</span><span class="jp">区分</span></th>
+            <th><span class="en">Supervisor Analysis / Comment</span><span class="jp">上長分析コメント</span></th>
           </tr>
         </thead>
         <tbody id="mainIssueBody"></tbody>
@@ -98,15 +104,14 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
   </div>
 
   <div class="card">
-    <div class="card-header"><span class="en">PRODUCTION RESULTS</span><span class="jp">🏭 生産状況 (昨日)</span></div>
+    <div class="card-header"><span class="en">Production Results</span><span class="jp">🏭 生産状況 (昨日)</span></div>
     <div class="card-body">
       <table>
         <thead>
           <tr>
-            <th class="t-left"><span class="en">Production Line</span><span class="jp">ライン名</span></th>
-            <th><span class="en">Actual / Planned</span><span class="jp">実績 / 計画</span></th>
-            <th><span class="en">Operation Rate</span><span class="jp">可動率</span></th>
-            <th><span class="en">Downtime (min) / Count</span><span class="jp">停止(分) / 件数</span></th>
+            <th class="t-left" style="width:45%;"><span class="en">Line</span><span class="jp">ライン名</span></th>
+            <th><span class="en">Actual</span><span class="jp">実績</span></th>
+            <th><span class="en">Rate</span><span class="jp">可動</span></th>
           </tr>
         </thead>
         <tbody id="mainProdBody"></tbody>
@@ -115,13 +120,13 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
   </div>
 
   <div class="card">
-    <div class="card-header"><span class="en">ANNOUNCEMENTS</span><span class="jp">📢 連絡事項</span></div>
+    <div class="card-header"><span class="en">General Announcements</span><span class="jp">📢 連絡事項</span></div>
     <div class="card-body">
       <table>
         <thead>
           <tr>
-            <th class="t-left" style="width:75%;"><span class="en">Notice Content</span><span class="jp">内容</span></th>
-            <th><span class="en">Department From</span><span class="jp">発信元</span></th>
+            <th class="t-left" style="width:80%;"><span class="en">Notice / Message Content</span><span class="jp">連絡事項内容</span></th>
+            <th><span class="en">Sender</span><span class="jp">発信元</span></th>
           </tr>
         </thead>
         <tbody id="mainNoticeBody"></tbody>
@@ -131,9 +136,9 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-btn btn-red" onclick="openM('qr')">📲 連携QR / QR LINK</button>
-  <button class="nav-btn btn-dark" onclick="openM('attend')">出勤詳細 / Details</button>
-  <button class="nav-btn btn-dark" onclick="openM('prod')">生産詳細 / Details</button>
+  <button class="nav-btn btn-red" onclick="openM('qr')">📲 QR LINKAGE</button>
+  <button class="nav-btn btn-dark" onclick="openM('attend')">ATTENDANCE DETAILS</button>
+  <button class="nav-btn btn-dark" onclick="openM('prod')">PRODUCTION DETAILS</button>
 </nav>
 
 <div id="modalQR" class="modal-overlay">
@@ -143,7 +148,7 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
       <div style="width:140px; height:140px; background:#fff; margin:auto; border:4px solid #334155; display:flex; align-items:center; justify-content:center; font-weight:900;">QR</div>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px; margin-top:15px;">
         <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Syncing...')">Mobile Sync</button>
-        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Manual Entry')">Data Entry</button>
+        <button class="nav-btn btn-dark" style="max-width:none;" onclick="alert('Manual Entry')">Entry</button>
         <button class="nav-btn btn-dark" style="max-width:none;" onclick="location.reload()">Refresh</button>
         <button class="nav-btn btn-red" style="max-width:none;" onclick="closeM('qr')">Close</button>
       </div>
@@ -153,14 +158,14 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
 
 <div id="modalAttend" class="modal-overlay">
   <div class="modal-content">
-    <div class="modal-header"><b>ATTENDANCE DETAILS (MONTHLY CUMULATIVE)</b><button onclick="closeM('attend')" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button></div>
+    <div class="modal-header"><b>ATTENDANCE DETAILS (MONTHLY)</b><button onclick="closeM('attend')" style="border:none;background:none;font-size:20px;cursor:pointer;">×</button></div>
     <div class="modal-body">
       <table>
         <thead>
           <tr>
             <th rowspan="2"><span class="en">Production Line</span><span class="jp">ライン</span></th>
-            <th rowspan="2"><span class="en">Full Name</span><span class="jp">氏名</span></th>
-            <th rowspan="2"><span class="en">Today's Status</span><span class="jp">現況</span></th>
+            <th rowspan="2"><span class="en">Employee Full Name</span><span class="jp">氏名</span></th>
+            <th rowspan="2"><span class="en">Current Status</span><span class="jp">現況</span></th>
             <th colspan="5" style="background:#e2e8f0;"><span class="en">Monthly Cumulative Total</span><span class="jp">当月累計</span></th>
           </tr>
           <tr>
@@ -187,12 +192,12 @@ th .jp { font-size: 10px; display: block; margin-top: 1px; }
             <th style="width:15%;"><span class="en">Production Line</span><span class="jp">ライン</span></th>
             <th><span class="en">Unit</span><span class="jp">U</span></th>
             <th><span class="en">Shift</span><span class="jp">直</span></th>
-            <th><span class="en">Planned</span><span class="jp">計画</span></th>
-            <th><span class="en">Actual</span><span class="jp">実績</span></th>
+            <th><span class="en">Planned Quantity</span><span class="jp">計画</span></th>
+            <th><span class="en">Actual Quantity</span><span class="jp">実績</span></th>
             <th><span class="en">Difference</span><span class="jp">差引</span></th>
-            <th><span class="en">Progress %</span><span class="jp">進捗</span></th>
-            <th><span class="en">Operation %</span><span class="jp">可動</span></th>
-            <th><span class="en">Stop Time</span><span class="jp">停</span></th>
+            <th><span class="en">Progress Rate</span><span class="jp">進捗</span></th>
+            <th><span class="en">Operation Rate</span><span class="jp">可動</span></th>
+            <th><span class="en">Downtime</span><span class="jp">停</span></th>
             <th><span class="en">Overtime</span><span class="jp">残</span></th>
           </tr>
         </thead>
@@ -210,16 +215,19 @@ const DATA = {
       {name:'佐藤 健太郎', st:'出勤', n:1, am:0, pm:1, c:0, s:0},
       {name:'田中 美咲', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}
     ] 
-  }],
+  },
+  { line:'中型トランス', on:18, total:18, rate:100, members:[] }],
   prod: [{ 
-    line:'大型エンジン組立', u:'U1', shift:'昼', plan:50, res:48, diff:-2, prog:92, rate:88, stopT:25, stopC:3, over:30, 
-    rounds:[{rd:1, p:5, r:4, s:10, c:'設備センサー異常'}] 
+    line:'大型エンジン組立', plan:50, res:48, rate:88, u:'U1', shift:'昼', diff:-2, prog:92, stopT:25, over:30
   }],
   issues: [
-    { content:'コンベアベアリング異音', status:'継続中', cat:'Machine', comment:'了解👌', boss:'課' },
-    { content:'作業手順の不遵守', status:'対応済', cat:'Man', comment:'横展開', boss:'工' }
+    { content:'U1コンベアベアリング異音発生', status:'継続中', cat:'Machine', comment:'保全手配済み。部品入荷待ち。', boss:'課' },
+    { content:'加工精度バラツキによる再加工', status:'対応済', cat:'Method', comment:'治具位置合わせ再設定完了。', boss:'工' }
   ],
-  notices: [{ content:'夏季休暇期間の設備点検計画について', from:'保全課' }]
+  notices: [
+    { content:'【重要】夏季休暇期間中の設備点検計画書の提出期限について', from:'保全課' },
+    { content:'5Sパトロール結果：Bエリア工具棚の整理整頓が必要', from:'総務部' }
+  ]
 };
 
 function renderMain() {
@@ -227,18 +235,16 @@ function renderMain() {
   
   DATA.attend.forEach(l => {
     const rateClass = l.rate < 95 ? 'cell-ng' : 'cell-ok';
-    aH += `<tr><td class="t-left">${l.line}</td><td>${l.on} / ${l.total}</td><td class="${rateClass}">${l.rate}%</td></tr>`;
+    aH += `<tr><td class="t-left">${l.line}</td><td>${l.on}/${l.total}</td><td class="${rateClass}">${l.rate}%</td></tr>`;
   });
 
   DATA.prod.forEach(l => {
     const resClass = l.res < l.plan ? 'cell-ng' : 'cell-ok';
-    const rateClass = l.rate < 90 ? 'cell-warn' : '';
-    pH += `<tr><td class="t-left">${l.line}</td><td class="${resClass}">${l.res} / ${l.plan}</td><td class="${rateClass}">${l.rate}%</td><td>${l.stopT} / ${l.stopC}</td></tr>`;
+    pH += `<tr><td class="t-left">${l.line}</td><td class="${resClass}">${l.res}/${l.plan}</td><td class="${l.rate<90?'cell-warn':''}">${l.rate}%</td></tr>`;
   });
 
   DATA.issues.forEach(i => {
-    let stStyle = '';
-    if(i.status === '継続中') stStyle = 'color:var(--accent); font-weight:900;';
+    const stStyle = i.status === '継続中' ? 'color:var(--accent); font-weight:900; background:#FFF1F0;' : '';
     iH += `<tr><td class="t-left">${i.content}</td><td style="${stStyle}">${i.status}</td><td>${i.cat}</td><td class="t-left"><span class="stamp">${i.boss}</span>${i.comment}</td></tr>`;
   });
 
