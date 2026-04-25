@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FAM 朝会モニター — ver7.9</title>
+<title>FAM 朝会モニター — ver8.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
@@ -14,31 +14,38 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text); padding-bottom: 70px; font-size: 11px; }
 
+/* ヘッダー */
 header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; height: 40px; background: #fff; border-bottom: 2px solid var(--accent); }
 .h-title { font-size: 14px; font-weight: 900; color: var(--accent); }
 .h-clock { font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: 700; }
 
+/* 2x2 グリッド */
 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px; }
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 39vh; }
-.card-header { padding: 4px 8px; background: #f1f4f6; border-bottom: 1px solid var(--border); font-weight: 900; font-size: 12px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 39vh; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.card-header { padding: 4px 8px; background: #f1f4f6; border-bottom: 1px solid var(--border); }
+.card-header .en { font-size: 9px; color: #64748b; display: block; line-height: 1; font-weight: 700; }
+.card-header .jp { font-size: 12px; font-weight: 900; }
 .card-body { flex: 1; overflow-y: auto; }
 
-/* テーブル圧縮 */
+/* テーブル共通設定 */
 table { width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed; }
 th, td { padding: 3px 1px; border-bottom: 1px solid #edf2f7; border-right: 1px solid #f1f5f9; word-break: break-all; }
-th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
+th { background: #f8fafc; font-weight: 700; vertical-align: middle; }
+th .en { font-size: 8px; color: #94a3b8; display: block; line-height: 1; }
+th .jp { font-size: 10px; display: block; }
+tbody tr:nth-child(even) { background-color: #fafbfc; }
 .t-left { text-align: left; padding-left: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* ドリルダウン用 */
-.acc-row { cursor: pointer; }
-.acc-row:hover { background-color: #f0f9ff; }
-.acc-content { display: none; background: #fff; }
+/* ドリルダウン */
+.acc-row { cursor: pointer; transition: background 0.2s; }
+.acc-row:hover { background-color: #f0f9ff !important; }
+.acc-content { display: none; background: #f1f5f9; }
 
 /* 状態・スタンプ */
 .st-badge { padding: 1px 3px; border-radius: 2px; font-size: 10px; color: #fff; font-weight: 700; display: inline-block; }
 .bg-ng { background: var(--accent); }
 .bg-ok { background: var(--teal); }
-.stamp { display: inline-block; width: 18px; height: 18px; line-height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 9px; text-align: center; margin-right: 2px; vertical-align: middle; }
+.stamp { display: inline-block; width: 18px; height: 18px; line-height: 16px; border: 1.5px solid var(--accent); border-radius: 50%; color: var(--accent); font-weight: 900; font-size: 9px; text-align: center; margin-right: 2px; vertical-align: middle; background: #fff; }
 
 /* モーダル */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 3000; padding: 5px; align-items: flex-start; justify-content: center; }
@@ -47,11 +54,9 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 .modal-body { overflow: auto; flex: 1; }
 .modal-close { font-size: 24px; cursor: pointer; border: none; background: none; color: #94a3b8; }
 
-/* QR内ボタン */
+/* QR・ナビ */
 .qr-btn-container { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 15px; width: 100%; }
 .qr-btn { padding: 10px; border: none; border-radius: 4px; background: #334155; color: #fff; font-weight: 700; font-size: 11px; cursor: pointer; }
-
-/* 下部ナビ */
 .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 55px; background: #fff; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 10px; z-index: 2500; }
 .nav-btn { flex: 1; max-width: 130px; height: 38px; border: none; border-radius: 4px; font-weight: 700; color: #fff; font-size: 11px; cursor: pointer; }
 .btn-red { background: var(--accent); }
@@ -61,29 +66,66 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 <body>
 
 <header>
-  <div class="h-title">FAM 朝会モニター ver7.9</div>
+  <div class="h-title">FAM 朝会モニター ver8.0</div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
 <main class="main-grid">
   <div class="card">
-    <div class="card-header">👥 出勤状況</div>
-    <div class="card-body"><table><thead><tr><th class="t-left" style="width:45%;">ライン</th><th>出/欠</th><th>出勤率</th></tr></thead><tbody id="mainAttendBody"></tbody></table></div>
+    <div class="card-header"><span class="en">ATTENDANCE</span><span class="jp">👥 出勤状況</span></div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th class="t-left" style="width:45%;"><span class="en">Line</span><span class="jp">ライン</span></th>
+          <th><span class="en">Att/Def</span><span class="jp">出/欠</span></th>
+          <th><span class="en">Rate</span><span class="jp">出勤率</span></th></tr>
+        </thead>
+        <tbody id="mainAttendBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-header">⚠️ 遅れ・不良</div>
-    <div class="card-body"><table><thead><tr><th class="t-left" style="width:30%;">内容</th><th style="width:18%;">状況</th><th style="width:15%;">区分</th><th>コメント</th></tr></thead><tbody id="mainIssueBody"></tbody></table></div>
+    <div class="card-header"><span class="en">ISSUES / DEFECTS</span><span class="jp">⚠️ 遅れ・不良</span></div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th class="t-left" style="width:28%;"><span class="en">Issue</span><span class="jp">内容</span></th>
+          <th style="width:18%;"><span class="en">Status</span><span class="jp">状況</span></th>
+          <th style="width:15%;"><span class="en">Category</span><span class="jp">区分</span></th>
+          <th><span class="en">Comment</span><span class="jp">コメント</span></th></tr>
+        </thead>
+        <tbody id="mainIssueBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-header">🏭 生産状況 (昨日)</div>
-    <div class="card-body"><table><thead><tr><th class="t-left">ライン</th><th>実/計</th><th>可動</th><th>停(分)/件</th></tr></thead><tbody id="mainProdBody"></tbody></table></div>
+    <div class="card-header"><span class="en">PRODUCTION STATUS</span><span class="jp">🏭 生産状況 (昨日)</span></div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th class="t-left"><span class="en">Line</span><span class="jp">ライン</span></th>
+          <th><span class="en">Act/Plan</span><span class="jp">実/計</span></th>
+          <th><span class="en">Eff.</span><span class="jp">可動</span></th>
+          <th><span class="en">Stop(m)/Cnt</span><span class="jp">停(分)/件</span></th></tr>
+        </thead>
+        <tbody id="mainProdBody"></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="card">
-    <div class="card-header">📢 連絡事項</div>
-    <div class="card-body"><table><thead><tr><th class="t-left" style="width:75%;">内容</th><th>発信元</th></tr></thead><tbody id="mainNoticeBody"></tbody></table></div>
+    <div class="card-header"><span class="en">ANNOUNCEMENTS</span><span class="jp">📢 連絡事項</span></div>
+    <div class="card-body">
+      <table>
+        <thead>
+          <tr><th class="t-left" style="width:75%;"><span class="en">Content</span><span class="jp">内容</span></th>
+          <th><span class="en">From</span><span class="jp">発信元</span></th></tr>
+        </thead>
+        <tbody id="mainNoticeBody"></tbody>
+      </table>
+    </div>
   </div>
 </main>
 
@@ -95,7 +137,7 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 
 <div id="modalQR" class="modal-overlay">
   <div class="modal-content" style="max-width:320px;">
-    <div class="modal-header"><b>QR連携</b><button class="modal-close" onclick="closeM('qr')">×</button></div>
+    <div class="modal-header"><b>QR LINKAGE</b><button class="modal-close" onclick="closeM('qr')">×</button></div>
     <div class="modal-body" style="padding:20px; text-align:center;">
       <div style="width:140px; height:140px; background:#fff; margin:auto; border:4px solid #334155; display:flex; align-items:center; justify-content:center; font-weight:900;">QR CODE</div>
       <div class="qr-btn-container">
@@ -110,11 +152,24 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 
 <div id="modalAttend" class="modal-overlay">
   <div class="modal-content">
-    <div class="modal-header"><b>出勤詳細 (当月累計)</b><button class="modal-close" onclick="closeM('attend')">×</button></div>
+    <div class="modal-header"><b>ATTENDANCE DETAILS (MONTHLY)</b><button class="modal-close" onclick="closeM('attend')">×</button></div>
     <div class="modal-body">
       <table>
-        <thead><tr style="background:#f1f5f9;"><th rowspan="2" style="width:15%;">ライン</th><th rowspan="2" style="width:12%;">氏名</th><th rowspan="2" style="width:10%;">現況</th><th colspan="5" style="background:#e2e8f0;">当月累計</th></tr>
-        <tr style="background:#f1f5f9;"><th>年休</th><th>AM半</th><th>PM半</th><th>遅刻</th><th>早退</th></tr></thead>
+        <thead style="background:#f1f5f9;">
+          <tr>
+            <th rowspan="2" style="width:15%;"><span class="en">Line</span><span class="jp">ライン</span></th>
+            <th rowspan="2" style="width:15%;"><span class="en">Name</span><span class="jp">氏名</span></th>
+            <th rowspan="2" style="width:10%;"><span class="en">Today</span><span class="jp">現況</span></th>
+            <th colspan="5" style="background:#e2e8f0; border-bottom:1px solid #cbd5e1;"><span class="en">Monthly Total</span><span class="jp">当月累計</span></th>
+          </tr>
+          <tr style="background:#e2e8f0;">
+            <th><span class="en">Paid Vac.</span><span class="jp">年休</span></th>
+            <th><span class="en">AM Half</span><span class="jp">AM半</span></th>
+            <th><span class="en">PM Half</span><span class="jp">PM半</span></th>
+            <th><span class="en">Late</span><span class="jp">遅刻</span></th>
+            <th><span class="en">Early</span><span class="jp">早退</span></th>
+          </tr>
+        </thead>
         <tbody id="detailAttendBody"></tbody>
       </table>
     </div>
@@ -123,10 +178,23 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 
 <div id="modalProd" class="modal-overlay">
   <div class="modal-content">
-    <div class="modal-header"><b>生産詳細 (行クリックでRD表示)</b><button class="modal-close" onclick="closeM('prod')">×</button></div>
+    <div class="modal-header"><b>PRODUCTION DRILL-DOWN (BY LINE)</b><button class="modal-close" onclick="closeM('prod')">×</button></div>
     <div class="modal-body">
       <table>
-        <thead><tr style="background:#f1f5f9;"><th style="width:15%;">ライン</th><th style="width:5%;">U</th><th style="width:5%;">直</th><th style="width:7%;">計</th><th style="width:7%;">実</th><th style="width:7%;">差</th><th style="width:7%;">進捗</th><th style="width:7%;">可動</th><th style="width:7%;">停</th><th style="width:7%;">残</th></tr></thead>
+        <thead style="background:#f1f5f9;">
+          <tr>
+            <th style="width:15%;"><span class="en">Line</span><span class="jp">ライン</span></th>
+            <th style="width:5%;"><span class="en">U</span><span class="jp">U</span></th>
+            <th style="width:5%;"><span class="en">Sft</span><span class="jp">直</span></th>
+            <th style="width:7%;"><span class="en">Plan</span><span class="jp">計</span></th>
+            <th style="width:7%;"><span class="en">Act</span><span class="jp">実</span></th>
+            <th style="width:7%;"><span class="en">Diff</span><span class="jp">差</span></th>
+            <th style="width:7%;"><span class="en">Prog</span><span class="jp">進捗</span></th>
+            <th style="width:7%;"><span class="en">Eff.</span><span class="jp">可動</span></th>
+            <th style="width:7%;"><span class="en">Stop</span><span class="jp">停</span></th>
+            <th style="width:7%;"><span class="en">OT</span><span class="jp">残</span></th>
+          </tr>
+        </thead>
         <tbody id="detailProdBody"></tbody>
       </table>
     </div>
@@ -135,8 +203,17 @@ th { background: #f8fafc; font-size: 10px; color: #64748b; font-weight: 700; }
 
 <script>
 const DATA = {
-  attend: [{ line:'大型エンジン', on:22, total:24, rate:91.6, members:[{name:'田中', st:'出勤', n:1, am:0, pm:1, c:0, s:0},{name:'佐藤', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}] }],
-  prod: [{ line:'大型エンジン', u:'U1', shift:'昼', plan:50, res:48, diff:-2, prog:92, rate:89, stopT:25, stopC:3, over:30, rounds:[{rd:1, p:5, r:4, s:10, c:'設備故障'}] }],
+  attend: [{ 
+    line:'大型エンジン', on:22, total:24, rate:91.6, 
+    members:[
+      {name:'田中 太郎', st:'出勤', n:1, am:0, pm:1, c:0, s:0},
+      {name:'佐藤 次郎', st:'欠勤', n:2, am:1, pm:0, c:1, s:2}
+    ] 
+  }],
+  prod: [{ 
+    line:'大型エンジン', u:'U1', shift:'昼', plan:50, res:48, diff:-2, prog:92, rate:89, stopT:25, stopC:3, over:30, 
+    rounds:[{rd:1, p:5, r:4, s:10, c:'設備故障'}] 
+  }],
   issues: [{ content:'U1停止', status:'継続中', cat:'Mach', comment:'了解👌', boss:'課' }],
   notices: [{ content:'挟まれ災害展開', from:'安全室' }]
 };
@@ -169,7 +246,10 @@ function closeM(id) {
 
 function renderAttendDetail() {
   let html = '';
-  DATA.attend.forEach(l => l.members.forEach(m => html += `<tr><td class="t-left">${l.line}</td><td>${m.name}</td><td>${m.st}</td><td>${m.n}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.c}</td><td>${m.s}</td></tr>`));
+  DATA.attend.forEach(l => l.members.forEach(m => {
+    const rowCol = m.st === '欠勤' ? 'style="background:#fff5f5; color:var(--accent); font-weight:700;"' : '';
+    html += `<tr ${rowCol}><td class="t-left">${l.line}</td><td>${m.name}</td><td>${m.st}</td><td>${m.n}</td><td>${m.am}</td><td>${m.pm}</td><td>${m.c}</td><td>${m.s}</td></tr>`;
+  }));
   document.getElementById('detailAttendBody').innerHTML = html;
 }
 
@@ -182,11 +262,13 @@ function renderProdDetail() {
         <td style="color:${l.diff<0?'var(--accent)':'var(--teal)'};font-weight:900;">${l.diff}</td>
         <td>${l.prog}</td><td>${l.rate}</td><td>${l.stopT}</td><td>${l.over}</td>
       </tr>
-      <tr class="acc-content"><td colspan="10" style="padding:5px; background:#f9fafb;">
-        <div style="border:1px solid #ddd; border-radius:4px; background:#fff; padding:4px;">
-          <div style="font-weight:900; color:var(--teal); margin-bottom:2px;">【RD実績】</div>
-          <table><thead><tr><th>RD</th><th>計</th><th>実</th><th>停</th><th>内容</th></tr></thead>
-          <tbody>${l.rounds.map(r=>`<tr><td>${r.rd}</td><td>${r.p}</td><td>${r.r}</td><td>${r.s}</td><td>${r.c}</td></tr>`).join('')}</tbody></table>
+      <tr class="acc-content"><td colspan="10" style="padding:5px;">
+        <div style="border:1px solid #ddd; border-radius:4px; background:#fff; padding:6px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.1);">
+          <div style="font-weight:900; color:var(--teal); margin-bottom:4px; font-size:10px;">ROUND RESULTS / RD実績</div>
+          <table style="font-size:10px;">
+            <thead><tr style="background:#f8fafc;"><th>RD</th><th>Plan</th><th>Act</th><th>Stop</th><th>Comment</th></tr></thead>
+            <tbody>${l.rounds.map(r=>`<tr><td>${r.rd}</td><td>${r.p}</td><td>${r.r}</td><td>${r.s}</td><td>${r.c}</td></tr>`).join('')}</tbody>
+          </table>
         </div>
       </td></tr>`;
   });
