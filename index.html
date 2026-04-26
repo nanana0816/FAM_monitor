@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM MORNING MONITOR v12.0</title>
+<title>FAM MORNING MONITOR v12.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -11,18 +11,14 @@
 :root {
   --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; 
   --accent-light: #E57373; --text: #1A1C1E; --border: #BDBDBD; 
-  --radius: 10px; --teal: #00897B;
+  --radius: 12px; --teal: #00897B;
 }
 
-/* 根本的なレイアウト修正：100vhに収め、bodyは絶対に動かさない */
+/* 画面全体の固定 */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { 
-  height: 100%; width: 100%; overflow: hidden; 
-  background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text);
-}
+html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; }
 body { display: flex; flex-direction: column; }
 
-/* ヘッダー：固定 */
 header { 
   flex: 0 0 60px; display: flex; align-items: center; justify-content: space-between; 
   padding: 0 20px; background: #fff; border-bottom: 3px solid var(--accent); z-index: 1000;
@@ -30,22 +26,18 @@ header {
 .h-title { font-size: 18px; font-weight: 900; color: var(--accent); }
 .h-clock { font-family: 'Share Tech Mono', monospace; font-size: 26px; font-weight: 700; color: var(--accent); }
 
-/* メイン：ここだけがスクロール領域 */
+/* メインコンテンツ（グリッド） */
 main { 
-  flex: 1; display: grid; gap: 12px; padding: 12px; 
-  overflow-y: auto; /* 縦スクロールを許可 */
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch; /* iOSでの慣性スクロール */
-  touch-action: pan-y; /* 縦方向のタッチ操作を保証 */
+  flex: 1; display: grid; gap: 12px; padding: 12px; overflow-y: auto; 
+  -webkit-overflow-scrolling: touch; touch-action: pan-y;
 }
 @media (orientation: landscape) { main { grid-template-columns: 4fr 6fr; grid-template-areas: "attend issue" "prod notice"; } }
 @media (orientation: portrait) { main { grid-template-columns: 1fr; grid-template-rows: repeat(4, auto); grid-template-areas: "attend" "prod" "issue" "notice"; } }
 
-/* ボトムナビ：完全に独立・最前面 */
+/* ボトムナビ */
 footer {
   flex: 0 0 85px; background: #263238; display: flex; padding: 10px; gap: 8px;
-  z-index: 6000; /* モーダルより上に配置して誤操作を防ぐ */
-  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
+  z-index: 6000; box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
 }
 
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; min-height: 200px; }
@@ -57,19 +49,36 @@ th, td { padding: 10px 8px; border-bottom: 1px solid #EEE; text-align: center; }
 th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0; z-index: 20; }
 .t-left { text-align: left; }
 
-/* ナビボタン：クリック範囲を拡大 */
-.nav-btn { flex: 1; border: none; border-radius: 8px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #455A64; position: relative; }
-.nav-btn:active { background: #37474F; transform: translateY(2px); }
+/* ナビボタン */
+.nav-btn { flex: 1; border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #455A64; position: relative; }
+.nav-btn:active { transform: scale(0.95); background: #37474F; }
 .btn-qr { background: var(--accent) !important; }
-.nav-btn .label { font-size: 10px; font-weight: 700; margin-top: 5px; line-height: 1.1; pointer-events: none; }
+.nav-btn .label { font-size: 10px; font-weight: 700; margin-top: 5px; pointer-events: none; }
 
-/* モーダル */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+/* モーダル（詳細カード） */
+.modal-overlay { 
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center; padding: 15px; 
+}
 .modal-overlay.is-open { display: flex; }
-.modal-content { background: #fff; width: 100%; max-width: 1200px; border-radius: 15px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
-.modal-header { padding: 0 20px; height: 65px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
-.close-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 40px; cursor: pointer; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+
+/* カード全体が表示されない問題の修正：高さを85vhに制限 */
+.modal-content { 
+  background: #fff; width: 100%; max-width: 1100px; border-radius: 16px; 
+  max-height: 85vh; /* 画面内に収める */
+  display: flex; flex-direction: column; overflow: hidden; 
+}
+.modal-header { padding: 0 20px; height: 60px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 900; flex-shrink: 0; }
+.close-btn { background: rgba(0,0,0,0.1); border: none; color: #fff; font-size: 32px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+/* 詳細スクロール設定 */
+.modal-body { 
+  padding: 15px; 
+  overflow-y: auto; /* ここでスクロールさせる */
+  flex: 1; 
+  overscroll-behavior: contain; /* 親要素のスクロールを防止 */
+  -webkit-overflow-scrolling: touch;
+}
 
 .stamp { display: inline-block; padding: 2px 6px; border: 2px solid var(--accent); border-radius: 4px; color: var(--accent); font-weight: 900; transform: rotate(-5deg); background: #fff; }
 .badge { display: inline-block; padding: 4px 10px; border-radius: 5px; font-weight: 700; font-size: 11px; color: #fff; }
@@ -79,11 +88,11 @@ th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0
 <body>
 
 <header>
-  <div class="h-title">FAM MORNING MONITOR <small>v12.0</small></div>
+  <div class="h-title">FAM MORNING MONITOR <small>v12.1</small></div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
-<main id="mainContent">
+<main>
   <section class="card area-attend"><div class="card-header"><i data-lucide="users"></i>出勤状況</div><div class="card-body"><table><thead><tr><th class="t-left">ライン名</th><th>出/総員</th><th>率</th></tr></thead><tbody id="mainAttendBody"></tbody></table></div></section>
   <section class="card area-prod"><div class="card-header"><i data-lucide="factory"></i>生産状況</div><div class="card-body"><table><thead><tr><th class="t-left">ライン</th><th>実績/計画</th><th>可動</th><th>停止</th><th>残業</th></tr></thead><tbody id="mainProdBody"></tbody></table></div></section>
   <section class="card area-issue"><div class="card-header"><i data-lucide="alert-triangle"></i>遅れ・停止</div><div class="card-body"><table><thead><tr><th class="t-left">内容</th><th style="width:50px;">停止</th><th>状況</th><th>上長</th></tr></thead><tbody id="mainIssueBody"></tbody></table></div></section>
@@ -91,31 +100,20 @@ th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0
 </main>
 
 <footer>
-  <button class="nav-btn btn-qr" id="qrTrigger" onclick="openModal('qr')"><i data-lucide="qr-code"></i><div class="label">連携QR<br>QR Sync</div></button>
-  <button class="nav-btn" onclick="openModal('attend')"><i data-lucide="list-checks"></i><div class="label">出勤詳細<br>Attend Det.</div></button>
-  <button class="nav-btn" onclick="openModal('prod')"><i data-lucide="bar-chart-3"></i><div class="label">生産詳細<br>Prod Det.</div></button>
-  <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label">遅れ/不良詳細<br>Issue/Defect</div></button>
+  <button class="nav-btn btn-qr" onclick="openModal('qr')"><i data-lucide="qr-code"></i><div class="label">連携QR</div></button>
+  <button class="nav-btn" onclick="openModal('attend')"><i data-lucide="list-checks"></i><div class="label">出勤詳細</div></button>
+  <button class="nav-btn" onclick="openModal('prod')"><i data-lucide="bar-chart-3"></i><div class="label">生産詳細</div></button>
+  <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label">遅れ/不良詳細</div></button>
 </footer>
 
-<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')">
-  <div class="modal-content">
-    <div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div>
-    <div class="modal-body" style="text-align:center; padding: 40px 10px;">
-      <div id="qrPlaceholder" style="display:inline-block; padding:15px; background:#fff; border:1px solid #ddd; border-radius:10px;">
-        <img id="qrImg" src="" style="width:250px; height:250px; display:block;">
-      </div>
-      <p id="qrPageName" style="font-weight:900; color:var(--accent); font-size:20px; margin-top:20px;"></p>
-    </div>
-  </div>
-</div>
+<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')"><div class="modal-content"><div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div><div class="modal-body" style="text-align:center; padding: 30px 10px;"><div id="qrPlaceholder" style="display:inline-block; padding:15px; background:#fff; border:1px solid #ddd; border-radius:10px;"><img id="qrImg" src="" style="width:250px; height:250px; display:block;"></div><p id="qrPageName" style="font-weight:900; color:var(--accent); font-size:20px; margin-top:20px;"></p></div></div></div>
 <div id="modalAttend" class="modal-overlay" onclick="closeOnBg(event, 'attend')"><div class="modal-content"><div class="modal-header">出勤詳細 / Attendance <button class="close-btn" onclick="closeModal('attend')">&times;</button></div><div class="modal-body" id="modalAttendBody"></div></div></div>
 <div id="modalProd" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header">生産詳細 / Production <button class="close-btn" onclick="closeModal('prod')">&times;</button></div><div class="modal-body" id="modalProdBody"></div></div></div>
 <div id="modalIssue" class="modal-overlay" onclick="closeOnBg(event, 'issue')"><div class="modal-content"><div class="modal-header">遅れ/不良詳細 / Issue Details <button class="close-btn" onclick="closeModal('issue')">&times;</button></div><div class="modal-body" id="modalIssueBody"></div></div></div>
 
 <script>
-// データとロジック（テーブル構成は前回の指示内容を完全反映）
 const DATA = {
-  attendance: [{ line: "大型エンジン組立", on: 22, total: 24, rate: 91, members: [{ name: "佐藤 健太郎", status: "出勤", code: "ok", annual: 2, am: 0, pm: 1, late: 1, early: 2 }] }],
+  attendance: [{ line: "大型エンジン組立", on: 22, total: 24, rate: 91, members: Array(10).fill({ name: "佐藤 健太郎", status: "出勤", code: "ok", annual: 2, am: 0, pm: 1, late: 1, early: 2 }) }],
   production: [{ line: "大型エンジン組立", plan: 50, res: 48, rate: 88, stopT: 25, overtime: 30 }, { line: "小型エンジン組立", plan: 150, res: 148, rate: 88, stopT: 35, overtime: 70 }],
   issues: [{ cat: "machine", content: "設備故障", detail: "搬送設備A0000-1にてローダー破損", action: "ローダー交換により復旧", stop: 25, status: "継続中", boss: "了解", comment: "要因を究明し再発防止に努めること" }],
   notices: [{ content: "夏季休暇点検計画を提出のこと。", from: "保全課" }]
@@ -123,20 +121,26 @@ const DATA = {
 
 function esc(str) { return String(str || '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s])); }
 
-// モーダル制御
+// 排他制御：他のモーダルが開いていたら閉じる
+function closeAllModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('is-open'));
+}
+
 function openModal(id) {
+  closeAllModals(); // 他を閉じてから開く
   if(id==='qr') genQR('全体閲覧 / Main Monitor', 'https://example.com');
   if(id==='attend') renderAttendDetail();
   if(id==='prod') renderProdDetail();
   if(id==='issue') renderIssueDetail();
   document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('is-open');
 }
+
 function closeModal(id) {
   document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.remove('is-open');
 }
+
 function closeOnBg(e, id) { if(e.target.classList.contains('modal-overlay')) closeModal(id); }
 
-// QRコード生成（より反応の良いAPIへ変更）
 function genQR(name, url) {
   document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
   document.getElementById('qrPageName').textContent = name;
