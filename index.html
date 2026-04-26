@@ -173,13 +173,29 @@ function renderMain() {
   document.getElementById('mainNoticeBody').innerHTML = DATA.notices.map(n => `<tr><td class="t-left" style="white-space:normal;">${esc(n.content)}</td><td>${esc(n.from)}</td></tr>`).join('');
 }
 
+// ===== モーダル制御（スクロールロック付） =====
 function openModal(id) {
   if(id==='qr') genQR('全体閲覧', 'https://example.com');
   if(id==='attend') renderAttendDetail();
   if(id==='prod') renderProdDetail();
   if(id==='issue') renderIssueDetail();
-  document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.add('is-open');
+  
+  // モーダルを表示
+  const modal = document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1));
+  modal.classList.add('is-open');
+  
+  // 【不具合修正】背景（メイン画面）のスクロールを禁止
+  document.body.style.overflow = 'hidden';
 }
+
+function closeModal(id) {
+  const modal = document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1));
+  modal.classList.remove('is-open');
+  
+  // 【不具合修正】背景のスクロールを再開
+  document.body.style.overflow = '';
+}
+
 function closeModal(id) { document.getElementById('modal' + id.charAt(0).toUpperCase() + id.slice(1)).classList.remove('is-open'); }
 function closeOnBg(e, id) { if(e.target.classList.contains('modal-overlay')) closeModal(id); }
 
