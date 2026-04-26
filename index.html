@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM MORNING MONITOR v12.2</title>
+<title>FAM MORNING MONITOR v12.3</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -12,15 +12,17 @@
   --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; 
   --accent-light: #E57373; --text: #1A1C1E; --border: #BDBDBD; 
   --radius: 12px; --teal: #00897B;
+  --header-h: 60px;
+  --footer-h: 85px;
 }
 
-/* 全体レイアウト固定 */
+/* 基本レイアウト */
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; }
 body { display: flex; flex-direction: column; }
 
 header { 
-  flex: 0 0 60px; display: flex; align-items: center; justify-content: space-between; 
+  flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; 
   padding: 0 20px; background: #fff; border-bottom: 3px solid var(--accent); z-index: 1000;
 }
 .h-title { font-size: 18px; font-weight: 900; color: var(--accent); }
@@ -36,17 +38,17 @@ main {
 
 /* ボトムナビ */
 footer {
-  flex: 0 0 85px; background: #263238; display: flex; padding: 10px; gap: 8px;
+  flex: 0 0 var(--footer-h); background: #263238; display: flex; padding: 10px; gap: 8px;
   z-index: 6000; box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
 }
 
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; min-height: 200px; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; min-height: 180px; }
 .card-header { padding: 10px 16px; background: #fafafa; border-bottom: 2px solid var(--border); font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
 .card-body { flex: 1; overflow: hidden; background: #fff; }
 
-table { width: 100%; border-collapse: collapse; }
+table { width: 100%; border-collapse: collapse; background: #fff; }
 th, td { padding: 10px 8px; border-bottom: 1px solid #EEE; text-align: center; font-size: 13px; }
-th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0; z-index: 20; }
+th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0; z-index: 30; }
 .t-left { text-align: left; }
 
 .nav-btn { flex: 1; border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #455A64; }
@@ -54,45 +56,47 @@ th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0
 .btn-qr { background: var(--accent) !important; }
 .nav-btn .label { font-size: 10px; font-weight: 700; margin-top: 5px; pointer-events: none; }
 
-/* モーダル：絶対中央配置 */
+/* モーダル：ボトムナビに絶対被せない計算 */
 .modal-overlay { 
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-  background: rgba(0,0,0,0.8); z-index: 5000; 
+  display: none; position: fixed; 
+  top: var(--header-h); /* ヘッダーの下から開始 */
+  left: 0; width: 100%; 
+  height: calc(100% - var(--header-h) - var(--footer-h)); /* ヘッダーとフッターの間のみ */
+  background: rgba(0,0,0,0.7); z-index: 5000; 
 }
-.modal-overlay.is-open { display: block; }
+.modal-overlay.is-open { display: flex; align-items: center; justify-content: center; }
 
 .modal-content { 
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); /* 画面中央に固定 */
   background: #fff; width: 95%; max-width: 1150px; border-radius: 16px; 
-  max-height: 85vh; /* 画面内に収める */
-  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  max-height: 96%; /* 親要素(overlay)の96%までに制限 */
+  display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
 }
 
 .modal-header { 
-  padding: 0 20px; height: 60px; background: var(--accent-light); color: #fff; 
+  padding: 0 20px; height: 54px; background: var(--accent-light); color: #fff; 
   display: flex; justify-content: space-between; align-items: center; 
   font-weight: 900; flex-shrink: 0; z-index: 100;
 }
-.close-btn { background: rgba(0,0,0,0.1); border: none; color: #fff; font-size: 32px; cursor: pointer; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.close-btn { background: rgba(0,0,0,0.1); border: none; color: #fff; font-size: 30px; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-/* モーダル内スクロール設定：ヘッダーとの隙間を排除 */
+/* モーダル内スクロール：確実に末尾まで見せる */
 .modal-body { 
-  padding: 0; /* paddingを排除してヘッダーを密着させる */
   overflow-y: auto; flex: 1; 
   -webkit-overflow-scrolling: touch;
+  background: #fff;
+  padding-bottom: 20px; /* 最後の行が窮屈にならないよう余白 */
 }
-.modal-body table { border-top: none; }
 
 /* スタンプ・バッジ */
-.stamp { display: inline-block; padding: 2px 6px; border: 2px solid var(--accent); border-radius: 4px; color: var(--accent); font-weight: 900; transform: rotate(-5deg); background: #fff; font-size: 11px; }
-.badge { display: inline-block; padding: 4px 10px; border-radius: 5px; font-weight: 700; font-size: 11px; color: #fff; }
+.stamp { display: inline-block; padding: 2px 6px; border: 1.5px solid var(--accent); border-radius: 4px; color: var(--accent); font-weight: 900; transform: rotate(-5deg); background: #fff; font-size: 11px; }
+.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; color: #fff; }
 .bg-ng { background: var(--accent); } .bg-ok { background: var(--teal); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-title">FAM MORNING MONITOR <small>v12.2</small></div>
+  <div class="h-title">FAM MORNING MONITOR <small>v12.3</small></div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
@@ -110,14 +114,14 @@ th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0
   <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label">遅れ/不良詳細</div></button>
 </footer>
 
-<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')"><div class="modal-content"><div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div><div class="modal-body" style="text-align:center; padding: 40px 0;"><img id="qrImg" src="" style="width:250px; height:250px; border:1px solid #ddd; padding:10px;"><p id="qrPageName" style="font-weight:900; color:var(--accent); font-size:20px; margin-top:20px;"></p></div></div></div>
+<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')"><div class="modal-content"><div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div><div class="modal-body" style="text-align:center; padding-top:40px;"><img id="qrImg" src="" style="width:220px; height:220px; border:1px solid #ddd; padding:10px;"><p id="qrPageName" style="font-weight:900; color:var(--accent); font-size:18px; margin-top:15px;"></p></div></div></div>
 <div id="modalAttend" class="modal-overlay" onclick="closeOnBg(event, 'attend')"><div class="modal-content"><div class="modal-header">出勤詳細 / Attendance <button class="close-btn" onclick="closeModal('attend')">&times;</button></div><div class="modal-body" id="modalAttendBody"></div></div></div>
 <div id="modalProd" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header">生産詳細 / Production <button class="close-btn" onclick="closeModal('prod')">&times;</button></div><div class="modal-body" id="modalProdBody"></div></div></div>
 <div id="modalIssue" class="modal-overlay" onclick="closeOnBg(event, 'issue')"><div class="modal-content"><div class="modal-header">遅れ/不良詳細 / Issue Details <button class="close-btn" onclick="closeModal('issue')">&times;</button></div><div class="modal-body" id="modalIssueBody"></div></div></div>
 
 <script>
 const DATA = {
-  attendance: [{ line: "大型エンジン組立", on: 22, total: 24, rate: 91, members: Array(5).fill({ name: "佐藤 健太郎", status: "出勤", code: "ok", annual: 2, am: 0, pm: 1, late: 1, early: 2 }) }],
+  attendance: [{ line: "大型エンジン組立", on: 22, total: 24, rate: 91, members: Array(3).fill({ name: "佐藤 健太郎", status: "出勤", code: "ok", annual: 2, am: 0, pm: 1, late: 1, early: 2 }) }],
   production: [{ line: "大型エンジン組立", plan: 50, res: 48, rate: 88, stopT: 25, overtime: 30 }],
   issues: [{ cat: "machine", content: "設備故障", detail: "搬送設備ローダー破損", action: "交換復旧", stop: 25, status: "継続中", boss: "了解", comment: "再発防止に努めること" }],
   notices: [{ content: "夏季休暇点検計画を提出のこと。", from: "保全課" }]
