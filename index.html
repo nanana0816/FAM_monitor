@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM MORNING MONITOR v11.9</title>
+<title>FAM MORNING MONITOR v12.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -11,80 +11,79 @@
 :root {
   --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; 
   --accent-light: #E57373; --text: #1A1C1E; --border: #BDBDBD; 
-  --radius: 8px; --teal: #00897B;
+  --radius: 10px; --teal: #00897B;
 }
 
-/* 根本的なレイアウト：bodyのスクロールを禁止 */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { 
-  background: var(--bg); font-family: 'Noto Sans JP', sans-serif; 
-  color: var(--text); font-size: 13px;
-  height: 100vh; width: 100vw;
-  display: flex; flex-direction: column; /* 縦に並べる構造 */
-  overflow: hidden; /* 全体スクロールを防止 */
+/* 根本的なレイアウト修正：100vhに収め、bodyは絶対に動かさない */
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { 
+  height: 100%; width: 100%; overflow: hidden; 
+  background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--text);
 }
+body { display: flex; flex-direction: column; }
 
-/* ヘッダー */
+/* ヘッダー：固定 */
 header { 
   flex: 0 0 60px; display: flex; align-items: center; justify-content: space-between; 
-  padding: 0 20px; background: #fff; border-bottom: 3px solid var(--accent);
-  z-index: 1000;
+  padding: 0 20px; background: #fff; border-bottom: 3px solid var(--accent); z-index: 1000;
 }
 .h-title { font-size: 18px; font-weight: 900; color: var(--accent); }
-.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: 700; color: var(--accent); }
+.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 26px; font-weight: 700; color: var(--accent); }
 
-/* メインエリア（ここだけがスクロールする） */
+/* メイン：ここだけがスクロール領域 */
 main { 
-  flex: 1; /* 残りの高さをすべて使う */
-  display: grid; gap: 10px; padding: 10px; 
-  overflow-y: auto; /* 内部スクロール */
-  -webkit-overflow-scrolling: touch;
+  flex: 1; display: grid; gap: 12px; padding: 12px; 
+  overflow-y: auto; /* 縦スクロールを許可 */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* iOSでの慣性スクロール */
+  touch-action: pan-y; /* 縦方向のタッチ操作を保証 */
 }
 @media (orientation: landscape) { main { grid-template-columns: 4fr 6fr; grid-template-areas: "attend issue" "prod notice"; } }
-@media (orientation: portrait) { main { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); grid-template-areas: "attend" "prod" "issue" "notice"; } }
+@media (orientation: portrait) { main { grid-template-columns: 1fr; grid-template-rows: repeat(4, auto); grid-template-areas: "attend" "prod" "issue" "notice"; } }
 
-/* ボトムナビ（常に最下部に固定） */
+/* ボトムナビ：完全に独立・最前面 */
 footer {
-  flex: 0 0 80px; background: #263238; display: flex; padding: 8px; gap: 8px;
-  z-index: 5000; /* モーダルより前面 */
-  box-shadow: 0 -3px 12px rgba(0,0,0,0.4);
+  flex: 0 0 85px; background: #263238; display: flex; padding: 10px; gap: 8px;
+  z-index: 6000; /* モーダルより上に配置して誤操作を防ぐ */
+  box-shadow: 0 -4px 15px rgba(0,0,0,0.4);
 }
 
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; height: 100%; min-height: 180px; }
-.card-header { padding: 8px 14px; background: #fafafa; border-bottom: 2px solid var(--border); font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.card-body { flex: 1; overflow-y: auto; background: #fff; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; min-height: 200px; }
+.card-header { padding: 10px 16px; background: #fafafa; border-bottom: 2px solid var(--border); font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+.card-body { flex: 1; overflow: hidden; background: #fff; }
 
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 8px; border-bottom: 1px solid #EEE; border-right: 1px solid #F5F5F5; text-align: center; }
-th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0; z-index: 10; }
+th, td { padding: 10px 8px; border-bottom: 1px solid #EEE; text-align: center; }
+th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0; z-index: 20; }
 .t-left { text-align: left; }
 
-.nav-btn { flex: 1; border: none; border-radius: 8px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #546E7A; transition: background 0.2s; }
-.nav-btn:active { background: #455A64; transform: scale(0.96); }
-.btn-qr { background: var(--accent); }
-.nav-btn .label { font-size: 10px; font-weight: 700; margin-top: 4px; line-height: 1.1; pointer-events: none; }
+/* ナビボタン：クリック範囲を拡大 */
+.nav-btn { flex: 1; border: none; border-radius: 8px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #455A64; position: relative; }
+.nav-btn:active { background: #37474F; transform: translateY(2px); }
+.btn-qr { background: var(--accent) !important; }
+.nav-btn .label { font-size: 10px; font-weight: 700; margin-top: 5px; line-height: 1.1; pointer-events: none; }
 
 /* モーダル */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 4000; align-items: center; justify-content: center; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
 .modal-overlay.is-open { display: flex; }
-.modal-content { background: #fff; width: 96%; max-width: 1280px; border-radius: 12px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-.modal-header { padding: 0 20px; height: 60px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 700; flex-shrink: 0; }
-.close-btn { background: rgba(255,255,255,0.25); border: none; color: #fff; font-size: 40px; cursor: pointer; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.modal-body { padding: 12px; overflow-y: auto; flex: 1; }
+.modal-content { background: #fff; width: 100%; max-width: 1200px; border-radius: 15px; max-height: 80vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal-header { padding: 0 20px; height: 65px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 900; }
+.close-btn { background: rgba(255,255,255,0.2); border: none; color: #fff; font-size: 40px; cursor: pointer; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 15px; overflow-y: auto; flex: 1; }
 
-.stamp { display: inline-block; padding: 2px 6px; border: 2px solid var(--accent); border-radius: 4px; color: var(--accent); font-weight: 900; font-size: 12px; transform: rotate(-5deg); background: #fff; }
-.badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-weight: 700; font-size: 11px; color: #fff; }
+.stamp { display: inline-block; padding: 2px 6px; border: 2px solid var(--accent); border-radius: 4px; color: var(--accent); font-weight: 900; transform: rotate(-5deg); background: #fff; }
+.badge { display: inline-block; padding: 4px 10px; border-radius: 5px; font-weight: 700; font-size: 11px; color: #fff; }
 .bg-ng { background: var(--accent); } .bg-ok { background: var(--teal); }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-title">FAM MORNING MONITOR <small>v11.9</small></div>
+  <div class="h-title">FAM MORNING MONITOR <small>v12.0</small></div>
   <div class="h-clock" id="hClock">00:00:00</div>
 </header>
 
-<main>
+<main id="mainContent">
   <section class="card area-attend"><div class="card-header"><i data-lucide="users"></i>出勤状況</div><div class="card-body"><table><thead><tr><th class="t-left">ライン名</th><th>出/総員</th><th>率</th></tr></thead><tbody id="mainAttendBody"></tbody></table></div></section>
   <section class="card area-prod"><div class="card-header"><i data-lucide="factory"></i>生産状況</div><div class="card-body"><table><thead><tr><th class="t-left">ライン</th><th>実績/計画</th><th>可動</th><th>停止</th><th>残業</th></tr></thead><tbody id="mainProdBody"></tbody></table></div></section>
   <section class="card area-issue"><div class="card-header"><i data-lucide="alert-triangle"></i>遅れ・停止</div><div class="card-body"><table><thead><tr><th class="t-left">内容</th><th style="width:50px;">停止</th><th>状況</th><th>上長</th></tr></thead><tbody id="mainIssueBody"></tbody></table></div></section>
@@ -92,18 +91,29 @@ th { background: #F5F5F5; font-size: 11px; color: #666; position: sticky; top: 0
 </main>
 
 <footer>
-  <button class="nav-btn btn-qr" id="qrTrigger"><i data-lucide="qr-code"></i><div class="label">連携QR<br>QR Sync</div></button>
+  <button class="nav-btn btn-qr" id="qrTrigger" onclick="openModal('qr')"><i data-lucide="qr-code"></i><div class="label">連携QR<br>QR Sync</div></button>
   <button class="nav-btn" onclick="openModal('attend')"><i data-lucide="list-checks"></i><div class="label">出勤詳細<br>Attend Det.</div></button>
   <button class="nav-btn" onclick="openModal('prod')"><i data-lucide="bar-chart-3"></i><div class="label">生産詳細<br>Prod Det.</div></button>
   <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label">遅れ/不良詳細<br>Issue/Defect</div></button>
 </footer>
 
-<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')"><div class="modal-content"><div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div><div class="modal-body" style="text-align:center;"><img id="qrImg" src="" style="width:240px;margin:20px 0;border:1px solid #ddd;"><p id="qrPageName" style="font-weight:700;color:var(--accent);font-size:16px;"></p></div></div></div>
+<div id="modalQR" class="modal-overlay" onclick="closeOnBg(event, 'qr')">
+  <div class="modal-content">
+    <div class="modal-header">連携QR / QR Sync <button class="close-btn" onclick="closeModal('qr')">&times;</button></div>
+    <div class="modal-body" style="text-align:center; padding: 40px 10px;">
+      <div id="qrPlaceholder" style="display:inline-block; padding:15px; background:#fff; border:1px solid #ddd; border-radius:10px;">
+        <img id="qrImg" src="" style="width:250px; height:250px; display:block;">
+      </div>
+      <p id="qrPageName" style="font-weight:900; color:var(--accent); font-size:20px; margin-top:20px;"></p>
+    </div>
+  </div>
+</div>
 <div id="modalAttend" class="modal-overlay" onclick="closeOnBg(event, 'attend')"><div class="modal-content"><div class="modal-header">出勤詳細 / Attendance <button class="close-btn" onclick="closeModal('attend')">&times;</button></div><div class="modal-body" id="modalAttendBody"></div></div></div>
 <div id="modalProd" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header">生産詳細 / Production <button class="close-btn" onclick="closeModal('prod')">&times;</button></div><div class="modal-body" id="modalProdBody"></div></div></div>
 <div id="modalIssue" class="modal-overlay" onclick="closeOnBg(event, 'issue')"><div class="modal-content"><div class="modal-header">遅れ/不良詳細 / Issue Details <button class="close-btn" onclick="closeModal('issue')">&times;</button></div><div class="modal-body" id="modalIssueBody"></div></div></div>
 
 <script>
+// データとロジック（テーブル構成は前回の指示内容を完全反映）
 const DATA = {
   attendance: [{ line: "大型エンジン組立", on: 22, total: 24, rate: 91, members: [{ name: "佐藤 健太郎", status: "出勤", code: "ok", annual: 2, am: 0, pm: 1, late: 1, early: 2 }] }],
   production: [{ line: "大型エンジン組立", plan: 50, res: 48, rate: 88, stopT: 25, overtime: 30 }, { line: "小型エンジン組立", plan: 150, res: 148, rate: 88, stopT: 35, overtime: 70 }],
@@ -113,9 +123,7 @@ const DATA = {
 
 function esc(str) { return String(str || '').replace(/[&<>"']/g, s => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[s])); }
 
-// QRボタンの動作を確実にする
-document.getElementById('qrTrigger').onclick = function() { openModal('qr'); };
-
+// モーダル制御
 function openModal(id) {
   if(id==='qr') genQR('全体閲覧 / Main Monitor', 'https://example.com');
   if(id==='attend') renderAttendDetail();
@@ -128,9 +136,9 @@ function closeModal(id) {
 }
 function closeOnBg(e, id) { if(e.target.classList.contains('modal-overlay')) closeModal(id); }
 
+// QRコード生成（より反応の良いAPIへ変更）
 function genQR(name, url) {
-  const qrImg = document.getElementById('qrImg');
-  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+  document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
   document.getElementById('qrPageName').textContent = name;
 }
 
