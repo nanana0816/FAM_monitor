@@ -9,440 +9,178 @@
 
 <style>
 :root {
-  --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; --teal: #00897B;
-  --amber: #F57C00; --text: #1A1C1E; --border: #BDBDBD; --radius: 8px;
+  /* サフランレッド・インフォグラフィック・パレット */
+  --bg: #FDFCFB; 
+  --panel: #FFFFFF; 
+  --accent: #E64A19; /* Saffron Red */
+  --accent-light: #FF8A65;
+  --sub: #FFB300;    /* Amber/Gold */
+  --teal: #00897B;
+  --text: #2C3E50; 
+  --text-light: #7F8C8D;
+  --border: #E0E0E0; 
+  --radius: 12px;
+  --shadow: 0 4px 20px rgba(230, 74, 25, 0.08);
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body { 
   background: var(--bg); 
   font-family: 'Noto Sans JP', sans-serif; 
   color: var(--text); 
-  padding-bottom: 80px; 
+  padding-bottom: 90px; 
   font-size: 14px; 
-  line-height: 1.4;
+  line-height: 1.6;
 }
 
 header { 
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
-  padding: 12px 20px; 
-  height: 60px; 
+  padding: 0 24px; 
+  height: 70px; 
   background: #fff; 
-  border-bottom: 3px solid var(--accent); 
+  border-bottom: 4px solid var(--accent); 
   position: sticky; 
   top: 0; 
   z-index: 1000; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 15px rgba(0,0,0,0.05);
 }
-.h-title { font-size: 18px; font-weight: 900; color: var(--accent); }
-.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+
+.h-title { 
+  font-size: 20px; 
+  font-weight: 900; 
+  color: var(--accent); 
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.h-clock { 
+  font-family: 'Share Tech Mono', monospace; 
+  font-size: 32px; 
+  font-weight: 700; 
+  color: var(--text); 
+  background: #f0f0f0;
+  padding: 4px 16px;
+  border-radius: 6px;
+}
 
 .main-grid { 
   display: grid; 
-  gap: 12px; 
-  padding: 12px;
-  min-height: calc(100vh - 120px);
+  gap: 16px; 
+  padding: 16px;
 }
 
-@media (orientation: landscape) {
-  .main-grid { grid-template-columns: 3.5fr 6.5fr; grid-template-areas: "attend issue" "prod notice"; }
-}
-
-@media (orientation: portrait) {
-  .main-grid { grid-template-columns: 1fr; grid-template-areas: "attend" "prod" "issue" "notice"; }
-}
-
-.area-attend { grid-area: attend; }
-.area-prod   { grid-area: prod; }
-.area-issue  { grid-area: issue; }
-.area-notice { grid-area: notice; }
-
+/* カードデザインのインフォグラフィック化 */
 .card {
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
 }
 
 .card-header {
-  padding: 12px 16px;
-  background: #fafafa;
-  border-bottom: 2px solid var(--border);
-  flex-shrink: 0;
+  padding: 16px 20px;
+  background: linear-gradient(to right, #FFF5F2, #FFFFFF);
+  border-bottom: 1px solid #FFE0D6;
   font-weight: 700;
   font-size: 16px;
   color: var(--accent);
+  display: flex;
+  align-items: center;
+}
+
+.card-header::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  background: var(--accent);
+  margin-right: 10px;
+  border-radius: 2px;
 }
 
 .card-body {
   flex: 1;
   overflow-y: auto;
-  background: #fff;
-  max-height: 320px;
+  max-height: 350px;
 }
 
+/* テーブルデザインの洗練 */
 table {
   width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-  background: #fff;
-}
-
-th, td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #EEEEEE;
-  border-right: 1px solid #F5F5F5;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  font-size: 13px;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 th {
-  background: #F5F5F5;
+  background: #FAFAFA;
   font-weight: 700;
-  color: #424242;
-  vertical-align: middle;
+  color: var(--text-light);
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 12px;
+  border-bottom: 2px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.t-left { text-align: left; padding-left: 12px; }
-
-.badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 12px;
-  white-space: nowrap;
+td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #F0F0F0;
+  font-size: 14px;
 }
 
-.badge-ok { background: var(--teal); color: #fff; }
-.badge-ng { background: var(--accent); color: #fff; }
-.badge-warn { background: var(--amber); color: #fff; }
+tr:hover td {
+  background-color: #FFF9F7;
+}
 
-.stamp {
-  display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 26px;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
+/* バッジとスタンプの調整 */
+.badge {
+  padding: 4px 12px;
+  border-radius: 6px;
   font-weight: 700;
   font-size: 11px;
-  text-align: center;
-  vertical-align: middle;
+}
+.badge-ok { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; }
+.badge-ng { background: #FFEBEE; color: #C62828; border: 1px solid #EF9A9A; }
+.badge-warn { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+
+.stamp {
+  background: var(--accent);
+  border: none;
+  box-shadow: 0 2px 4px rgba(230,74,25,0.3);
 }
 
+/* ナビゲーション */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 70px;
-  background: #263238;
-  display: flex;
-  padding: 6px;
-  z-index: 2000;
-  gap: 6px;
+  background: #1A1C1E;
+  padding: 10px;
+  gap: 12px;
 }
 
 .nav-btn {
-  flex: 1;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  font-weight: 700;
-  font-size: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.nav-btn:active { transform: scale(0.95); box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-.nav-btn:hover { opacity: 0.9; }
-
-.btn-qr { background: var(--accent); }
-.btn-dark { background: #546E7A; }
-
-.nav-btn span { display: block; }
-.nav-btn .icon { font-size: 16px; margin-bottom: 2px; }
-.nav-btn .label { font-size: 11px; }
-
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 3000;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-.modal-overlay.is-open { display: flex; }
-
-.modal-content {
-  background: #fff;
-  width: 100%;
-  max-width: 1200px;
   border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  max-height: 90vh;
-  overflow-y: auto;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
+.btn-qr { background: var(--accent); box-shadow: 0 4px 0 #BF360C; }
+.btn-qr:active { transform: translateY(2px); box-shadow: none; }
+
+.btn-dark { background: #37474F; }
+
+/* モーダル */
 .modal-header {
-  padding: 16px 24px;
-  background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.modal-header button {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  transition: opacity 0.2s;
-}
-
-.modal-header button:hover { opacity: 0.8; }
-
-.modal-body { padding: 24px; flex: 1; overflow-y: auto; }
-
-.qr-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.qr-btn-card {
-  padding: 24px;
-  border-radius: 12px;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 8px;
-  min-height: 120px;
-  transition: all 0.3s ease;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.qr-btn-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
-.qr-btn-card:active { transform: translateY(-2px); }
-
-.qr-btn-card .icon { font-size: 32px; }
-.qr-btn-card .label { font-size: 14px; }
-
-.qr-btn-view { background: #1565C0; }
-.qr-btn-attend { background: var(--teal); }
-.qr-btn-contact { background: #7B1FA2; }
-.qr-btn-react { background: #E64A19; }
-
-.qr-display {
-  display: none;
-  text-align: center;
-  padding: 24px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: #FAFAFA;
-}
-
-.qr-display.is-visible { display: block; }
-
-.qr-display img {
-  width: 240px;
-  height: 240px;
-  border: 4px solid #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  margin-bottom: 16px;
-}
-
-.qr-page-name { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.qr-url { font-size: 12px; color: #666; word-break: break-all; background: #fff; padding: 8px; border-radius: 4px; }
-
-.detail-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-}
-
-.detail-table th {
-  background: #F5F5F5;
-  padding: 12px 16px;
-  text-align: left;
-  font-weight: 700;
-  font-size: 13px;
-  color: #424242;
-  border-bottom: 2px solid var(--border);
-}
-
-.detail-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #EEEEEE;
-  font-size: 13px;
-}
-
-.detail-table tr:hover { background: #FAFAFA; }
-
-/* ===== 2段ヘッダー（出勤詳細） ===== */
-.two-level-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
-}
-
-.header-row-1 th {
-  background: #F5F5F5;
-  padding: 10px 8px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 12px;
-  color: #424242;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid #EEEEEE;
-}
-
-.header-row-1 th.monthly-label {
-  background: #FFF3E0;
-  color: var(--amber);
-  font-weight: 900;
-  border-right: 2px solid var(--amber);
-}
-
-.header-row-2 th {
-  background: #FAFAFA;
-  padding: 8px 6px;
-  text-align: center;
-  font-weight: 600;
-  font-size: 11px;
-  color: #666;
-  border-bottom: 2px solid var(--border);
-  border-right: 1px solid #EEEEEE;
-}
-
-.two-level-table tbody tr {
-  border-bottom: 1px solid #EEEEEE;
-}
-
-.two-level-table tbody td {
-  padding: 10px 8px;
-  text-align: center;
-  font-size: 13px;
-  border-right: 1px solid #F5F5F5;
-}
-
-.two-level-table tbody td.t-left {
-  text-align: left;
-  padding-left: 12px;
-}
-
-/* アコーディオン */
-.accordion-header {
-  background: #F5F5F5;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 12px 16px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 13px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: all 0.2s;
-  margin-bottom: 6px;
-}
-
-.accordion-header:hover { background: #EEEEEE; }
-
-.accordion-header.open { background: var(--accent); color: #fff; }
-
-.accordion-content {
-  display: none;
-  padding: 12px 16px;
-  background: #FAFAFA;
-  border: 1px solid var(--border);
-  border-top: none;
-  border-radius: 0 0 6px 6px;
-  margin-bottom: 8px;
-}
-
-.accordion-content.open { display: block; }
-
-.accordion-toggle { font-size: 10px; }
-
-/* 累計ヘッダーセクション */
-.monthly-header {
-  background: #FFF3E0;
-  border-left: 4px solid var(--amber);
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  border-radius: 4px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-  font-size: 12px;
-}
-
-.monthly-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.monthly-label { font-weight: 600; color: #666; }
-.monthly-value { font-weight: 700; color: var(--text); }
-
-@media (min-width: 2560px) {
-  body { font-size: 18px; }
-  header { height: 80px; padding: 16px 28px; }
-  .h-title { font-size: 24px; }
-  .h-clock { font-size: 36px; }
-  .card-header { font-size: 20px; padding: 16px 20px; }
-  th, td { padding: 14px 16px; font-size: 16px; }
-  .badge { padding: 8px 18px; font-size: 14px; }
-  .nav-btn { font-size: 14px; }
-  .nav-btn .icon { font-size: 20px; }
-  .modal-header { font-size: 22px; padding: 20px 28px; }
-  .modal-body { padding: 32px; }
-  .qr-btn-card { min-height: 160px; }
-  .qr-btn-card .icon { font-size: 40px; }
-  .qr-btn-card .label { font-size: 16px; }
-  .qr-display img { width: 300px; height: 300px; }
-  .qr-page-name { font-size: 18px; }
+  background: var(--accent);
+  border-bottom: 4px solid var(--sub);
 }
 </style>
 
