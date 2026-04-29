@@ -2,93 +2,101 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM-PM 入力 v14.4</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>FAM-PM 入力 v14.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 :root {
   --bg: #F0F2F5; --accent: #D32F2F; --dark: #263238; --border: #BDBDBD; --radius: 12px;
-  --header-h: 85px;
+  --header-h: 12vh; /* 画面高に合わせ可変 */
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--dark); overflow: hidden; }
+html, body { height: 100vh; width: 100vw; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--dark); overflow: hidden; }
 body { display: flex; flex-direction: column; }
 
-/* ヘッダー：累計表示と自動更新 */
+/* ヘッダー：累計・ラウンドアイコン・時計を統合 */
 header { 
   flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; 
-  padding: 0 15px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
+  padding: 0 1.5vw; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
 }
-.h-left { display: flex; flex-direction: column; }
-.h-title { font-size: 16px; font-weight: 900; color: var(--accent); }
-.total-box { display: flex; gap: 10px; margin-top: 4px; }
-.total-item { background: #f0f0f0; padding: 2px 8px; border-radius: 4px; border-left: 3px solid var(--dark); }
-.total-label { font-size: 8px; font-weight: 900; color: #666; display: block; }
-.total-val { font-family: 'Share Tech Mono'; font-size: 16px; font-weight: 700; }
+.h-left { display: flex; flex-direction: column; justify-content: center; }
+.total-box { display: flex; gap: 8px; margin-top: 2px; }
+.total-item { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; border-left: 3px solid var(--dark); }
+.total-label { font-size: 0.6rem; font-weight: 900; color: #666; display: block; }
+.total-val { font-family: 'Share Tech Mono'; font-size: 1rem; font-weight: 700; }
 
-.h-center { display: flex; gap: 4px; }
-.rd-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #eee; color: #aaa; font-weight: 900; font-size: 14px; border: 2px solid transparent; }
-.rd-icon.active { background: var(--accent); color: #fff; border-color: var(--dark); }
+.h-center { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rd-group { display: flex; gap: 0.5vw; align-items: center; }
+.rd-icon { 
+  width: 2.5vw; height: 2.5vw; min-width: 28px; min-height: 28px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+  background: #eee; color: #ccc; font-weight: 900; font-size: 0.8rem; transition: all 0.3s;
+}
+.rd-icon.active { background: var(--accent); color: #fff; transform: scale(1.3); box-shadow: 0 0 10px rgba(211,47,47,0.4); }
+.rd-icon.inactive { opacity: 0.3; transform: scale(0.8); }
 
 .h-right { text-align: right; }
-.h-clock { font-family: 'Share Tech Mono'; font-size: 22px; font-weight: 700; color: var(--accent); }
-.h-update { font-size: 8px; font-weight: 700; color: #888; }
+.h-clock { font-family: 'Share Tech Mono'; font-size: 1.8rem; font-weight: 700; color: var(--accent); line-height: 1; }
 
-main { flex: 1; display: flex; padding: 8px; gap: 8px; overflow: hidden; }
-.col-left { flex: 0 0 42%; display: flex; flex-direction: column; gap: 8px; }
+/* メインレイアウト */
+main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(--header-h)); }
+.col-left { flex: 0 0 40%; display: flex; flex-direction: column; gap: 8px; }
 .col-right { flex: 1; display: flex; flex-direction: column; }
 
-.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.card-header { padding: 6px 10px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.ch-ja { font-size: 12px; font-weight: 900; color: var(--accent); }
-.card-body { padding: 10px; flex: 1; overflow-y: auto; }
+.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
+.card-header { padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ch-ja { font-size: clamp(0.7rem, 1.5vw, 0.9rem); font-weight: 900; color: var(--accent); }
+.card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-around; overflow: hidden; }
 
 /* 実績カウンター */
-.counter-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
-.btn-calc { width: 55px; height: 55px; border-radius: 12px; border: none; background: #eee; font-size: 28px; font-weight: 900; cursor: pointer; }
-.act-val { font-family: 'Share Tech Mono'; font-size: 48px; font-weight: 700; color: var(--accent); line-height: 1; }
+.counter-container { display: flex; align-items: center; justify-content: center; gap: 2vw; }
+.btn-calc { 
+    width: 8vh; height: 8vh; border-radius: 12px; border: none; background: #eee; 
+    font-size: 2.5rem; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.act-val { font-family: 'Share Tech Mono'; font-size: clamp(3rem, 10vh, 5rem); font-weight: 700; color: var(--accent); }
 
-.btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 900; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.btn { width: 100%; padding: 1.5vh 0; border: none; border-radius: 10px; font-weight: 900; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-dark { background: var(--dark); color: #fff; margin-top: 8px; }
+.btn-dark { background: var(--dark); color: #fff; }
 
-/* クイック入力ボタン */
-.quick-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 15px; }
-.btn-quick { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; }
-.btn-quick:active { background: #f0f0f0; }
-
-/* 4M選択チップス */
-.m4-select { display: flex; gap: 4px; margin-bottom: 12px; }
-.m4-chip { flex: 1; padding: 8px 0; background: #eee; text-align: center; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer; }
-.m4-chip.active { background: var(--dark); color: #fff; }
-
-.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 10px 12px; position: relative; }
+/* タイムライン */
+.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 8px 12px; position: relative; }
 .tl-item::before { content: ""; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; position: absolute; left: -6px; top: 0; }
-.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 12px; }
-.tl-content { font-size: 12px; font-weight: 600; }
+.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+.tl-content { font-size: 0.85rem; font-weight: 600; }
 
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+/* モーダル内：クイック入力 ＋ 自由入力 */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal-content { background: #fff; width: 92%; max-width: 380px; border-radius: 16px; overflow: hidden; border-top: 6px solid var(--accent); }
+.modal-content { background: #fff; width: 95%; max-width: 450px; border-radius: 16px; overflow: hidden; border-top: 6px solid var(--accent); }
+.m4-select { display: flex; gap: 4px; margin-bottom: 10px; padding: 0 10px; }
+.m4-chip { flex: 1; padding: 8px 0; background: #eee; text-align: center; border-radius: 6px; font-size: 0.7rem; font-weight: 900; cursor: pointer; }
+.m4-chip.active { background: var(--dark); color: #fff; }
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 10px; margin-bottom: 10px; }
+.btn-quick { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-size: 0.75rem; font-weight: 700; text-align: left; }
+input#i-title { width: calc(100% - 20px); margin: 0 10px 10px 10px; padding: 12px; border: 2px solid var(--accent); border-radius: 8px; font-size: 1rem; font-weight: 700; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="h-left">
-    <div class="h-title">FAM-PM <small>INPUT</small></div>
+    <div class="h-title">FAM-PM <small>INPUT v14.5</small></div>
     <div class="total-box">
-      <div class="total-item"><span class="total-label">累計計画</span><span class="total-val" id="total-plan">584</span></div>
-      <div class="total-item"><span class="total-label">累計実績</span><span class="total-val" id="total-act">562</span></div>
+      <div class="total-item"><span class="total-label">累計計画</span><span class="total-val">584</span></div>
+      <div class="total-item"><span class="total-label">累計実績</span><span class="total-val">562</span></div>
     </div>
   </div>
   
-  <div class="h-center" id="rd-icons-container">
-    <div class="rd-icon">1</div><div class="rd-icon">2</div><div class="rd-icon">3</div><div class="rd-icon">4</div>
-    <div class="rd-icon">5</div><div class="rd-icon">6</div><div class="rd-icon">7</div><div class="rd-icon">8</div>
+  <div class="h-center">
+    <div class="rd-group" id="rd-group">
+      <div class="rd-icon">1</div><div class="rd-icon">2</div><div class="rd-icon">3</div><div class="rd-icon">4</div>
+      <div class="rd-icon">5</div><div class="rd-icon">6</div><div class="rd-icon">7</div><div class="rd-icon">8</div>
+    </div>
   </div>
 
   <div class="h-right">
@@ -99,27 +107,26 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; overflow: hidden; }
 
 <main>
   <div class="col-left">
-    <section class="card" style="height: 100%;">
+    <section class="card">
       <div class="card-header"><i data-lucide="edit-3" size="14"></i><span class="ch-ja">実績入力 / Production</span></div>
       <div class="card-body">
-        <div style="text-align: center; font-size: 10px; font-weight: 900; color: #666;">現ラウンド実績 / 計画</div>
+        <div style="text-align: center; font-size: 0.8rem; font-weight: 900; color: #666;">現ラウンド実績 / 計画</div>
         <div class="counter-container">
           <button class="btn-calc" onclick="changeVal(-1)">-</button>
           <div class="act-val" id="disp-act">0</div>
           <button class="btn-calc" onclick="changeVal(1)">+</button>
         </div>
-        <div style="text-align: center; font-family: 'Share Tech Mono'; font-size: 18px; color: #888;">/ <span id="disp-plan">73</span></div>
-
-        <div style="margin-top: 20px;">
-          <button class="btn btn-primary" onclick="submitData()"><i data-lucide="send"></i>実績を登録</button>
-          <button class="btn btn-dark" onclick="openModal()"><i data-lucide="plus-circle"></i>変化点を入力</button>
+        <div style="text-align: center; font-family: 'Share Tech Mono'; font-size: 1.5rem; color: #888;">/ <span id="disp-plan">73</span></div>
+        <div class="action-btns">
+          <button class="btn btn-primary" onclick="submitData()"><i data-lucide="send"></i>登録</button>
+          <button class="btn btn-dark" onclick="openModal()"><i data-lucide="plus-circle"></i>変化点入力</button>
         </div>
       </div>
     </section>
   </div>
 
   <div class="col-right">
-    <section class="card" style="height: 100%;">
+    <section class="card">
       <div class="card-header"><i data-lucide="clock" size="14"></i><span class="ch-ja">変化点タイムライン / Timeline</span></div>
       <div class="card-body" id="timeline"></div>
     </section>
@@ -128,26 +135,27 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; overflow: hidden; }
 
 <div id="issueModal" class="modal-overlay">
   <div class="modal-content">
-    <div class="card-header"><span class="ch-ja">変化点入力 (4M分類)</span></div>
-    <div class="card-body">
+    <div class="card-header"><span class="ch-ja">変化点登録 (4M)</span></div>
+    <div class="card-body" style="padding: 10px 0;">
       <div class="m4-select" id="m4-container">
         <div class="m4-chip active">Man</div><div class="m4-chip">Machine</div><div class="m4-chip">Material</div><div class="m4-chip">Method</div>
       </div>
 
-      <div style="font-size: 10px; font-weight: 900; margin-bottom: 8px; color:#666;">クイック入力 (頻出5件)</div>
       <div class="quick-grid">
-        <button class="btn-quick" onclick="quickInp('設備故障：チョコ停')">⚡ 設備故障：チョコ停</button>
-        <button class="btn-quick" onclick="quickInp('人員配置変更：交叉教育')">👤 人員配置変更：交叉教育</button>
-        <button class="btn-quick" onclick="quickInp('品質確認：初物確認')">🔍 品質確認：初物確認</button>
-        <button class="btn-quick" onclick="quickInp('材料欠品：搬送遅れ')">📦 材料欠品：搬送遅れ</button>
-        <button class="btn-quick" onclick="quickInp('治具交換：摩耗対策')">🔧 治具交換：摩耗対策</button>
+        <button class="btn-quick" onclick="setQuick('設備故障：チョコ停')">設備故障</button>
+        <button class="btn-quick" onclick="setQuick('配置転換：応援')">配置応援</button>
+        <button class="btn-quick" onclick="setQuick('品質確認：初物')">品質初物</button>
+        <button class="btn-quick" onclick="setQuick('材料欠品：搬送')">材料欠品</button>
+        <button class="btn-quick" onclick="setQuick('治具交換：摩耗')">治具交換</button>
       </div>
 
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+      <input type="text" id="i-title" placeholder="内容を自由入力（タップで反映）">
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding: 0 10px;">
         <button class="btn btn-dark" style="background:#00897B;" onclick="addIssue(false)">停止なし</button>
         <button class="btn btn-primary" onclick="addIssue(true)">停止あり</button>
       </div>
-      <button class="btn" style="background:#eee; color:#666; margin-top:8px;" onclick="closeModal()">キャンセル</button>
+      <button class="btn" style="background:#eee; color:#666; margin-top:10px;" onclick="closeModal()">キャンセル</button>
     </div>
   </div>
 </div>
@@ -155,24 +163,28 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; overflow: hidden; }
 <script>
 let curAct = 0;
 let curPlan = 73;
-let totalPlan = 584;
-let totalAct = 562;
 
+// 直マスター連携シミュレーション（1時間ごと）
 function updateClock() {
   const now = new Date();
   document.getElementById('live-clock').innerText = now.toLocaleTimeString('ja-JP', { hour12: false });
+  
+  // 始業8時を想定したラウンド判定
   const hour = now.getHours();
-  let rd = (hour < 8) ? 1 : (hour - 7);
-  if(rd < 1) rd = 1; if(rd > 8) rd = 8;
+  const rd = (hour < 8) ? 1 : (hour - 7);
+  const currentRd = Math.min(Math.max(rd, 1), 8);
   
   document.querySelectorAll('.rd-icon').forEach((icon, idx) => {
-    icon.classList.toggle('active', idx + 1 === rd);
+    const iconRd = idx + 1;
+    icon.classList.remove('active', 'inactive');
+    if (iconRd === currentRd) icon.classList.add('active');
+    else if (iconRd > currentRd) icon.classList.add('inactive');
   });
 
-  // ラウンド初回判定時に実績を自動セット（シミュレーション）
-  if(!curAct) {
-    curAct = Math.floor(curPlan * 0.98);
-    document.getElementById('disp-act').innerText = curAct;
+  // ラウンド開始時に実績初期値を自動セット
+  if(curAct === 0) {
+      curAct = Math.floor(curPlan * 0.98);
+      document.getElementById('disp-act').innerText = curAct;
   }
 }
 
@@ -183,36 +195,38 @@ function changeVal(n) {
 
 function submitData() {
   document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
-  alert('実績を保存しました');
+  alert('登録完了');
 }
 
-// 変化点関連
-let issues = [{ time: "08:15", title: "初物確認 (Method)", stop: false }];
+// 変化点入力ロジック
+function setQuick(val) {
+  document.getElementById('i-title').value = val;
+}
+
+function addIssue(hasStop) {
+  const title = document.getElementById('i-title').value;
+  if(!title) return alert('内容を入力してください');
+  const m4 = document.querySelector('.m4-chip.active').innerText;
+  const time = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+  issues.unshift({ time, title: `${title} (${m4})`, stop: hasStop });
+  renderTimeline();
+  closeModal();
+  document.getElementById('i-title').value = "";
+}
+
+let issues = [{ time: "08:15", title: "生産開始確認 (Method)", stop: false }];
 function renderTimeline() {
   const tl = document.getElementById('timeline');
   tl.innerHTML = issues.map(i => `
     <div class="tl-item">
-      <div class="tl-time">${i.time} ${i.stop ? '⚠️停止あり' : ''}</div>
+      <div class="tl-time">${i.time} ${i.stop ? '<span style="color:red">●停止</span>' : ''}</div>
       <div class="tl-content">${i.title}</div>
     </div>
   `).join('');
 }
 
-function quickInp(val) {
-  const m4 = document.querySelector('.m4-chip.active').innerText;
-  const time = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
-  issues.unshift({ time, title: `${val} (${m4})`, stop: false });
-  renderTimeline();
-  closeModal();
-}
-
-function addIssue(hasStop) {
-  const m4 = document.querySelector('.m4-chip.active').innerText;
-  const time = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
-  issues.unshift({ time, title: `手入力変化点 (${m4})`, stop: hasStop });
-  renderTimeline();
-  closeModal();
-}
+function openModal() { document.getElementById('issueModal').classList.add('open'); }
+function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
 
 document.querySelectorAll('.m4-chip').forEach(chip => {
   chip.addEventListener('click', function() {
@@ -220,9 +234,6 @@ document.querySelectorAll('.m4-chip').forEach(chip => {
     this.classList.add('active');
   });
 });
-
-function openModal() { document.getElementById('issueModal').classList.add('open'); }
-function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
 
 document.addEventListener('DOMContentLoaded', () => {
   lucide.createIcons();
