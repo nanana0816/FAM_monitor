@@ -3,74 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM-PM 入力 v14.3</title>
+<title>FAM-PM 入力 v14.4</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 :root {
   --bg: #F0F2F5; --accent: #D32F2F; --dark: #263238; --border: #BDBDBD; --radius: 12px;
-  --header-h: 75px;
+  --header-h: 85px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--dark); overflow: hidden; }
 body { display: flex; flex-direction: column; }
 
-/* ヘッダー：和英2段、ラウンド、時計を表示 */
+/* ヘッダー：累計表示と自動更新 */
 header { 
   flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; 
-  padding: 0 20px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
+  padding: 0 15px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
 }
 .h-left { display: flex; flex-direction: column; }
-.h-title { font-size: 18px; font-weight: 900; color: var(--accent); line-height: 1.1; }
-.h-subtitle { font-size: 10px; font-weight: 700; color: #666; }
+.h-title { font-size: 16px; font-weight: 900; color: var(--accent); }
+.total-box { display: flex; gap: 10px; margin-top: 4px; }
+.total-item { background: #f0f0f0; padding: 2px 8px; border-radius: 4px; border-left: 3px solid var(--dark); }
+.total-label { font-size: 8px; font-weight: 900; color: #666; display: block; }
+.total-val { font-family: 'Share Tech Mono'; font-size: 16px; font-weight: 700; }
 
-.h-center { text-align: center; }
-.rd-badge { background: var(--dark); color: #fff; padding: 2px 12px; border-radius: 4px; display: inline-block; }
-.rd-ja { font-size: 14px; font-weight: 900; display: block; line-height: 1.2; }
-.rd-en { font-size: 9px; font-weight: 700; opacity: 0.8; display: block; text-transform: uppercase; }
+.h-center { display: flex; gap: 4px; }
+.rd-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #eee; color: #aaa; font-weight: 900; font-size: 14px; border: 2px solid transparent; }
+.rd-icon.active { background: var(--accent); color: #fff; border-color: var(--dark); }
 
 .h-right { text-align: right; }
-.h-clock { font-family: 'Share Tech Mono'; font-size: 24px; font-weight: 700; color: var(--accent); line-height: 1; }
-.h-update { font-size: 9px; font-weight: 700; color: #888; margin-top: 2px; }
+.h-clock { font-family: 'Share Tech Mono'; font-size: 22px; font-weight: 700; color: var(--accent); }
+.h-update { font-size: 8px; font-weight: 700; color: #888; }
 
-main { flex: 1; display: flex; padding: 10px; gap: 10px; overflow: hidden; }
-.col-left { flex: 0 0 42%; display: flex; flex-direction: column; }
+main { flex: 1; display: flex; padding: 8px; gap: 8px; overflow: hidden; }
+.col-left { flex: 0 0 42%; display: flex; flex-direction: column; gap: 8px; }
 .col-right { flex: 1; display: flex; flex-direction: column; }
 
 .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-.card-header { padding: 8px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.ch-ja { font-size: 13px; font-weight: 900; color: var(--accent); }
-.card-body { padding: 12px; flex: 1; overflow-y: auto; }
+.card-header { padding: 6px 10px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.ch-ja { font-size: 12px; font-weight: 900; color: var(--accent); }
+.card-body { padding: 10px; flex: 1; overflow-y: auto; }
 
-/* カウンターUI */
-.counter-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 15px 0; }
-.btn-calc { 
-  width: 65px; height: 65px; border-radius: 14px; border: none; background: #eee; 
-  font-size: 32px; font-weight: 900; cursor: pointer; color: var(--dark); display: flex; align-items: center; justify-content: center;
-}
-.btn-calc:active { background: #ddd; transform: scale(0.95); }
-.act-val { font-family: 'Share Tech Mono'; font-size: 56px; font-weight: 700; color: var(--accent); line-height: 1; }
-.plan-sub { font-family: 'Share Tech Mono'; font-size: 20px; color: #888; font-weight: 700; border-top: 2px solid #eee; margin-top: 4px; text-align: center; }
+/* 実績カウンター */
+.counter-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
+.btn-calc { width: 55px; height: 55px; border-radius: 12px; border: none; background: #eee; font-size: 28px; font-weight: 900; cursor: pointer; }
+.act-val { font-family: 'Share Tech Mono'; font-size: 48px; font-weight: 700; color: var(--accent); line-height: 1; }
 
-.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+.btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 900; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-dark { background: var(--dark); color: #fff; }
+.btn-dark { background: var(--dark); color: #fff; margin-top: 8px; }
 
-/* タイムライン */
-.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 15px 15px; position: relative; }
-.tl-item::before { content: ""; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; left: -7px; top: 0; }
-.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 14px; }
-.tl-content { font-size: 13px; font-weight: 600; }
+/* クイック入力ボタン */
+.quick-grid { display: grid; grid-template-columns: 1fr; gap: 6px; margin-bottom: 15px; }
+.btn-quick { padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #fff; font-size: 11px; font-weight: 700; text-align: left; cursor: pointer; }
+.btn-quick:active { background: #f0f0f0; }
 
-/* モーダル */
+/* 4M選択チップス */
+.m4-select { display: flex; gap: 4px; margin-bottom: 12px; }
+.m4-chip { flex: 1; padding: 8px 0; background: #eee; text-align: center; border-radius: 6px; font-size: 11px; font-weight: 900; cursor: pointer; }
+.m4-chip.active { background: var(--dark); color: #fff; }
+
+.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 10px 12px; position: relative; }
+.tl-item::before { content: ""; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; position: absolute; left: -6px; top: 0; }
+.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 12px; }
+.tl-content { font-size: 12px; font-weight: 600; }
+
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 16px; overflow: hidden; border-top: 6px solid var(--accent); }
-.field { margin-bottom: 12px; padding: 0 15px; }
-.label { font-size: 11px; font-weight: 900; color: #555; display: block; margin-bottom: 4px; }
-input { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 16px; }
+.modal-content { background: #fff; width: 92%; max-width: 380px; border-radius: 16px; overflow: hidden; border-top: 6px solid var(--accent); }
 </style>
 </head>
 <body>
@@ -78,37 +80,38 @@ input { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-ra
 <header>
   <div class="h-left">
     <div class="h-title">FAM-PM <small>INPUT</small></div>
-    <div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE</div>
+    <div class="total-box">
+      <div class="total-item"><span class="total-label">累計計画</span><span class="total-val" id="total-plan">584</span></div>
+      <div class="total-item"><span class="total-label">累計実績</span><span class="total-val" id="total-act">562</span></div>
+    </div>
   </div>
   
-  <div class="h-center">
-    <div class="rd-badge">
-      <span class="rd-ja" id="head-rd-ja">第1ラウンド</span>
-      <span class="rd-en" id="head-rd-en">Round 1</span>
-    </div>
+  <div class="h-center" id="rd-icons-container">
+    <div class="rd-icon">1</div><div class="rd-icon">2</div><div class="rd-icon">3</div><div class="rd-icon">4</div>
+    <div class="rd-icon">5</div><div class="rd-icon">6</div><div class="rd-icon">7</div><div class="rd-icon">8</div>
   </div>
 
   <div class="h-right">
     <div class="h-clock" id="live-clock">00:00:00</div>
-    <div class="h-update">Last Update: <span id="last-update">--:--</span></div>
+    <div class="h-update">Last: <span id="last-update">--:--</span></div>
   </div>
 </header>
 
 <main>
   <div class="col-left">
     <section class="card" style="height: 100%;">
-      <div class="card-header"><i data-lucide="edit-3" size="16"></i><span class="ch-ja">実績入力 / Production Input</span></div>
+      <div class="card-header"><i data-lucide="edit-3" size="14"></i><span class="ch-ja">実績入力 / Production</span></div>
       <div class="card-body">
-        <div style="text-align: center; font-size: 11px; font-weight: 900; color: #666; margin-bottom: 5px;">実績数 / 計画数</div>
+        <div style="text-align: center; font-size: 10px; font-weight: 900; color: #666;">現ラウンド実績 / 計画</div>
         <div class="counter-container">
-          <button class="btn-calc" onclick="changeVal(-1)"><i data-lucide="minus"></i></button>
+          <button class="btn-calc" onclick="changeVal(-1)">-</button>
           <div class="act-val" id="disp-act">0</div>
-          <button class="btn-calc" onclick="changeVal(1)"><i data-lucide="plus"></i></button>
+          <button class="btn-calc" onclick="changeVal(1)">+</button>
         </div>
-        <div class="plan-sub">/ <span id="disp-plan">73</span></div>
+        <div style="text-align: center; font-family: 'Share Tech Mono'; font-size: 18px; color: #888;">/ <span id="disp-plan">73</span></div>
 
-        <div style="margin-top: 30px;">
-          <button class="btn btn-primary" onclick="submitData()"><i data-lucide="send"></i>実績を登録する</button>
+        <div style="margin-top: 20px;">
+          <button class="btn btn-primary" onclick="submitData()"><i data-lucide="send"></i>実績を登録</button>
           <button class="btn btn-dark" onclick="openModal()"><i data-lucide="plus-circle"></i>変化点を入力</button>
         </div>
       </div>
@@ -117,7 +120,7 @@ input { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-ra
 
   <div class="col-right">
     <section class="card" style="height: 100%;">
-      <div class="card-header"><i data-lucide="clock" size="16"></i><span class="ch-ja">変化点タイムライン / Timeline</span></div>
+      <div class="card-header"><i data-lucide="clock" size="14"></i><span class="ch-ja">変化点タイムライン / Timeline</span></div>
       <div class="card-body" id="timeline"></div>
     </section>
   </div>
@@ -125,72 +128,101 @@ input { width: 100%; padding: 12px; border: 1.5px solid var(--border); border-ra
 
 <div id="issueModal" class="modal-overlay">
   <div class="modal-content">
-    <div class="card-header"><span class="ch-ja">変化点登録</span></div>
+    <div class="card-header"><span class="ch-ja">変化点入力 (4M分類)</span></div>
     <div class="card-body">
-      <div class="field"><label class="label">内容 (Content)</label><input type="text" id="i-title" placeholder="故障、欠員など"></div>
-      <div class="field"><label class="label">開始時刻 (Start)</label><input type="time" id="i-start"></div>
-      <div class="btn-row" style="display:flex; gap:10px; padding: 0 15px 15px;">
-        <button class="btn btn-dark" style="background:#666;" onclick="closeModal()">キャンセル</button>
-        <button class="btn btn-primary" onclick="addIssue()">保存</button>
+      <div class="m4-select" id="m4-container">
+        <div class="m4-chip active">Man</div><div class="m4-chip">Machine</div><div class="m4-chip">Material</div><div class="m4-chip">Method</div>
       </div>
+
+      <div style="font-size: 10px; font-weight: 900; margin-bottom: 8px; color:#666;">クイック入力 (頻出5件)</div>
+      <div class="quick-grid">
+        <button class="btn-quick" onclick="quickInp('設備故障：チョコ停')">⚡ 設備故障：チョコ停</button>
+        <button class="btn-quick" onclick="quickInp('人員配置変更：交叉教育')">👤 人員配置変更：交叉教育</button>
+        <button class="btn-quick" onclick="quickInp('品質確認：初物確認')">🔍 品質確認：初物確認</button>
+        <button class="btn-quick" onclick="quickInp('材料欠品：搬送遅れ')">📦 材料欠品：搬送遅れ</button>
+        <button class="btn-quick" onclick="quickInp('治具交換：摩耗対策')">🔧 治具交換：摩耗対策</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
+        <button class="btn btn-dark" style="background:#00897B;" onclick="addIssue(false)">停止なし</button>
+        <button class="btn btn-primary" onclick="addIssue(true)">停止あり</button>
+      </div>
+      <button class="btn" style="background:#eee; color:#666; margin-top:8px;" onclick="closeModal()">キャンセル</button>
     </div>
   </div>
 </div>
 
 <script>
-let currentActual = 0;
-let currentPlan = 73;
+let curAct = 0;
+let curPlan = 73;
+let totalPlan = 584;
+let totalAct = 562;
 
-// 時計・更新時刻の自動更新
 function updateClock() {
   const now = new Date();
   document.getElementById('live-clock').innerText = now.toLocaleTimeString('ja-JP', { hour12: false });
-  
-  // ラウンドの自動判定（例：1時間ごとに1ラウンド進む簡易ロジック）
   const hour = now.getHours();
-  const rd = (hour < 8) ? 1 : (hour - 7); 
-  if(rd >= 1 && rd <= 8) setRoundDisplay(rd);
-}
+  let rd = (hour < 8) ? 1 : (hour - 7);
+  if(rd < 1) rd = 1; if(rd > 8) rd = 8;
+  
+  document.querySelectorAll('.rd-icon').forEach((icon, idx) => {
+    icon.classList.toggle('active', idx + 1 === rd);
+  });
 
-function setRoundDisplay(rd) {
-  document.getElementById('head-rd-ja').innerText = `第${rd}ラウンド`;
-  document.getElementById('head-rd-en').innerText = `Round ${rd}`;
+  // ラウンド初回判定時に実績を自動セット（シミュレーション）
+  if(!curAct) {
+    curAct = Math.floor(curPlan * 0.98);
+    document.getElementById('disp-act').innerText = curAct;
+  }
 }
 
 function changeVal(n) {
-  currentActual += n;
-  if(currentActual < 0) currentActual = 0;
-  document.getElementById('disp-act').innerText = currentActual;
+  curAct += n; if(curAct < 0) curAct = 0;
+  document.getElementById('disp-act').innerText = curAct;
 }
 
 function submitData() {
-  const now = new Date();
-  document.getElementById('last-update').innerText = now.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'});
+  document.getElementById('last-update').innerText = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
   alert('実績を保存しました');
 }
 
-// タイムライン関連
-let issues = [{ time: "08:15", title: "配置転換" }];
+// 変化点関連
+let issues = [{ time: "08:15", title: "初物確認 (Method)", stop: false }];
 function renderTimeline() {
   const tl = document.getElementById('timeline');
   tl.innerHTML = issues.map(i => `
     <div class="tl-item">
-      <div class="tl-time">${i.time}</div>
+      <div class="tl-time">${i.time} ${i.stop ? '⚠️停止あり' : ''}</div>
       <div class="tl-content">${i.title}</div>
     </div>
   `).join('');
 }
 
-function openModal() { document.getElementById('issueModal').classList.add('open'); }
-function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
-function addIssue() {
-  const title = document.getElementById('i-title').value;
-  if(!title) return;
-  const time = document.getElementById('i-start').value || "--:--";
-  issues.unshift({ time, title });
+function quickInp(val) {
+  const m4 = document.querySelector('.m4-chip.active').innerText;
+  const time = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+  issues.unshift({ time, title: `${val} (${m4})`, stop: false });
   renderTimeline();
   closeModal();
 }
+
+function addIssue(hasStop) {
+  const m4 = document.querySelector('.m4-chip.active').innerText;
+  const time = new Date().toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'});
+  issues.unshift({ time, title: `手入力変化点 (${m4})`, stop: hasStop });
+  renderTimeline();
+  closeModal();
+}
+
+document.querySelectorAll('.m4-chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.m4-chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+function openModal() { document.getElementById('issueModal').classList.add('open'); }
+function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
 
 document.addEventListener('DOMContentLoaded', () => {
   lucide.createIcons();
