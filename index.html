@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM MORNING MONITOR v13.1</title>
+<title>FAM MORNING MONITOR v13.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -35,7 +35,6 @@ main { flex: 1; display: grid; gap: 10px; padding: 10px; overflow-y: auto; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 th { background: #F8F9FA; position: sticky; top: 0; z-index: 10; padding: 6px 2px; border-bottom: 1px solid #ddd; }
 .th-ja { display: block; font-size: 10px; color: #333; }
-.th-en { display: block; font-size: 8px; color: #999; font-weight: normal; }
 td { padding: 8px 4px; border-bottom: 1px solid #eee; text-align: center; font-size: 12px; word-break: break-all; }
 .t-left { text-align: left; padding-left: 8px; }
 
@@ -53,7 +52,11 @@ footer { flex: 0 0 var(--footer-h); background: #263238; display: flex; padding:
 .modal-content { background: #fff; width: 98%; max-width: 1200px; border-radius: 16px; max-height: 98%; display: flex; flex-direction: column; overflow: hidden; }
 .modal-header { padding: 0 20px; height: 50px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 
-/* 生産詳細の階層表示用 */
+/* QR選択タブ */
+.qr-nav { display: flex; background: #eee; padding: 5px; gap: 5px; flex-shrink: 0; }
+.qr-nav-btn { flex: 1; padding: 10px 5px; border: none; border-radius: 6px; background: #ddd; font-size: 11px; font-weight: 900; cursor: pointer; }
+.qr-nav-btn.active { background: var(--accent); color: #fff; }
+
 .row-parent { cursor: pointer; background: #fff; }
 .row-child { background: #f9f9f9; display: none; }
 .row-child.is-open { display: table-row; }
@@ -63,7 +66,7 @@ footer { flex: 0 0 var(--footer-h); background: #263238; display: flex; padding:
 
 <header>
   <div class="h-left">
-    <div class="h-title">FAM MORNING MONITOR <small>v13.1</small></div>
+    <div class="h-title">FAM MORNING MONITOR <small>v13.2</small></div>
     <div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE SYSTEM</div>
   </div>
   <div class="h-clock" id="hClock">00:00:00</div>
@@ -74,7 +77,6 @@ footer { flex: 0 0 var(--footer-h); background: #263238; display: flex; padding:
     <div class="card-header"><i data-lucide="users" size="18" color="#D32F2F"></i><span class="ch-ja">出勤内容</span><span class="ch-en">Attendance</span></div>
     <div class="card-body">
       <table>
-        <colgroup><col style="width:30%"><col><col><col><col></colgroup>
         <thead><tr><th><span class="th-ja">ライン</span></th><th><span class="th-ja">年休</span></th><th><span class="th-ja">定員</span></th><th><span class="th-ja">率</span></th><th><span class="th-ja">判定</span></th></tr></thead>
         <tbody id="m-attend-body"></tbody>
       </table>
@@ -119,16 +121,30 @@ footer { flex: 0 0 var(--footer-h); background: #263238; display: flex; padding:
   <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label"><span class="lb-ja">遅れ詳細</span><span class="lb-en">ISSUE</span></div></button>
 </footer>
 
-<div id="modal-qr" class="modal-overlay" onclick="closeOnBg(event, 'qr')"><div class="modal-content"><div class="modal-header"><span>QR Sync</span><button onclick="closeModal('qr')">&times;</button></div><div style="padding:20px; text-align:center;"><img id="qrImg" src="" style="width:180px;"><p id="qrTxt" style="font-weight:bold;"></p></div></div></div>
+<div id="modal-qr" class="modal-overlay" onclick="closeOnBg(event, 'qr')">
+  <div class="modal-content">
+    <div class="modal-header"><span>連携QRコード選択 / Select QR</span><button onclick="closeModal('qr')">&times;</button></div>
+    <div class="qr-nav">
+      <button class="qr-nav-btn active" onclick="setQR('view','全体閲覧', this)">全体閲覧</button>
+      <button class="qr-nav-btn" onclick="setQR('at','出勤入力', this)">出勤入力</button>
+      <button class="qr-nav-btn" onclick="setQR('is','停止・不良入力', this)">停止・不良入力</button>
+      <button class="qr-nav-btn" onclick="setQR('nt','連絡入力', this)">連絡入力</button>
+    </div>
+    <div style="padding:30px; text-align:center;">
+      <img id="qrImg" src="" style="width:200px; border:4px solid #eee; padding:5px; background:#fff;">
+      <p id="qrTxt" style="font-weight:900; margin-top:15px; color:var(--accent); font-size:18px;"></p>
+    </div>
+  </div>
+</div>
+
 <div id="modal-attend" class="modal-overlay" onclick="closeOnBg(event, 'attend')"><div class="modal-content"><div class="modal-header"><span>出勤詳細 / Attendance Details</span><button onclick="closeModal('attend')">&times;</button></div><div class="card-body" id="det-attend"></div></div></div>
-<div id="modal-prod" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header"><span>生産実績詳細 / Production Details</span><button onclick="closeModal('prod')">&times;</button></div><div class="card-body" id="det-prod" style="font-size:10px;"></div></div></div>
+<div id="modal-prod" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header"><span>生産実績詳細 / Production Details</span><button onclick="closeModal('prod')">&times;</button></div><div class="card-body" id="det-prod"></div></div></div>
 <div id="modal-issue" class="modal-overlay" onclick="closeOnBg(event, 'issue')"><div class="modal-content"><div class="modal-header"><span>停止・不良詳細 / Issue Details</span><button onclick="closeModal('issue')">&times;</button></div><div class="card-body" id="det-issue"></div></div></div>
 
 <script>
-// サンプルデータ
 const MOCK = {
   attend: [{ line: "ABライン", paid: 2, cap: 24, rate: "92%", judge: "◎", list: [{ name: "田中一郎", status: "出", tyoku: "A" }] }, { line: "Dライン", paid: 4, cap: 30, rate: "87%", judge: "△", list: [{ name: "日野太郎", status: "休", tyoku: "A" }] }],
-  prod: [{ line: "ABライン", unit: "大型ENG", tyoku: "1直", plan: 73, act: 75, diff: "+2", monDiff: "▲56", tact: "6.50", stop: 19, ot: 102, oee: "96.60%", fix: 435, rounds:[7,8,7,8,7,8,7,8,7,8] }],
+  prod: [{ line: "ABライン", unit: "大型ENG", tyoku: "1直", plan: 73, act: 75, diff: "+2", monDiff: "▲56", tact: "6.50", stop: 19, ot: 102, oee: "96.60%", fix: 435, rounds:[7,8,7,8,7,8,7,8,7,8] }, { line: "Dライン", unit: "中型ENG", tyoku: "1直", plan: 104, act: 104, diff: "0", monDiff: "0", tact: "4.20", stop: 5, ot: 25, oee: "98.90%", fix: 435, rounds:[10,11,10,11,10,11,10,11,10,10] }],
   issue: [{ cat: "人", content: "体調不良", detail: "熱中症の為、日野さん病院へ受診", stop: 15, status: "済", cmt: "❕", detCmt: "受診後要結果報告" }, { cat: "設備", content: "工具破損", detail: "T-21工具以上摩耗により交換", stop: 20, status: "継続中", cmt: "❕", detCmt: "再発防止策提出お願いします" }],
   notice: [{ content: "4/1より生産調整により、組立ラインタクトタイム変更", from: "統括" }, { content: "13:00～防火３Ｓ活動にて、粉塵堆積について重点的に実施のこと", from: "工場長" }]
 };
@@ -141,31 +157,35 @@ function renderMain() {
 }
 
 function renderDetails() {
-  // 出勤詳細
   document.getElementById('det-attend').innerHTML = `<table><thead><tr><th>ライン</th><th>氏名</th><th>現況</th><th>直</th></tr></thead><tbody>` + 
     MOCK.attend.flatMap(l => l.list.map(m => `<tr><td>${l.line}</td><td>${m.name}</td><td>${m.status}</td><td>${m.tyoku}</td></tr>`)).join('') + `</tbody></table>`;
   
-  // 生産詳細（階層）
-  let ph = `<table><thead><tr><th>ライン</th><th>ユニット</th><th>直</th><th>計画</th><th>実績</th><th>差</th><th>当月進遅</th><th>タクト</th><th>停止</th><th>残業</th><th>可動率</th><th>定時稼働</th></tr></thead><tbody>`;
+  let ph = `<table><thead><tr><th>ライン</th><th>ユニット</th><th>直</th><th>計画</th><th>実績</th><th>差</th><th>当月進遅</th><th>タクト</th><th>停止</th><th>残業</th><th>可動率</th><th>定時</th></tr></thead><tbody>`;
   MOCK.prod.forEach((d, i) => {
     ph += `<tr class="row-parent" onclick="document.getElementById('r-${i}').classList.toggle('is-open')"><td>▶ ${d.line}</td><td>${d.unit}</td><td>${d.tyoku}</td><td>${d.plan}</td><td>${d.act}</td><td>${d.diff}</td><td>${d.monDiff}</td><td>${d.tact}</td><td>${d.stop}</td><td>${d.ot}</td><td>${d.oee}</td><td>${d.fix}</td></tr>`;
-    ph += `<tr id="r-${i}" class="row-child"><td colspan="12"><div style="display:flex; padding:10px; background:#e8f5e9;">` + d.rounds.map((r, idx) => `<div style="flex:1; text-align:center; border-right:1px solid #ccc;">${idx+1}rd<br><b>${r}</b></div>`).join('') + `</div></td></tr>`;
+    ph += `<tr id="r-${i}" class="row-child"><td colspan="12"><div style="display:flex; padding:8px; background:#e8f5e9;">` + d.rounds.map((r, idx) => `<div style="flex:1; text-align:center; border-right:1px solid #ccc;">${idx+1}rd<br><b>${r}</b></div>`).join('') + `</div></td></tr>`;
   });
   document.getElementById('det-prod').innerHTML = ph + `</tbody></table>`;
 
-  // 停止詳細
   document.getElementById('det-issue').innerHTML = `<table><thead><tr><th>区分</th><th>内容</th><th>詳細</th><th>停止</th><th>状況</th><th>コメ</th><th>詳細コメント</th></tr></thead><tbody>` + 
     MOCK.issue.map(i => `<tr><td>${i.cat}</td><td>${i.content}</td><td class="t-left">${i.detail}</td><td>${i.stop}</td><td>${i.status}</td><td>${i.cmt}</td><td class="t-left">${i.detCmt}</td></tr>`).join('') + `</tbody></table>`;
 }
 
 function openModal(id) {
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('is-open'));
-  if(id === 'qr') { document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=FAM_SYNC`; document.getElementById('qrTxt').innerText="全体閲覧"; }
+  if(id === 'qr') setQR('view','全体閲覧', document.querySelector('.qr-nav-btn'));
   renderDetails();
   document.getElementById('modal-' + id).classList.add('is-open');
 }
 function closeModal(id) { document.getElementById('modal-' + id).classList.remove('is-open'); }
 function closeOnBg(e, id) { if(e.target.classList.contains('modal-overlay')) closeModal(id); }
+
+function setQR(type, label, btn) {
+  document.querySelectorAll('.qr-nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('qrTxt').innerText = label;
+  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('https://example.com/fam/'+type)}`;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP', { hour12: false }); }, 1000);
