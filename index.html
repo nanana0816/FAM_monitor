@@ -2,195 +2,169 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>FAM MORNING MONITOR v13.2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>FAM-PM 入力システム v14.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 :root {
-  --bg: #F0F2F5; --accent: #D32F2F; --accent-light: #E57373; --border: #BDBDBD; 
-  --header-h: 65px; --footer-h: 90px; --radius: 12px;
+  --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; 
+  --dark: #263238; --border: #BDBDBD; --radius: 12px;
+  --header-h: 65px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; width: 100%; overflow: hidden; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; }
+html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--dark); overflow: hidden; }
 body { display: flex; flex-direction: column; }
 
-header { flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000; }
+/* ヘッダー：モニターと共通 */
+header { 
+  flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; 
+  padding: 0 20px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
+}
+.h-left { display: flex; flex-direction: column; }
 .h-title { font-size: 18px; font-weight: 900; color: var(--accent); line-height: 1.1; }
-.h-subtitle { font-size: 10px; font-weight: 700; color: #666; }
-.h-clock { font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: 700; color: var(--accent); }
+.h-subtitle { font-size: 10px; font-weight: 700; color: #666; letter-spacing: 0.05em; }
 
-main { flex: 1; display: grid; gap: 10px; padding: 10px; overflow-y: auto; }
-@media (orientation: landscape) { main { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; } }
-@media (orientation: portrait) { main { grid-template-columns: 1fr; grid-template-rows: repeat(4, 1fr); } }
+/* メイン：上下2段構成 */
+main { flex: 1; display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow-y: auto; }
 
-.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; }
-.card-header { padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* カードスタイル */
+.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.card-header { padding: 8px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .ch-ja { font-size: 13px; font-weight: 900; color: var(--accent); }
 .ch-en { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; margin-left: 4px; }
-.card-body { flex: 1; overflow-y: auto; }
+.card-body { padding: 15px; }
 
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-th { background: #F8F9FA; position: sticky; top: 0; z-index: 10; padding: 6px 2px; border-bottom: 1px solid #ddd; }
-.th-ja { display: block; font-size: 10px; color: #333; }
-td { padding: 8px 4px; border-bottom: 1px solid #eee; text-align: center; font-size: 12px; word-break: break-all; }
-.t-left { text-align: left; padding-left: 8px; }
+/* 入力グリッド */
+.input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.label { font-size: 11px; font-weight: 900; color: #555; }
+input, select, textarea { 
+  width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 16px; 
+  font-family: 'Share Tech Mono', monospace; background: #fafafa; transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
 
-.stamp { color: #D32F2F; font-weight: 900; font-size: 18px; }
-.cmt-icon { color: #FFA000; font-weight: 900; font-size: 16px; }
+/* ボタン類 */
+.btn-row { display: flex; gap: 10px; margin-top: 10px; }
+.btn { 
+  flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 900; font-size: 14px; 
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-dark { background: var(--dark); color: #fff; }
+.btn:active { opacity: 0.8; transform: scale(0.98); }
 
-footer { flex: 0 0 var(--footer-h); background: #263238; display: flex; padding: 10px; gap: 6px; z-index: 10000; }
-.nav-btn { flex: 1; border: none; border-radius: 10px; color: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #455A64; }
-.btn-qr { background: var(--accent) !important; }
-.lb-ja { font-size: 10px; font-weight: 900; }
-.lb-en { font-size: 8px; opacity: 0.7; }
+/* 下部カード専用：変化点入力 */
+.issue-card { border-top: 4px solid var(--accent); }
 
-.modal-overlay { display: none; position: fixed; top: var(--header-h); left: 0; width: 100%; height: calc(100% - var(--header-h) - var(--footer-h)); background: rgba(0,0,0,0.85); z-index: 9000; align-items: center; justify-content: center; }
-.modal-overlay.is-open { display: flex; }
-.modal-content { background: #fff; width: 98%; max-width: 1200px; border-radius: 16px; max-height: 98%; display: flex; flex-direction: column; overflow: hidden; }
-.modal-header { padding: 0 20px; height: 50px; background: var(--accent-light); color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+/* トースト通知 */
+#toast { 
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+  background: var(--dark); color: #fff; padding: 12px 24px; border-radius: 30px; 
+  font-size: 13px; font-weight: 700; display: none; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
 
-/* QR選択タブ */
-.qr-nav { display: flex; background: #eee; padding: 5px; gap: 5px; flex-shrink: 0; }
-.qr-nav-btn { flex: 1; padding: 10px 5px; border: none; border-radius: 6px; background: #ddd; font-size: 11px; font-weight: 900; cursor: pointer; }
-.qr-nav-btn.active { background: var(--accent); color: #fff; }
-
-.row-parent { cursor: pointer; background: #fff; }
-.row-child { background: #f9f9f9; display: none; }
-.row-child.is-open { display: table-row; }
+/* ラウンド・ライン選択用簡易チップス */
+.chip-group { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px; }
+.chip { padding: 6px 12px; background: #eee; border-radius: 20px; font-size: 11px; font-weight: 900; white-space: nowrap; cursor: pointer; }
+.chip.active { background: var(--accent); color: #fff; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="h-left">
-    <div class="h-title">FAM MORNING MONITOR <small>v13.2</small></div>
-    <div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE SYSTEM</div>
+    <div class="h-title">FAM-PM <small>INPUT</small></div>
+    <div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE INPUT</div>
   </div>
-  <div class="h-clock" id="hClock">00:00:00</div>
+  <div id="line-display" style="font-size:12px; font-weight:900; color:var(--dark);">未選択</div>
 </header>
 
 <main>
-  <article class="card">
-    <div class="card-header"><i data-lucide="users" size="18" color="#D32F2F"></i><span class="ch-ja">出勤内容</span><span class="ch-en">Attendance</span></div>
+  <section class="card">
+    <div class="card-header"><i data-lucide="edit-3" size="16" color="#D32F2F"></i><span class="ch-ja">生産実績入力</span><span class="ch-en">Production Input</span></div>
     <div class="card-body">
-      <table>
-        <thead><tr><th><span class="th-ja">ライン</span></th><th><span class="th-ja">年休</span></th><th><span class="th-ja">定員</span></th><th><span class="th-ja">率</span></th><th><span class="th-ja">判定</span></th></tr></thead>
-        <tbody id="m-attend-body"></tbody>
-      </table>
+      <div class="chip-group" id="line-chips">
+        <div class="chip active">ABライン</div><div class="chip">Dライン</div><div class="chip">大型組立</div>
+      </div>
+      <div class="chip-group" id="round-chips">
+        <div class="chip active">1rd</div><div class="chip">2rd</div><div class="chip">3rd</div><div class="chip">4rd</div><div class="chip">5rd</div><div class="chip">6rd</div><div class="chip">7rd</div><div class="chip">8rd</div>
+      </div>
+      
+      <div class="input-grid">
+        <div class="field"><label class="label">計画数 (Plan)</label><input type="number" id="p-plan" placeholder="0"></div>
+        <div class="field"><label class="label">実績数 (Actual)</label><input type="number" id="p-act" placeholder="0"></div>
+        <div class="field"><label class="label">不良数 (Defects)</label><input type="number" id="p-bad" placeholder="0"></div>
+        <div class="field"><label class="label">残業時間 (OT min)</label><input type="number" id="p-ot" placeholder="0"></div>
+      </div>
+      <button class="btn btn-primary" onclick="submitData('実績')"><i data-lucide="send"></i>実績を登録する</button>
     </div>
-  </article>
+  </section>
 
-  <article class="card">
-    <div class="card-header"><i data-lucide="factory" size="18" color="#D32F2F"></i><span class="ch-ja">生産実績</span><span class="ch-en">Production</span></div>
+  <section class="card issue-card">
+    <div class="card-header"><i data-lucide="alert-circle" size="16" color="#D32F2F"></i><span class="ch-ja">停止・不良入力 (変化点)</span><span class="ch-en">Downtime & Issues</span></div>
     <div class="card-body">
-      <table>
-        <thead><tr><th><span class="th-ja">ライン</span></th><th><span class="th-ja">計画</span></th><th><span class="th-ja">実績</span></th><th><span class="th-ja">差</span></th><th><span class="th-ja">停止</span></th><th><span class="th-ja">残業</span></th><th><span class="th-ja">稼働率</span></th></tr></thead>
-        <tbody id="m-prod-body"></tbody>
-      </table>
+      <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="field">
+          <label class="label">区分 (Category)</label>
+          <select id="i-cat"><option>設備</option><option>人</option><option>品質</option><option>材料</option></select>
+        </div>
+        <div class="field"><label class="label">内容 (Content)</label><input type="text" id="i-title" placeholder="故障、欠員など"></div>
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label class="label">詳細・対応 (Detail / Action)</label>
+        <textarea id="i-detail" rows="2" placeholder="詳細な状況と実施した処置を記入"></textarea>
+      </div>
+      <div class="input-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="field"><label class="label">停止開始 (Start)</label><input type="time" id="i-start"></div>
+        <div class="field"><label class="label">停止終了 (End)</label><input type="time" id="i-end"></div>
+        <div class="field">
+          <label class="label">状況 (Status)</label>
+          <select id="i-stat"><option>継続中</option><option>復旧済み</option></select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-dark" onclick="submitData('変化点')"><i data-lucide="save"></i>変化点を保存</button>
+      </div>
     </div>
-  </article>
-
-  <article class="card">
-    <div class="card-header"><i data-lucide="alert-triangle" size="18" color="#D32F2F"></i><span class="ch-ja">停止・不良</span><span class="ch-en">Downtime</span></div>
-    <div class="card-body">
-      <table>
-        <thead><tr><th><span class="th-ja">区分</span></th><th><span class="th-ja">内容</span></th><th><span class="th-ja">停止</span></th><th><span class="th-ja">状況</span></th><th><span class="th-ja">コメ</span></th></tr></thead>
-        <tbody id="m-issue-body"></tbody>
-      </table>
-    </div>
-  </article>
-
-  <article class="card">
-    <div class="card-header"><i data-lucide="megaphone" size="18" color="#D32F2F"></i><span class="ch-ja">連絡事項</span><span class="ch-en">Notices</span></div>
-    <div class="card-body">
-      <table>
-        <thead><tr><th class="t-left"><span class="th-ja">内容</span></th><th style="width:70px;"><span class="th-ja">発信元</span></th></tr></thead>
-        <tbody id="m-notice-body"></tbody>
-      </table>
-    </div>
-  </article>
+  </section>
 </main>
 
-<footer>
-  <button class="nav-btn btn-qr" onclick="openModal('qr')"><i data-lucide="qr-code"></i><div class="label"><span class="lb-ja">連携QR</span><span class="lb-en">SYNC</span></div></button>
-  <button class="nav-btn" onclick="openModal('attend')"><i data-lucide="list-checks"></i><div class="label"><span class="lb-ja">出勤詳細</span><span class="lb-en">ATTEND</span></div></button>
-  <button class="nav-btn" onclick="openModal('prod')"><i data-lucide="bar-chart-3"></i><div class="label"><span class="lb-ja">生産詳細</span><span class="lb-en">PROD</span></div></button>
-  <button class="nav-btn" onclick="openModal('issue')"><i data-lucide="search"></i><div class="label"><span class="lb-ja">遅れ詳細</span><span class="lb-en">ISSUE</span></div></button>
-</footer>
-
-<div id="modal-qr" class="modal-overlay" onclick="closeOnBg(event, 'qr')">
-  <div class="modal-content">
-    <div class="modal-header"><span>連携QRコード選択 / Select QR</span><button onclick="closeModal('qr')">&times;</button></div>
-    <div class="qr-nav">
-      <button class="qr-nav-btn active" onclick="setQR('view','全体閲覧', this)">全体閲覧</button>
-      <button class="qr-nav-btn" onclick="setQR('at','出勤入力', this)">出勤入力</button>
-      <button class="qr-nav-btn" onclick="setQR('is','停止・不良入力', this)">停止・不良入力</button>
-      <button class="qr-nav-btn" onclick="setQR('nt','連絡入力', this)">連絡入力</button>
-    </div>
-    <div style="padding:30px; text-align:center;">
-      <img id="qrImg" src="" style="width:200px; border:4px solid #eee; padding:5px; background:#fff;">
-      <p id="qrTxt" style="font-weight:900; margin-top:15px; color:var(--accent); font-size:18px;"></p>
-    </div>
-  </div>
-</div>
-
-<div id="modal-attend" class="modal-overlay" onclick="closeOnBg(event, 'attend')"><div class="modal-content"><div class="modal-header"><span>出勤詳細 / Attendance Details</span><button onclick="closeModal('attend')">&times;</button></div><div class="card-body" id="det-attend"></div></div></div>
-<div id="modal-prod" class="modal-overlay" onclick="closeOnBg(event, 'prod')"><div class="modal-content"><div class="modal-header"><span>生産実績詳細 / Production Details</span><button onclick="closeModal('prod')">&times;</button></div><div class="card-body" id="det-prod"></div></div></div>
-<div id="modal-issue" class="modal-overlay" onclick="closeOnBg(event, 'issue')"><div class="modal-content"><div class="modal-header"><span>停止・不良詳細 / Issue Details</span><button onclick="closeModal('issue')">&times;</button></div><div class="card-body" id="det-issue"></div></div></div>
+<div id="toast"></div>
 
 <script>
-const MOCK = {
-  attend: [{ line: "ABライン", paid: 2, cap: 24, rate: "92%", judge: "◎", list: [{ name: "田中一郎", status: "出", tyoku: "A" }] }, { line: "Dライン", paid: 4, cap: 30, rate: "87%", judge: "△", list: [{ name: "日野太郎", status: "休", tyoku: "A" }] }],
-  prod: [{ line: "ABライン", unit: "大型ENG", tyoku: "1直", plan: 73, act: 75, diff: "+2", monDiff: "▲56", tact: "6.50", stop: 19, ot: 102, oee: "96.60%", fix: 435, rounds:[7,8,7,8,7,8,7,8,7,8] }, { line: "Dライン", unit: "中型ENG", tyoku: "1直", plan: 104, act: 104, diff: "0", monDiff: "0", tact: "4.20", stop: 5, ot: 25, oee: "98.90%", fix: 435, rounds:[10,11,10,11,10,11,10,11,10,10] }],
-  issue: [{ cat: "人", content: "体調不良", detail: "熱中症の為、日野さん病院へ受診", stop: 15, status: "済", cmt: "❕", detCmt: "受診後要結果報告" }, { cat: "設備", content: "工具破損", detail: "T-21工具以上摩耗により交換", stop: 20, status: "継続中", cmt: "❕", detCmt: "再発防止策提出お願いします" }],
-  notice: [{ content: "4/1より生産調整により、組立ラインタクトタイム変更", from: "統括" }, { content: "13:00～防火３Ｓ活動にて、粉塵堆積について重点的に実施のこと", from: "工場長" }]
-};
-
-function renderMain() {
-  document.getElementById('m-attend-body').innerHTML = MOCK.attend.map(d => `<tr><td class="t-left">${d.line}</td><td>${d.paid}</td><td>${d.cap}</td><td>${d.rate}</td><td class="stamp">${d.judge}</td></tr>`).join('');
-  document.getElementById('m-prod-body').innerHTML = MOCK.prod.map(d => `<tr><td class="t-left">${d.line}</td><td>${d.plan}</td><td>${d.act}</td><td>${d.diff}</td><td>${d.stop}</td><td>${d.ot}</td><td>${d.oee}</td></tr>`).join('');
-  document.getElementById('m-issue-body').innerHTML = MOCK.issue.map(d => `<tr><td>${d.cat}</td><td>${d.content}</td><td>${d.stop}</td><td>${d.status}</td><td class="cmt-icon">${d.cmt}</td></tr>`).join('');
-  document.getElementById('m-notice-body').innerHTML = MOCK.notice.map(d => `<tr><td class="t-left">${d.content}</td><td>${d.from}</td></tr>`).join('');
-}
-
-function renderDetails() {
-  document.getElementById('det-attend').innerHTML = `<table><thead><tr><th>ライン</th><th>氏名</th><th>現況</th><th>直</th></tr></thead><tbody>` + 
-    MOCK.attend.flatMap(l => l.list.map(m => `<tr><td>${l.line}</td><td>${m.name}</td><td>${m.status}</td><td>${m.tyoku}</td></tr>`)).join('') + `</tbody></table>`;
+// UI制御
+function submitData(type) {
+  const toast = document.getElementById('toast');
+  toast.innerText = `✅ ${type}の登録が完了しました。`;
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 2500);
   
-  let ph = `<table><thead><tr><th>ライン</th><th>ユニット</th><th>直</th><th>計画</th><th>実績</th><th>差</th><th>当月進遅</th><th>タクト</th><th>停止</th><th>残業</th><th>可動率</th><th>定時</th></tr></thead><tbody>`;
-  MOCK.prod.forEach((d, i) => {
-    ph += `<tr class="row-parent" onclick="document.getElementById('r-${i}').classList.toggle('is-open')"><td>▶ ${d.line}</td><td>${d.unit}</td><td>${d.tyoku}</td><td>${d.plan}</td><td>${d.act}</td><td>${d.diff}</td><td>${d.monDiff}</td><td>${d.tact}</td><td>${d.stop}</td><td>${d.ot}</td><td>${d.oee}</td><td>${d.fix}</td></tr>`;
-    ph += `<tr id="r-${i}" class="row-child"><td colspan="12"><div style="display:flex; padding:8px; background:#e8f5e9;">` + d.rounds.map((r, idx) => `<div style="flex:1; text-align:center; border-right:1px solid #ccc;">${idx+1}rd<br><b>${r}</b></div>`).join('') + `</div></td></tr>`;
+  // 入力リセット（デモ用）
+  if(type === '変化点') {
+    document.getElementById('i-title').value = '';
+    document.getElementById('i-detail').value = '';
+  }
+}
+
+// チップス選択イベント
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    this.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+    if(this.parentElement.id === 'line-chips') {
+      document.getElementById('line-display').innerText = this.innerText;
+    }
   });
-  document.getElementById('det-prod').innerHTML = ph + `</tbody></table>`;
+});
 
-  document.getElementById('det-issue').innerHTML = `<table><thead><tr><th>区分</th><th>内容</th><th>詳細</th><th>停止</th><th>状況</th><th>コメ</th><th>詳細コメント</th></tr></thead><tbody>` + 
-    MOCK.issue.map(i => `<tr><td>${i.cat}</td><td>${i.content}</td><td class="t-left">${i.detail}</td><td>${i.stop}</td><td>${i.status}</td><td>${i.cmt}</td><td class="t-left">${i.detCmt}</td></tr>`).join('') + `</tbody></table>`;
-}
-
-function openModal(id) {
-  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('is-open'));
-  if(id === 'qr') setQR('view','全体閲覧', document.querySelector('.qr-nav-btn'));
-  renderDetails();
-  document.getElementById('modal-' + id).classList.add('is-open');
-}
-function closeModal(id) { document.getElementById('modal-' + id).classList.remove('is-open'); }
-function closeOnBg(e, id) { if(e.target.classList.contains('modal-overlay')) closeModal(id); }
-
-function setQR(type, label, btn) {
-  document.querySelectorAll('.qr-nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('qrTxt').innerText = label;
-  document.getElementById('qrImg').src=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('https://example.com/fam/'+type)}`;
-}
-
+// 初期表示
 document.addEventListener('DOMContentLoaded', () => {
-  setInterval(() => { document.getElementById('hClock').textContent = new Date().toLocaleTimeString('ja-JP', { hour12: false }); }, 1000);
-  renderMain();
   lucide.createIcons();
+  document.getElementById('line-display').innerText = "ABライン";
 });
 </script>
 </body>
