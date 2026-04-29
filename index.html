@@ -2,169 +2,156 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>FAM-PM 入力システム v14.0</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FAM-PM 入力 v14.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 :root {
-  --bg: #F0F2F5; --panel: #FFFFFF; --accent: #D32F2F; 
-  --dark: #263238; --border: #BDBDBD; --radius: 12px;
+  --bg: #F0F2F5; --accent: #D32F2F; --dark: #263238; --border: #BDBDBD; --radius: 12px;
   --header-h: 65px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: var(--bg); font-family: 'Noto Sans JP', sans-serif; color: var(--dark); overflow: hidden; }
 body { display: flex; flex-direction: column; }
 
-/* ヘッダー：モニターと共通 */
-header { 
-  flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; 
-  padding: 0 20px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000;
-}
-.h-left { display: flex; flex-direction: column; }
+header { flex: 0 0 var(--header-h); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: #fff; border-bottom: 4px solid var(--accent); z-index: 1000; }
 .h-title { font-size: 18px; font-weight: 900; color: var(--accent); line-height: 1.1; }
-.h-subtitle { font-size: 10px; font-weight: 700; color: #666; letter-spacing: 0.05em; }
+.h-subtitle { font-size: 10px; font-weight: 700; color: #666; }
 
-/* メイン：上下2段構成 */
-main { flex: 1; display: flex; flex-direction: column; padding: 10px; gap: 10px; overflow-y: auto; }
+/* レイアウト：左(入力) 45% : 右(タイムライン) 55% */
+main { flex: 1; display: flex; padding: 10px; gap: 10px; overflow: hidden; }
+.col-left { flex: 0 0 42%; display: flex; flex-direction: column; gap: 10px; }
+.col-right { flex: 1; display: flex; flex-direction: column; }
 
-/* カードスタイル */
-.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 .card-header { padding: 8px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .ch-ja { font-size: 13px; font-weight: 900; color: var(--accent); }
-.ch-en { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; margin-left: 4px; }
-.card-body { padding: 15px; }
+.card-body { padding: 12px; flex: 1; overflow-y: auto; }
 
-/* 入力グリッド */
-.input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 15px; }
-.field { display: flex; flex-direction: column; gap: 4px; }
-.label { font-size: 11px; font-weight: 900; color: #555; }
-input, select, textarea { 
-  width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 16px; 
-  font-family: 'Share Tech Mono', monospace; background: #fafafa; transition: border-color 0.2s;
-}
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+/* 入力パーツ */
+.field { margin-bottom: 10px; }
+.label { font-size: 11px; font-weight: 900; color: #555; display: block; margin-bottom: 4px; }
+input { width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 18px; font-family: 'Share Tech Mono', monospace; }
+input:focus { outline: none; border-color: var(--accent); background: #fff; }
 
-/* ボタン類 */
-.btn-row { display: flex; gap: 10px; margin-top: 10px; }
-.btn { 
-  flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: 900; font-size: 14px; 
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
-}
+.btn { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: 900; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-dark { background: var(--dark); color: #fff; }
-.btn:active { opacity: 0.8; transform: scale(0.98); }
 
-/* 下部カード専用：変化点入力 */
-.issue-card { border-top: 4px solid var(--accent); }
+/* タイムライン */
+.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 15px 15px; position: relative; }
+.tl-item::before { content: ""; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: absolute; left: -7px; top: 0; }
+.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 14px; }
+.tl-content { font-size: 13px; font-weight: 500; margin-top: 2px; }
+.tl-status { display: inline-block; padding: 2px 6px; font-size: 10px; border-radius: 4px; color: #fff; margin-top: 4px; }
 
-/* トースト通知 */
-#toast { 
-  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-  background: var(--dark); color: #fff; padding: 12px 24px; border-radius: 30px; 
-  font-size: 13px; font-weight: 700; display: none; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
+/* モーダル */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal-content { background: #fff; width: 90%; max-width: 400px; border-radius: 16px; overflow: hidden; border-top: 6px solid var(--accent); }
 
-/* ラウンド・ライン選択用簡易チップス */
-.chip-group { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 10px; }
-.chip { padding: 6px 12px; background: #eee; border-radius: 20px; font-size: 11px; font-weight: 900; white-space: nowrap; cursor: pointer; }
+/* チップス */
+.chip-group { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.chip { padding: 4px 10px; background: #eee; border-radius: 15px; font-size: 10px; font-weight: 900; cursor: pointer; }
 .chip.active { background: var(--accent); color: #fff; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-left">
-    <div class="h-title">FAM-PM <small>INPUT</small></div>
-    <div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE INPUT</div>
-  </div>
-  <div id="line-display" style="font-size:12px; font-weight:900; color:var(--dark);">未選択</div>
+  <div class="h-left"><div class="h-title">FAM-PM <small>INPUT</small></div><div class="h-subtitle">FACTORY ANALYSIS & MAINTENANCE</div></div>
+  <div id="cur-info" style="font-size:12px; font-weight:900;">ABライン | 1rd</div>
 </header>
 
 <main>
-  <section class="card">
-    <div class="card-header"><i data-lucide="edit-3" size="16" color="#D32F2F"></i><span class="ch-ja">生産実績入力</span><span class="ch-en">Production Input</span></div>
-    <div class="card-body">
-      <div class="chip-group" id="line-chips">
-        <div class="chip active">ABライン</div><div class="chip">Dライン</div><div class="chip">大型組立</div>
+  <div class="col-left">
+    <section class="card">
+      <div class="card-header"><i data-lucide="edit-3" size="16"></i><span class="ch-ja">実績入力</span></div>
+      <div class="card-body">
+        <div class="chip-group">
+          <div class="chip active">1rd</div><div class="chip">2rd</div><div class="chip">3rd</div><div class="chip">4rd</div><div class="chip">5rd</div><div class="chip">6rd</div><div class="chip">7rd</div><div class="chip">8rd</div>
+        </div>
+        <div class="field"><label class="label">計画数 (Plan)</label><input type="number" value="73"></div>
+        <div class="field"><label class="label">実績数 (Actual)</label><input type="number" id="inp-act"></div>
+        <div class="field"><label class="label">不良数 (Defects)</label><input type="number" value="0"></div>
+        <button class="btn btn-primary" onclick="alert('実績を登録しました')"><i data-lucide="send"></i>登録送信</button>
       </div>
-      <div class="chip-group" id="round-chips">
-        <div class="chip active">1rd</div><div class="chip">2rd</div><div class="chip">3rd</div><div class="chip">4rd</div><div class="chip">5rd</div><div class="chip">6rd</div><div class="chip">7rd</div><div class="chip">8rd</div>
-      </div>
-      
-      <div class="input-grid">
-        <div class="field"><label class="label">計画数 (Plan)</label><input type="number" id="p-plan" placeholder="0"></div>
-        <div class="field"><label class="label">実績数 (Actual)</label><input type="number" id="p-act" placeholder="0"></div>
-        <div class="field"><label class="label">不良数 (Defects)</label><input type="number" id="p-bad" placeholder="0"></div>
-        <div class="field"><label class="label">残業時間 (OT min)</label><input type="number" id="p-ot" placeholder="0"></div>
-      </div>
-      <button class="btn btn-primary" onclick="submitData('実績')"><i data-lucide="send"></i>実績を登録する</button>
-    </div>
-  </section>
+    </section>
+    
+    <button class="btn btn-dark" onclick="openModal()"><i data-lucide="plus-circle"></i>変化点入力</button>
+  </div>
 
-  <section class="card issue-card">
-    <div class="card-header"><i data-lucide="alert-circle" size="16" color="#D32F2F"></i><span class="ch-ja">停止・不良入力 (変化点)</span><span class="ch-en">Downtime & Issues</span></div>
-    <div class="card-body">
-      <div class="input-grid" style="grid-template-columns: 1fr 1fr;">
-        <div class="field">
-          <label class="label">区分 (Category)</label>
-          <select id="i-cat"><option>設備</option><option>人</option><option>品質</option><option>材料</option></select>
+  <div class="col-right">
+    <section class="card" style="height: 100%;">
+      <div class="card-header"><i data-lucide="clock" size="16"></i><span class="ch-ja">変化点タイムライン</span></div>
+      <div class="card-body" id="timeline">
         </div>
-        <div class="field"><label class="label">内容 (Content)</label><input type="text" id="i-title" placeholder="故障、欠員など"></div>
-      </div>
-      <div class="field" style="margin-bottom:12px;">
-        <label class="label">詳細・対応 (Detail / Action)</label>
-        <textarea id="i-detail" rows="2" placeholder="詳細な状況と実施した処置を記入"></textarea>
-      </div>
-      <div class="input-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-        <div class="field"><label class="label">停止開始 (Start)</label><input type="time" id="i-start"></div>
-        <div class="field"><label class="label">停止終了 (End)</label><input type="time" id="i-end"></div>
-        <div class="field">
-          <label class="label">状況 (Status)</label>
-          <select id="i-stat"><option>継続中</option><option>復旧済み</option></select>
-        </div>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-dark" onclick="submitData('変化点')"><i data-lucide="save"></i>変化点を保存</button>
-      </div>
-    </div>
-  </section>
+    </section>
+  </div>
 </main>
 
-<div id="toast"></div>
+<div id="issueModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="card-header"><span>変化点入力</span></div>
+    <div class="card-body">
+      <div class="field"><label class="label">区分</label><select id="i-cat" style="width:100%; padding:8px;"><option>設備</option><option>人</option><option>品質</option></select></div>
+      <div class="field"><label class="label">内容</label><input type="text" id="i-title" placeholder="例：工具破損"></div>
+      <div class="field"><label class="label">詳細</label><input type="text" id="i-detail" placeholder="詳細コメント"></div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <div class="field"><label class="label">開始</label><input type="time" id="i-start"></div>
+        <div class="field"><label class="label">終了</label><input type="time" id="i-end"></div>
+      </div>
+      <div class="btn-row" style="display:flex; gap:10px;">
+        <button class="btn btn-dark" style="background:#666;" onclick="closeModal()">キャンセル</button>
+        <button class="btn btn-primary" onclick="addIssue()">保存する</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-// UI制御
-function submitData(type) {
-  const toast = document.getElementById('toast');
-  toast.innerText = `✅ ${type}の登録が完了しました。`;
-  toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 2500);
-  
-  // 入力リセット（デモ用）
-  if(type === '変化点') {
-    document.getElementById('i-title').value = '';
-    document.getElementById('i-detail').value = '';
-  }
+// データ管理
+let issues = [
+  { time: "08:15", title: "配置転換", detail: "交叉教育の為 田中⇔佐藤入替", cat: "人", status: "済" }
+];
+
+function renderTimeline() {
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = issues.map(i => `
+    <div class="tl-item">
+      <div class="tl-time">${i.time} - ${i.cat}</div>
+      <div class="tl-content"><b>${i.title}</b><br><small>${i.detail}</small></div>
+      <div class="tl-status" style="background:${i.status==='済'?'#00897B':'#D32F2F'}">${i.status}</div>
+    </div>
+  `).join('');
 }
 
-// チップス選択イベント
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', function() {
-    this.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    this.classList.add('active');
-    if(this.parentElement.id === 'line-chips') {
-      document.getElementById('line-display').innerText = this.innerText;
-    }
-  });
-});
+function openModal() { document.getElementById('issueModal').classList.add('open'); }
+function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
 
-// 初期表示
+function addIssue() {
+  const time = document.getElementById('i-start').value || "13:00";
+  const title = document.getElementById('i-title').value;
+  const detail = document.getElementById('i-detail').value;
+  const cat = document.getElementById('i-cat').value;
+  const end = document.getElementById('i-end').value;
+
+  if(!title) return alert("内容を入力してください");
+
+  issues.unshift({ time, title, detail, cat, status: end ? "済" : "継続中" });
+  renderTimeline();
+  closeModal();
+  // フォームリセット
+  document.getElementById('i-title').value = "";
+  document.getElementById('i-detail').value = "";
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   lucide.createIcons();
-  document.getElementById('line-display').innerText = "ABライン";
+  renderTimeline();
 });
 </script>
 </body>
