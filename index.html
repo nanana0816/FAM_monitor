@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>FAM-PM 入力 v14.9</title>
+<title>FAM-PM 入力 v15.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
 :root {
-  --bg: #F0F2F5; --accent: #D32F2F; --dark: #263238; --border: #BDBDBD; --radius: 12px;
+  --bg: #F0F2F5; --accent: #D32F2F; --safe: #00897B; --dark: #263238; --border: #BDBDBD; --radius: 12px;
   --header-h: 12vh;
 }
 
@@ -34,8 +34,9 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 .col-right { flex: 1; display: flex; flex-direction: column; }
 .card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; overflow: hidden; height: 100%; }
 .card-header { padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #ddd; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-.card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: space-around; }
+.card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
+/* 実績カウンター */
 .counter-container { display: flex; align-items: center; justify-content: center; gap: 2vw; }
 .btn-calc { width: 8vh; height: 8vh; border-radius: 12px; border: none; background: #eee; font-size: 2.5rem; font-weight: 900; cursor: pointer; }
 .act-val { font-family: 'Share Tech Mono'; font-size: clamp(3rem, 10vh, 5rem); font-weight: 700; color: var(--accent); }
@@ -44,21 +45,38 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-dark { background: var(--dark); color: #fff; }
 
-/* タイムライン表示変更：1行表示・一続きの縦軸 */
-#timeline { padding-left: 5px; position: relative; }
-#timeline::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: #ddd; z-index: 0; }
+/* タイムライン：左右振り分け・縦スクロール */
+.timeline-scroll-area { 
+  flex: 1; overflow-y: auto; padding: 20px 0; position: relative; 
+  scrollbar-width: thin;
+}
+#timeline-container { position: relative; width: 100%; min-height: 100%; }
+/* 中央縦軸 */
+#timeline-container::before { 
+  content: ""; position: absolute; left: 50%; top: 0; bottom: 0; 
+  width: 2px; background: #ddd; transform: translateX(-50%); z-index: 0; 
+}
 
-.tl-item { 
-  display: flex; align-items: center; gap: 12px; padding: 12px 0; position: relative; z-index: 1;
+.tl-row { 
+  display: flex; width: 100%; margin-bottom: 15px; position: relative; z-index: 1; align-items: center; 
 }
+.tl-item { width: 45%; display: flex; align-items: center; gap: 8px; }
+.tl-left { justify-content: flex-end; padding-right: 5px; text-align: right; margin-left: 0; }
+.tl-right { justify-content: flex-start; padding-left: 5px; text-align: left; margin-left: 55%; }
+
 .tl-dot { 
-  width: 10px; height: 10px; background: var(--accent); border-radius: 50%; border: 2px solid #fff; 
-  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 12px; height: 12px; background: #fff; border: 3px solid var(--accent); border-radius: 50%; 
+  position: absolute; left: 50%; transform: translateX(-50%); 
 }
-.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 1rem; min-width: 50px; margin-left: 30px; }
-.tl-icon-box { color: var(--dark); display: flex; align-items: center; }
-.tl-content { font-size: 0.95rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.tl-stop-tag { color: #D32F2F; font-size: 0.7rem; font-weight: 900; border: 1px solid #D32F2F; padding: 0 4px; border-radius: 3px; margin-left: 4px; }
+.tl-time { font-family: 'Share Tech Mono'; font-weight: 900; font-size: 0.9rem; color: #666; }
+.tl-content { font-size: 0.85rem; font-weight: 700; }
+.tl-left .tl-content { order: 1; }
+.tl-left .tl-icon { order: 2; color: var(--safe); }
+.tl-left .tl-time { order: 3; margin-left: 5px; }
+
+.tl-right .tl-time { order: 1; margin-right: 5px; color: var(--accent); }
+.tl-right .tl-icon { order: 2; color: var(--accent); }
+.tl-right .tl-content { order: 3; color: var(--accent); }
 
 /* モーダル (既存維持) */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
@@ -68,19 +86,15 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 .stop-toggle-box { grid-column: span 2; display: flex; gap: 10px; }
 .btn-toggle { flex: 1; padding: 15px; border-radius: 8px; border: 2px solid #ddd; background: #f9f9f9; font-weight: 900; cursor: pointer; }
 .btn-toggle.active { border-color: var(--accent); background: #fff0f0; color: var(--accent); }
-.btn-toggle.active-green { border-color: #00897B; background: #e0f2f1; color: #00897B; }
+.btn-toggle.active-green { border-color: var(--safe); background: #e0f2f1; color: var(--safe); }
 #time-section { grid-column: span 2; display: none; background: #f0f2f5; padding: 10px; border-radius: 8px; }
 #time-section.visible { display: block; }
 .time-spinner-container { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Share Tech Mono'; }
-.spinner-unit { display: flex; flex-direction: column; align-items: center; }
 .spin-btn { background: #fff; border: 1px solid #ccc; width: 60px; height: 40px; font-size: 1.5rem; cursor: pointer; font-weight: 900; color: var(--accent); border-radius: 6px; }
-.spin-val { font-size: 2.2rem; font-weight: 700; color: var(--dark); width: 60px; text-align: center; }
+.spin-val { font-size: 2.2rem; font-weight: 700; width: 60px; text-align: center; }
 .m4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; grid-column: span 2; }
 .m4-chip { padding: 10px 4px; background: #eee; border-radius: 6px; font-size: 0.75rem; font-weight: 900; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .m4-chip.active { background: var(--dark); color: #fff; }
-.quick-group { display: flex; flex-direction: column; gap: 8px; }
-.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.btn-quick { padding: 12px; border: 1px solid #ccc; border-radius: 8px; background: #fff; font-size: 0.85rem; font-weight: 700; text-align: left; }
 input.text-inp { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1.1rem; font-weight: 700; }
 </style>
 </head>
@@ -118,8 +132,12 @@ input.text-inp { width: 100%; padding: 12px; border: 2px solid #ddd; border-radi
   <div class="col-right">
     <section class="card">
       <div class="card-header"><i data-lucide="clock" size="14"></i><span class="ch-ja">変化点タイムライン / Timeline</span></div>
-      <div class="card-body" id="timeline">
+      <div class="card-body">
+        <div class="timeline-scroll-area">
+          <div id="timeline-container">
+            </div>
         </div>
+      </div>
     </section>
   </div>
 </main>
@@ -152,19 +170,8 @@ input.text-inp { width: 100%; padding: 12px; border: 2px solid #ddd; border-radi
         <div class="m4-chip" data-icon="log-in" onclick="selM4(this)"><i data-lucide="log-in"></i>投入</div>
         <div class="m4-chip" data-icon="log-out" onclick="selM4(this)"><i data-lucide="log-out"></i>下車</div>
       </div>
-      <div class="quick-group">
-        <div class="quick-grid">
-          <button class="btn-quick" onclick="setInp('i-title', 'チョコ停発生')">チョコ停発生</button>
-          <button class="btn-quick" onclick="setInp('i-title', '刃具交換')">刃具交換</button>
-        </div>
-        <input type="text" id="i-title" class="text-inp" placeholder="内容入力">
-      </div>
-      <div class="quick-group">
-        <div class="quick-grid">
-          <button class="btn-quick" onclick="setInp('i-action', '再起動実施')">再起動実施</button>
-          <button class="btn-quick" onclick="setInp('i-action', 'リーダー報告')">リーダー報告</button>
-        </div>
-        <input type="text" id="i-action" class="text-inp" placeholder="処置内容">
+      <div style="grid-column: span 2;">
+          <input type="text" id="i-title" class="text-inp" placeholder="内容入力">
       </div>
       <div class="stop-toggle-box">
         <button class="btn btn-dark" style="background:#888;" onclick="closeModal()">キャンセル</button>
@@ -178,7 +185,8 @@ input.text-inp { width: 100%; padding: 12px; border: 2px solid #ddd; border-radi
 let curAct = 0; let currentRound = 1; let hasStop = true;
 let issues = [
   { time: "08:05", icon: "log-in", title: "生産投入開始", stop: false },
-  { time: "08:45", icon: "settings", title: "設備チョコ停", stop: true }
+  { time: "08:45", icon: "settings", title: "設備チョコ停", stop: true },
+  { time: "09:10", icon: "user", title: "応援者1名投入", stop: false }
 ];
 
 function updateClock() {
@@ -199,16 +207,21 @@ function renderRoundDisplay() {
 }
 
 function renderTimeline() {
-  // 時間順にソートして描画
   issues.sort((a,b) => a.time.localeCompare(b.time));
-  document.getElementById('timeline').innerHTML = issues.map(i => `
-    <div class="tl-item">
-      <div class="tl-dot"></div>
-      <div class="tl-time">${i.time}</div>
-      <div class="tl-icon-box"><i data-lucide="${i.icon}" size="18"></i></div>
-      <div class="tl-content">${i.title}${i.stop ? '<span class="tl-stop-tag">停止</span>' : ''}</div>
-    </div>
-  `).join('');
+  const container = document.getElementById('timeline-container');
+  container.innerHTML = issues.map(i => {
+    const sideClass = i.stop ? 'tl-right' : 'tl-left';
+    return `
+      <div class="tl-row">
+        <div class="tl-dot" style="border-color: ${i.stop ? 'var(--accent)' : 'var(--safe)'}"></div>
+        <div class="tl-item ${sideClass}">
+          <span class="tl-time">${i.time}</span>
+          <span class="tl-icon"><i data-lucide="${i.icon}" size="16"></i></span>
+          <span class="tl-content">${i.title}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
   lucide.createIcons();
 }
 
@@ -227,7 +240,6 @@ function openModal() {
 }
 
 function closeModal() { document.getElementById('issueModal').classList.remove('open'); }
-function setInp(id, val) { document.getElementById(id).value = val; }
 function selM4(el) {
   document.querySelectorAll('.m4-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
