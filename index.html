@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>FAM-PM v16.1</title>
+<title>FAM-PM v16.2</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -26,66 +26,72 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 .card-header { padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #ddd; font-weight: 900; display: flex; align-items: center; gap: 6px; }
 .card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-/* タイムラインヘッダー復活 */
+/* タイムライン表示（以前の仕様維持） */
 .tl-label-row { display: flex; justify-content: space-between; padding: 5px 15px; font-weight: 900; font-size: 0.75rem; color: #666; background: #fdfdfd; border-bottom: 1px solid #eee; }
-.tl-label-left { color: var(--safe); }
-.tl-label-right { color: var(--accent); }
-.timeline-scroll-area { flex: 1; overflow-y: auto; padding: 10px 0; position: relative; }
+.timeline-scroll-area { flex: 1; overflow-y: auto; padding: 10px 0; }
 #timeline-container { position: relative; width: 100%; min-height: 100%; }
 #timeline-container::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #ddd; transform: translateX(-50%); }
-.tl-row { display: flex; width: 100%; margin-bottom: 15px; position: relative; z-index: 1; align-items: center; }
+.tl-row { display: flex; width: 100%; margin-bottom: 15px; position: relative; align-items: center; }
 .tl-item { width: 45%; display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; }
 .tl-left { justify-content: flex-end; padding-right: 5px; text-align: right; }
 .tl-right { justify-content: flex-start; padding-left: 5px; text-align: left; margin-left: 55%; }
 .tl-dot { width: 10px; height: 10px; background: #fff; border: 3px solid var(--accent); border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); }
-.status-badge { padding: 1px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 900; color: #fff; margin-left: 4px; }
-.st-stop { background: var(--accent); }
-.st-done { background: var(--safe); }
+.status-badge { padding: 1px 6px; border-radius: 4px; font-size: 0.65rem; color: #fff; margin-left: 4px; }
 
-/* --- モーダル新レイアウト --- */
+/* --- モーダル表示崩れ対策 --- */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; }
 .modal-overlay.open { display: flex; }
 .modal-content { width: 100vw; height: 100vh; background: #fff; display: flex; overflow: hidden; }
 
-/* 7項目サイドバー */
-.m4-side-bar { flex: 0 0 12vw; background: var(--dark); display: flex; flex-direction: column; }
-.m4-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; border: none; border-bottom: 1px solid #444; color: #888; cursor: pointer; }
-.m4-btn i { width: 2.2vw; height: 2.2vw; margin-bottom: 2px; }
-.m4-btn span { font-size: 0.9vw; font-weight: 900; }
+/* サイドバーは固定 */
+.m4-side-bar { flex: 0 0 14vw; background: var(--dark); display: flex; flex-direction: column; }
+.m4-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; border: none; border-bottom: 1px solid #444; color: #888; }
+.m4-btn i { width: 2.5vw; height: 2.5vw; margin-bottom: 2px; }
+.m4-btn span { font-size: 1vw; font-weight: 900; }
 .m4-btn.active { background: var(--accent); color: #fff; }
 
-/* メインエリア */
-.modal-main { flex: 1; display: flex; flex-direction: column; padding: 1vh 1.5vw; gap: 1vh; overflow: hidden; }
-.input-row-top { flex: 1.5; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5vw; min-height: 0; }
-.input-row-mid { flex: 1.2; display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5vw; } /* 処置の右に時刻 */
+/* メインエリア：収まりきらない場合はスクロール可能に */
+.modal-main { flex: 1; display: flex; flex-direction: column; padding: 10px 1.5vw; gap: 12px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-.box-col { display: flex; flex-direction: column; gap: 0.4vh; height: 100%; overflow: hidden; }
-.label-sm { font-size: 0.75rem; font-weight: 900; color: #555; background: #eee; padding: 1px 8px; border-radius: 4px; width: fit-content; }
+/* グリッドレイアウトの安定化 */
+.input-row-top { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.input-row-mid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 15px; align-items: start; }
 
-.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; flex: 1; align-content: start; }
-.btn-q { padding: 1.4vh 2px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-weight: 700; font-size: clamp(0.7rem, 0.85vw, 1rem); cursor: pointer; }
-.inp-t { width: 100%; padding: 0.8vh; border: 2px solid #bbb; border-radius: 6px; font-size: 1rem; font-weight: 700; }
+.box-col { display: flex; flex-direction: column; gap: 6px; }
+.label-sm { font-size: 0.8rem; font-weight: 900; color: #555; background: #eee; padding: 2px 8px; border-radius: 4px; width: fit-content; }
 
-/* 時刻入力パーツ */
-.time-container { display: flex; flex-direction: column; gap: 5px; justify-content: center; height: 100%; }
-.spin-box { display: flex; align-items: center; gap: 2px; background: #f9f9f9; padding: 4px; border-radius: 8px; border: 1px solid #ddd; justify-content: center; }
-.spin-v { font-family: 'Share Tech Mono'; font-size: 1.4rem; font-weight: 700; width: 3.5vw; text-align: center; }
-.spin-b { width: 2.8vw; height: 3.5vh; background: #eee; border: 1px solid #ccc; border-radius: 4px; font-weight: 900; font-size: 1rem; }
+/* ボタンと入力欄のサイズ確保 */
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.btn-q { min-height: 40px; padding: 8px 4px; border: 1px solid #ccc; border-radius: 6px; background: #fff; font-weight: 700; font-size: 0.9rem; cursor: pointer; }
+.inp-t { width: 100%; min-height: 40px; padding: 8px; border: 2px solid #bbb; border-radius: 6px; font-size: 1rem; font-weight: 700; }
 
-/* フッター */
-.modal-footer { flex: 0 0 auto; display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.5vw; background: #f0f0f0; padding: 1.2vh 2vw; border-radius: 12px 12px 0 0; align-items: center; }
-.btn-toggle { flex: 1; padding: 1.5vh; border: 2px solid #ccc; border-radius: 8px; font-weight: 900; background: #fff; font-size: 1rem; }
+/* 時刻入力の重なりを解消 */
+.time-container { display: flex; flex-direction: column; gap: 8px; }
+.spin-box { display: flex; align-items: center; gap: 4px; background: #fdfdfd; padding: 6px; border-radius: 8px; border: 1px solid #ccc; width: 100%; justify-content: center; }
+.spin-unit { display: flex; align-items: center; gap: 2px; }
+.spin-v { font-family: 'Share Tech Mono'; font-size: 1.6rem; font-weight: 700; min-width: 40px; text-align: center; }
+.spin-b { width: 36px; height: 36px; background: #eee; border: 1px solid #ccc; border-radius: 4px; font-weight: 900; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+
+/* フッター（登録・キャンセル） */
+.modal-footer { margin-top: auto; padding: 15px 0; display: grid; grid-template-columns: 1fr 1.5fr; gap: 15px; border-top: 1px solid #eee; background: #fff; }
+.btn-toggle { flex: 1; min-height: 45px; border: 2px solid #ccc; border-radius: 8px; font-weight: 900; background: #fff; font-size: 1rem; }
 .btn-toggle.active { border-color: var(--accent); background: #fff0f0; color: var(--accent); }
 .action-btns { display: flex; gap: 10px; }
-.btn-f { flex: 1; padding: 1.8vh; border-radius: 8px; border: none; font-size: 1.3rem; font-weight: 900; cursor: pointer; }
+.btn-f { flex: 1; min-height: 50px; border-radius: 8px; border: none; font-size: 1.2rem; font-weight: 900; cursor: pointer; }
 .btn-save { background: var(--accent); color: #fff; }
 .btn-can { background: #78909c; color: #fff; }
+
+/* スマホ・タブレット用調整 */
+@media (max-width: 600px) {
+  .input-row-top, .input-row-mid { grid-template-columns: 1fr; }
+  .m4-side-bar { flex: 0 0 18vw; }
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="h-title" style="font-weight:900;">FAM-PM <small>v16.1</small></div>
+  <div class="h-title" style="font-weight:900;">FAM-PM <small>v16.2</small></div>
   <div class="h-clock" id="live-clock">00:00:00</div>
 </header>
 
@@ -99,15 +105,14 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
           <div style="font-family:'Share Tech Mono'; font-size:4rem; font-weight:700; color:var(--accent);" id="disp-act">0</div>
           <button class="btn-q" style="width:60px;height:60px;font-size:2rem;" onclick="changeVal(1)">+</button>
         </div>
-        <button class="btn-f" style="background:var(--dark); color:#fff; font-size:1.1rem; margin-bottom:10px;" onclick="openRegModal()">変化点入力</button>
-        <div id="rd-display-area" style="text-align:center; font-family:'Share Tech Mono'; font-weight:900; color:var(--accent);">1rd</div>
+        <button class="btn-f" style="background:var(--dark); color:#fff; margin-bottom:10px;" onclick="openRegModal()">変化点入力</button>
       </div>
     </section>
   </div>
   <div class="col-right">
     <section class="card">
       <div class="card-header"><i data-lucide="clock" size="14"></i>変化点タイムライン</div>
-      <div class="tl-label-row"><div class="tl-label-left">← 停止なし</div><div class="tl-label-right">停止あり →</div></div>
+      <div class="tl-label-row"><div style="color:var(--safe)">← 停止なし</div><div style="color:var(--accent)">停止あり →</div></div>
       <div class="card-body">
         <div class="timeline-scroll-area"><div id="timeline-container"></div></div>
       </div>
@@ -139,28 +144,46 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
           <input type="text" id="reg-detail" class="inp-t" placeholder="詳細入力">
         </div>
       </div>
+
       <div class="input-row-mid">
         <div class="box-col">
           <span class="label-sm">処置内容タップ (履歴)</span>
-          <div id="q-actions" class="quick-grid" style="grid-template-columns: repeat(2, 1fr);"></div>
+          <div id="q-actions" class="quick-grid"></div>
           <input type="text" id="reg-act" class="inp-t" placeholder="処置入力">
         </div>
         <div class="time-container">
           <span class="label-sm">時刻入力</span>
           <div class="spin-box">
-            <span style="font-size:0.6rem; font-weight:900; margin-right:4px;">開始</span>
-            <button class="spin-b" onclick="spin('sh',1)">▲</button><div class="spin-v" id="sh">08</div><button class="spin-b" onclick="spin('sh',-1)">▼</button>
-            <span style="font-weight:900;">:</span>
-            <button class="spin-b" onclick="spin('sm',1)">▲</button><div class="spin-v" id="sm">00</div><button class="spin-b" onclick="spin('sm',-1)">▼</button>
+            <span style="font-size:0.7rem; font-weight:900;">開始</span>
+            <div class="spin-unit">
+              <button class="spin-b" onclick="spin('sh',1)">▲</button>
+              <div class="spin-v" id="sh">08</div>
+              <button class="spin-b" onclick="spin('sh',-1)">▼</button>
+            </div>
+            <span>:</span>
+            <div class="spin-unit">
+              <button class="spin-b" onclick="spin('sm',1)">▲</button>
+              <div class="spin-v" id="sm">00</div>
+              <button class="spin-b" onclick="spin('sm',-1)">▼</button>
+            </div>
           </div>
           <div class="spin-box">
-            <span style="font-size:0.6rem; font-weight:900; margin-right:4px;">終了</span>
-            <button class="spin-b" onclick="spin('eh',1)">▲</button><div class="spin-v" id="eh">--</div><button class="spin-b" onclick="spin('eh',-1)">▼</button>
-            <span style="font-weight:900;">:</span>
-            <button class="spin-b" onclick="spin('em',1)">▲</button><div class="spin-v" id="em">--</div><button class="spin-b" onclick="spin('em',-1)">▼</button>
+            <span style="font-size:0.7rem; font-weight:900;">終了</span>
+            <div class="spin-unit">
+              <button class="spin-b" onclick="spin('eh',1)">▲</button>
+              <div class="spin-v" id="eh">--</div>
+              <button class="spin-b" onclick="spin('eh',-1)">▼</button>
+            </div>
+            <span>:</span>
+            <div class="spin-unit">
+              <button class="spin-b" onclick="spin('em',1)">▲</button>
+              <div class="spin-v" id="em">--</div>
+              <button class="spin-b" onclick="spin('em',-1)">▼</button>
+            </div>
           </div>
         </div>
       </div>
+
       <div class="modal-footer">
         <div style="display:flex; gap:10px;">
           <button id="stop-on" class="btn-toggle active" onclick="setStop(true)">⚠️ 停止あり</button>
@@ -178,7 +201,6 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 <script>
 let issues = [];
 let regHasStop = true;
-
 const master = {
   '人': { t:['応援投入','作業遅れ','研修','離席'], d:['No.1ライン','新人A','応援者B','全工程'], a:['リーダー報告','配置変','教育','休憩'] },
   '設備': { t:['チョコ停','刃具折損','給油','エラー'], d:['OP-10','OP-20','コンベア','センサー'], a:['再起動','刃具交換','清掃','点検'] },
@@ -194,12 +216,9 @@ function switchM4(btn) {
   btn.classList.add('active');
   const type = btn.dataset.type;
   const data = master[type];
-  const setBtns = (id, list, target) => {
-    document.getElementById(id).innerHTML = list.map(v => `<button class="btn-q" onclick="setVal('${target}','${v}')">${v}</button>`).join('');
-  };
-  setBtns('q-titles', data.t, 'reg-title');
-  setBtns('q-details', data.d, 'reg-detail');
-  setBtns('q-actions', data.a.slice(0,4), 'reg-act'); // 履歴上位4件想定
+  document.getElementById('q-titles').innerHTML = data.t.map(v => `<button class="btn-q" onclick="setVal('reg-title','${v}')">${v}</button>`).join('');
+  document.getElementById('q-details').innerHTML = data.d.map(v => `<button class="btn-q" onclick="setVal('reg-detail','${v}')">${v}</button>`).join('');
+  document.getElementById('q-actions').innerHTML = data.a.map(v => `<button class="btn-q" onclick="setVal('reg-act','${v}')">${v}</button>`).join('');
 }
 
 function openRegModal() {
@@ -217,7 +236,6 @@ function saveIssue() {
   const isDone = eh !== "--";
   const type = document.querySelector('.m4-btn.active').dataset.type;
   const iconMap = {'人':'user','設備':'settings','材料':'package','方法':'info','不良':'alert-triangle','投入':'log-in','下車':'log-out'};
-  
   issues.push({
     time: `${document.getElementById('sh').innerText}:${document.getElementById('sm').innerText}`,
     endTime: isDone ? `${eh}:${document.getElementById('em').innerText}` : null,
