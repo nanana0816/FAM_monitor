@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>FAM-PM 入力 v14.8</title>
+<title>FAM-PM 入力 v14.9</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -44,45 +44,44 @@ main { flex: 1; display: flex; padding: 8px; gap: 8px; height: calc(100vh - var(
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-dark { background: var(--dark); color: #fff; }
 
-/* タイムライン (既存維持) */
-.tl-item { border-left: 3px solid var(--accent); margin-left: 10px; padding: 0 0 8px 12px; position: relative; }
-.tl-item::before { content: ""; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; position: absolute; left: -6px; top: 0; }
-.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+/* タイムライン表示変更：1行表示・一続きの縦軸 */
+#timeline { padding-left: 5px; position: relative; }
+#timeline::before { content: ""; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: #ddd; z-index: 0; }
 
-/* 横長画面基準のモーダル */
+.tl-item { 
+  display: flex; align-items: center; gap: 12px; padding: 12px 0; position: relative; z-index: 1;
+}
+.tl-dot { 
+  width: 10px; height: 10px; background: var(--accent); border-radius: 50%; border: 2px solid #fff; 
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+}
+.tl-time { font-family: 'Share Tech Mono'; font-weight: 700; color: var(--accent); font-size: 1rem; min-width: 50px; margin-left: 30px; }
+.tl-icon-box { color: var(--dark); display: flex; align-items: center; }
+.tl-content { font-size: 0.95rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tl-stop-tag { color: #D32F2F; font-size: 0.7rem; font-weight: 900; border: 1px solid #D32F2F; padding: 0 4px; border-radius: 3px; margin-left: 4px; }
+
+/* モーダル (既存維持) */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
 .modal-content { background: #fff; width: 90vw; max-width: 900px; max-height: 95vh; border-radius: 16px; border-top: 6px solid var(--accent); display: flex; flex-direction: column; }
-
 .modal-body { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; overflow-y: auto; }
-
-/* 停止スイッチ */
 .stop-toggle-box { grid-column: span 2; display: flex; gap: 10px; }
 .btn-toggle { flex: 1; padding: 15px; border-radius: 8px; border: 2px solid #ddd; background: #f9f9f9; font-weight: 900; cursor: pointer; }
 .btn-toggle.active { border-color: var(--accent); background: #fff0f0; color: var(--accent); }
 .btn-toggle.active-green { border-color: #00897B; background: #e0f2f1; color: #00897B; }
-
-/* 時刻スピンレイアウト */
 #time-section { grid-column: span 2; display: none; background: #f0f2f5; padding: 10px; border-radius: 8px; }
 #time-section.visible { display: block; }
 .time-spinner-container { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Share Tech Mono'; }
 .spinner-unit { display: flex; flex-direction: column; align-items: center; }
 .spin-btn { background: #fff; border: 1px solid #ccc; width: 60px; height: 40px; font-size: 1.5rem; cursor: pointer; font-weight: 900; color: var(--accent); border-radius: 6px; }
 .spin-val { font-size: 2.2rem; font-weight: 700; color: var(--dark); width: 60px; text-align: center; }
-
-/* 区分・内容チップ */
 .m4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; grid-column: span 2; }
 .m4-chip { padding: 10px 4px; background: #eee; border-radius: 6px; font-size: 0.75rem; font-weight: 900; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .m4-chip.active { background: var(--dark); color: #fff; }
-
 .quick-group { display: flex; flex-direction: column; gap: 8px; }
-.section-label { font-size: 0.8rem; font-weight: 900; color: #666; margin-bottom: 4px; }
 .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .btn-quick { padding: 12px; border: 1px solid #ccc; border-radius: 8px; background: #fff; font-size: 0.85rem; font-weight: 700; text-align: left; }
-
-.full-input { grid-column: span 2; }
 input.text-inp { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1.1rem; font-weight: 700; }
-input.text-inp:focus { border-color: var(--accent); outline: none; }
 </style>
 </head>
 <body>
@@ -92,7 +91,6 @@ input.text-inp:focus { border-color: var(--accent); outline: none; }
   <div class="h-center">
     <div class="rd-group" id="rd-display-area"></div>
     <div class="total-item">
-      <span class="total-label">本日の累積</span>
       <div class="total-val-box"><span id="total-act">562</span> / <span id="total-plan" style="color:#888">584</span></div>
     </div>
   </div>
@@ -120,93 +118,68 @@ input.text-inp:focus { border-color: var(--accent); outline: none; }
   <div class="col-right">
     <section class="card">
       <div class="card-header"><i data-lucide="clock" size="14"></i><span class="ch-ja">変化点タイムライン / Timeline</span></div>
-      <div class="card-body" id="timeline"></div>
+      <div class="card-body" id="timeline">
+        </div>
     </section>
   </div>
 </main>
 
 <div id="issueModal" class="modal-overlay">
   <div class="modal-content">
-    <div class="card-header"><span class="ch-ja">変化点登録 / Change Point</span></div>
+    <div class="card-header"><span class="ch-ja">変化点登録</span></div>
     <div class="modal-body">
-      
       <div class="stop-toggle-box">
         <button id="stop-on" class="btn-toggle active" onclick="toggleStop(true)">⚠️ 停止あり</button>
         <button id="stop-off" class="btn-toggle" onclick="toggleStop(false)">✅ 停止なし</button>
       </div>
-
       <div id="time-section" class="visible">
         <div class="time-spinner-container">
-          <div class="spinner-unit">
-            <button class="spin-btn" onclick="spin('sh',1)">△</button>
-            <div class="spin-val" id="s-h">08</div>
-            <button class="spin-btn" onclick="spin('sh',-1)">▽</button>
-          </div>
+          <div class="spinner-unit"><button class="spin-btn" onclick="spin('sh',1)">△</button><div class="spin-val" id="s-h">08</div><button class="spin-btn" onclick="spin('sh',-1)">▽</button></div>
           <div class="spin-val">:</div>
-          <div class="spinner-unit">
-            <button class="spin-btn" onclick="spin('sm',1)">△</button>
-            <div class="spin-val" id="s-m">35</div>
-            <button class="spin-btn" onclick="spin('sm',-1)">▽</button>
-          </div>
-          <div class="spin-val" style="margin:0 15px">〜</div>
-          <div class="spinner-unit">
-            <button class="spin-btn" onclick="spin('eh',1)">△</button>
-            <div class="spin-val" id="e-h">--</div>
-            <button class="spin-btn" onclick="spin('eh',-1)">▽</button>
-          </div>
+          <div class="spinner-unit"><button class="spin-btn" onclick="spin('sm',1)">△</button><div class="spin-val" id="s-m">35</div><button class="spin-btn" onclick="spin('sm',-1)">▽</button></div>
+          <div class="spin-val" style="margin:0 10px">〜</div>
+          <div class="spinner-unit"><button class="spin-btn" onclick="spin('eh',1)">△</button><div class="spin-val" id="e-h">--</div><button class="spin-btn" onclick="spin('eh',-1)">▽</button></div>
           <div class="spin-val">:</div>
-          <div class="spinner-unit">
-            <button class="spin-btn" onclick="spin('em',1)">△</button>
-            <div class="spin-val" id="e-m">--</div>
-            <button class="spin-btn" onclick="spin('em',-1)">▽</button>
-          </div>
+          <div class="spinner-unit"><button class="spin-btn" onclick="spin('em',1)">△</button><div class="spin-val" id="e-m">--</div><button class="spin-btn" onclick="spin('em',-1)">▽</button></div>
         </div>
       </div>
-
       <div class="m4-grid">
-        <div class="m4-chip active" onclick="selM4(this)"><i data-lucide="user"></i>人</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="settings"></i>設備</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="package"></i>材料</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="info"></i>方法</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="alert-triangle"></i>不良品</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="log-in"></i>投入</div>
-        <div class="m4-chip" onclick="selM4(this)"><i data-lucide="log-out"></i>下車</div>
+        <div class="m4-chip active" data-icon="user" onclick="selM4(this)"><i data-lucide="user"></i>人</div>
+        <div class="m4-chip" data-icon="settings" onclick="selM4(this)"><i data-lucide="settings"></i>設備</div>
+        <div class="m4-chip" data-icon="package" onclick="selM4(this)"><i data-lucide="package"></i>材料</div>
+        <div class="m4-chip" data-icon="info" onclick="selM4(this)"><i data-lucide="info"></i>方法</div>
+        <div class="m4-chip" data-icon="alert-triangle" onclick="selM4(this)"><i data-lucide="alert-triangle"></i>不良品</div>
+        <div class="m4-chip" data-icon="log-in" onclick="selM4(this)"><i data-lucide="log-in"></i>投入</div>
+        <div class="m4-chip" data-icon="log-out" onclick="selM4(this)"><i data-lucide="log-out"></i>下車</div>
       </div>
-
       <div class="quick-group">
-        <div class="section-label">変化内容</div>
         <div class="quick-grid">
           <button class="btn-quick" onclick="setInp('i-title', 'チョコ停発生')">チョコ停発生</button>
-          <button class="btn-quick" onclick="setInp('i-title', '初物確認')">初物確認</button>
-          <button class="btn-quick" onclick="setInp('i-title', '応援投入')">応援投入</button>
           <button class="btn-quick" onclick="setInp('i-title', '刃具交換')">刃具交換</button>
         </div>
-        <input type="text" id="i-title" class="text-inp" placeholder="内容を自由入力">
+        <input type="text" id="i-title" class="text-inp" placeholder="内容入力">
       </div>
-
       <div class="quick-group">
-        <div class="section-label">処置内容</div>
         <div class="quick-grid">
           <button class="btn-quick" onclick="setInp('i-action', '再起動実施')">再起動実施</button>
-          <button class="btn-quick" onclick="setInp('i-action', '基準値内確認')">基準値内確認</button>
-          <button class="btn-quick" onclick="setInp('i-action', '清掃・点検')">清掃・点検</button>
           <button class="btn-quick" onclick="setInp('i-action', 'リーダー報告')">リーダー報告</button>
         </div>
-        <input type="text" id="i-action" class="text-inp" placeholder="処置内容を入力">
+        <input type="text" id="i-action" class="text-inp" placeholder="処置内容">
       </div>
-
       <div class="stop-toggle-box">
         <button class="btn btn-dark" style="background:#888;" onclick="closeModal()">キャンセル</button>
         <button class="btn btn-primary" style="flex:2" onclick="saveIssue()">変化点を登録</button>
       </div>
-
     </div>
   </div>
 </div>
 
 <script>
-let curAct = 0; let currentRound = 1;
-let hasStop = true;
+let curAct = 0; let currentRound = 1; let hasStop = true;
+let issues = [
+  { time: "08:05", icon: "log-in", title: "生産投入開始", stop: false },
+  { time: "08:45", icon: "settings", title: "設備チョコ停", stop: true }
+];
 
 function updateClock() {
   const now = new Date();
@@ -223,6 +196,20 @@ function renderRoundDisplay() {
     if(i >= 1 && i <= 8) html += `<span class="rd-icon ${i===currentRound?'active':'side'}">${i}rd</span>`;
   }
   container.innerHTML = html + '<span style="color:#ddd">・</span>';
+}
+
+function renderTimeline() {
+  // 時間順にソートして描画
+  issues.sort((a,b) => a.time.localeCompare(b.time));
+  document.getElementById('timeline').innerHTML = issues.map(i => `
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-time">${i.time}</div>
+      <div class="tl-icon-box"><i data-lucide="${i.icon}" size="18"></i></div>
+      <div class="tl-content">${i.title}${i.stop ? '<span class="tl-stop-tag">停止</span>' : ''}</div>
+    </div>
+  `).join('');
+  lucide.createIcons();
 }
 
 function toggleStop(status) {
@@ -255,28 +242,17 @@ function spin(target, val) {
 }
 
 function saveIssue() {
-  const title = document.getElementById('i-title').value;
-  if(!title) return alert('内容を入力してください');
-  const time = hasStop ? `${document.getElementById('s-h').innerText}:${document.getElementById('s-m').innerText}` : "--:--";
-  issues.unshift({ time, title, stop: hasStop });
+  const title = document.getElementById('i-title').value || "未入力";
+  const icon = document.querySelector('.m4-chip.active').dataset.icon;
+  const time = `${document.getElementById('s-h').innerText}:${document.getElementById('s-m').innerText}`;
+  issues.push({ time, icon, title, stop: hasStop });
   renderTimeline(); closeModal();
-}
-
-let issues = [{ time: "08:15", title: "生産開始確認", stop: false }];
-function renderTimeline() {
-  document.getElementById('timeline').innerHTML = issues.map(i => `
-    <div class="tl-item">
-      <div class="tl-time">${i.time} ${i.stop?'<span style="color:red">●停止</span>':''}</div>
-      <div class="tl-content">${i.title}</div>
-    </div>
-  `).join('');
 }
 
 function changeVal(n) { curAct += n; document.getElementById('disp-act').innerText = Math.max(0, curAct); }
 function submitData() { alert('実績を保存しました'); }
 
 document.addEventListener('DOMContentLoaded', () => {
-  lucide.createIcons();
   setInterval(updateClock, 1000); updateClock(); renderTimeline();
 });
 </script>
